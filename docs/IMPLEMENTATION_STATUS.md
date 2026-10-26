@@ -1,47 +1,68 @@
 # 实施状态
 
-2026-10-26：会前内容已整体重编，等待本轮精确提交的远端CI核验；既有网站与依赖修复保留。未执行生产部署，不宣称真机或真实学习效果验收完成。
+2026-10-26：会前内容重编已提交，精确代码提交 `3e4d1d88740b958867b9fd1e9336b1329dd106cc` 已通过远端CI。未执行生产部署；真机视觉/离线与真实读者理解效果仍未验。
 
 ## 当前内容
 
-- 70张卡，稳定ID K001—K073（K022—K024此前合并，继续不复用）。
+- 70张卡，稳定ID K001—K073（K022—K024此前合并，继续不复用）；六组正文及详情已重编。
 - 18术语、40来源、16书架入口、10讲者；15个日程区块原样保留。
-- 新增 `content/reading-order.json`，保持收藏、笔记和深链基于原ID；先基础与场次知识，再历史讲者和会场工具。
-- 相邻研究明确署名，不伪装本届讲稿；自创笔记/提问/保密建议独立登记为S38。
-- 审读缺陷与本轮修订见 `docs/editorial/2026-10-26-content-revision.md`，上一轮审读保留在 `docs/reviews/2026-10-26-content-audit.md`。
-- 旧章节、旧工具稿和12张示例保留为研究归档，不覆盖回当前发布正文。见 `content/README.md`。
+- `content/reading-order.json`先组织基础与场次知识，再历史讲者和会场工具；收藏、笔记和深链继续使用原ID。
+- 补齐驱力、并入、物、书写、节奏、青少年与移情的实质知识。主体/自我、大他者、客体小a等增加入门说明与关联。
+- 相邻研究明确署名，不伪装本届讲稿；编者工具独立登记为S38。
+- 详见 `docs/editorial/2026-10-26-content-revision.md`；上一轮审读保留于 `docs/reviews/2026-10-26-content-audit.md`。
+- 旧章节、工具稿和12张示例是研究归档，不覆盖当前发布正文；见 `content/README.md`。
 
-## 已独立核实的依赖修复
+## 本轮实际验证
 
-`aa28a900f128713db84d9019b81c216d71895042` 保持在本轮祖先链中。
+代码/内容SHA：`3e4d1d88740b958867b9fd1e9336b1329dd106cc`。
 
-- CI Run：40297484283；Job：121486968125。
-- 结果：success；`npm ci`为 `found 0 vulnerabilities`。
-- Vitest4.1.12，29/29单测；56/56 e2e；typecheck、build通过。
-- 这是依赖修复提交的结果；不冒充本轮新内容测试结果。
-- 本机镜像audit接口失败与官方源审计成功的区别，见Issue #1评论6412364810。接受已知公告修复，不声明绝对安全。
+[CI 40303313046](https://github.com/Dylan5237/lakang/actions/runs/40303313046)，job `121506204623`，completed/success，已读取完整日志。环境Ubuntu24.04、Node22.23.3、npm10.9.9、Vitest4.1.12、Playwright自带Chromium。
 
-## 本轮新增验证
+| 检查 | 实际结果 |
+|---|---|
+| npm ci | found 0 vulnerabilities |
+| npm run typecheck | 通过 |
+| npm test | 5文件、32/32通过；含12项内容测试 |
+| npx playwright test | 56/56通过，33.5秒 |
+| npm run build | 成功；PWA预缓存16项、414.81 KiB |
 
-`npm run typecheck`、`npm test`、`npm run build`、`npx playwright test`和`python scripts/validate_materials.py`将按新提交由现有CI执行。
+资料层在内容提交 `43e12c227d08d05e8eb9303a1da76ab8231ae23b` 上运行：[Validate 40302974092](https://github.com/Dylan5237/lakang/actions/runs/40302974092)，job `121505085095`，success。实际输出：
 
-内容测试增加：完整稳定ID顺序、核心议题的实质来源与定位、审读纠错回归、原创工具独立归属。来源数量更新至40，术语18；未关闭数据、日程、可访问性或离线检查。
+```text
+PASS: 16 chapters, 10 speakers, 40 sources, 15 agenda blocks, 12 example cards, 70 current cards, 18 terms; reading order complete
+```
 
-创建本文件时新CI未运行；最终结果必须对应真实提交与日志，并回写Issue。测试检查工程和结构，不等于学术内容或学习效果自动验收。
+其后3e4d1d8只更新两份测试与交接文档，未更改该校验所检查的数据和脚本。最终代码CI的内容测试再次校验全部ID、引用、日程、18术语、40来源及顺序。
 
-## 已有工程及记录
+首轮CI `40302974117` 曾因两处旧测试假设失败：按类别连续排序、糖肽必出现在某张旧标题。已在3e4d1d8改为显式完整路径与筛选后相对顺序；搜索继续验证标题优先、正文命中、多词与关系及限定集合。没有删除失败测试、关闭审计或取消离线/布局检查。
 
-站点：React/Vite静态PWA、上下刷、日程互链、搜索筛选、本地收藏/笔记/进度、备份导入导出、字体与主题、离线及缓存更新。无账号、后端或远程AI问答。
+程序测试覆盖刷卡、返回/焦点、搜索筛选、收藏笔记、导入导出、三时区日程、小屏/横屏/大字号、图示边界和许可、离线冷启动及缓存更新。它们证明结构与行为，不自动证明所有学术解释或所有读者的理解。
 
-原件导入、前几轮提交、历史Edge实测与布局统计保留于[本轮前的实施状态](https://github.com/Dylan5237/lakang/blob/eb781e2d9fab36cc9c25e2d4139c0f9fc48e9324/docs/IMPLEMENTATION_STATUS.md)，不把旧高度统计套用到新正文。
+## 依赖修复独立验收
 
-主要历史节点：6795eda原件；31d30d1站点；cf1b00b第二轮内容；bbdcba4三环图；574d0b5措辞修订；436a491旧状态；aa28a90依赖修复；eb781e2内容审读。历史记录中曾遗漏npm告警的总结已由依赖修复和独立验收取代。
+`aa28a900f128713db84d9019b81c216d71895042`保留在祖先链中，包与锁文件本轮没有修改。
+
+- CI `40297484283`，job `121486968125`：success；npm ci零已知告警；29/29单测、56/56 e2e及build通过。
+- Vitest3→4为主版本升级，并非补丁版本；本项目已有回归结果支持兼容。本轮再跑仍零已知告警。
+- 本机npmmirror不支持audit接口，不把接口失败当通过；官方源审计详情见Issue #1评论6412364810。
+- 接受已知公告修复，不将其升级为供应链绝对安全保证。
+
+## 提交与历史
+
+| SHA | 本轮成果 |
+|---|---|
+| 43e12c2 | 70卡内容重编、40来源、18术语、16书架、学习顺序与回归校验 |
+| 3e4d1d8 | 更新旧顺序/标题测试假设、保留搜索与筛选约束，全部CI通过 |
+
+原件导入、历史提交与旧Edge布局统计见[重编前状态](https://github.com/Dylan5237/lakang/blob/eb781e2d9fab36cc9c25e2d4139c0f9fc48e9324/docs/IMPLEMENTATION_STATUS.md)，不将旧高度统计套到新正文。历史遗漏的npm告警总结已由依赖修复与独立验收取代。
+
+本次Git比较确认 `agenda.json`、`package.json`、`package-lock.json`和存储键逻辑未修改；无强推，无生产部署。
 
 ## 仍未验证
 
-- iPhone Safari、内置浏览器、真实安卓；桌面Chromium移动视口不等同真机。
+- iPhone Safari、内置浏览器与真实安卓；桌面Chromium移动视口不等同真机。
 - K011真实手机上的交叉缺口与标签视觉效果；用户提供截图，ChatGPT审阅。
-- 真实参会者读后的理解与复述效果。
+- 真实参会者读后的理解、复述与会前学习效果。
 - 实际生产域名上的部署、缓存更新与断网冷启动。
 
 ## 运行与构建
@@ -56,4 +77,4 @@ npm run test:e2e
 python scripts/validate_materials.py
 ```
 
-e2e本地默认Edge；CI使用Playwright Chromium。相对base与hash路由支持子路径，需HTTPS启用Service Worker。静态产物为dist；不应给sw.js配置长期强缓存。本轮未执行部署。
+e2e本地默认Edge、CI使用Playwright Chromium。相对base与hash路由支持子路径；需HTTPS启用Service Worker，产物为dist，sw.js不应长期强缓存。本状态文件是验证回写，所记录测试精确对应上述代码SHA，不把后续仅文档提交宣称为已重新运行的代码测试。
