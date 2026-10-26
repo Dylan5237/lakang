@@ -8,7 +8,6 @@ const sizes = [
   { name: '横屏 667x375', width: 667, height: 375 },
   { name: '横屏 844x390', width: 844, height: 390 },
 ];
-
 async function horizontalOverflow(page: Page) {
   return page.evaluate(() => {
     const vw = document.documentElement.clientWidth;
@@ -22,22 +21,18 @@ async function horizontalOverflow(page: Page) {
     return { docScroll: document.documentElement.scrollWidth - vw, bodyScroll: document.body.scrollWidth - vw, bad: bad.slice(0, 5) };
   });
 }
-
 async function smallTargets(page: Page, selector: string, min = 40) {
   return page.evaluate(
-    ([sel, m]) =>
-      [...document.querySelectorAll<HTMLElement>(sel as string)]
-        .filter((e) => e.offsetParent !== null)
-        .map((e) => ({ t: (e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 8), w: e.getBoundingClientRect().width, h: e.getBoundingClientRect().height }))
-        .filter((x) => x.w < (m as number) || x.h < (m as number)),
+    ([sel, m]) => [...document.querySelectorAll<HTMLElement>(sel as string)]
+      .filter((e) => e.offsetParent !== null)
+      .map((e) => ({ t: (e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 8), w: e.getBoundingClientRect().width, h: e.getBoundingClientRect().height }))
+      .filter((x) => x.w < (m as number) || x.h < (m as number)),
     [selector, min] as const,
   );
 }
-
 for (const size of sizes) {
   test.describe(size.name, () => {
     test.use({ viewport: { width: size.width, height: size.height } });
-
     for (const level of [0, 3]) {
       test(`四个页面无横向溢出，触控目标 ≥40px（字号档 ${level}）`, async ({ page }) => {
         await page.goto('/#/me');
@@ -46,14 +41,12 @@ for (const size of sizes) {
         for (const h of hashes) {
           await page.goto('/' + h);
           await expect(page.locator('main').first()).toBeVisible();
-          const o = await horizontalOverflow(page);
-          expect(o, `${h} 横向溢出`).toEqual({ docScroll: 0, bodyScroll: 0, bad: [] });
+          expect(await horizontalOverflow(page), `${h} 横向溢出`).toEqual({ docScroll: 0, bodyScroll: 0, bad: [] });
         }
         await page.goto('/#/');
         expect(await smallTargets(page, '.act, .icon-btn, .bottom-nav a, .chip')).toEqual([]);
       });
     }
-
     test('卡片流：全部 70 张的文字不横向溢出，操作按钮可达', async ({ page }) => {
       await page.goto('/#/');
       await expect(page.getByTestId('feed')).toBeVisible();
@@ -67,7 +60,7 @@ for (const size of sizes) {
           if (c.offsetHeight > vh + 1) taller++;
           maxRatio = Math.max(maxRatio, c.offsetHeight / vh);
           c.querySelectorAll<HTMLElement>('*').forEach((e) => {
-            // SVG 子元素的 clientWidth 以用户单位计，与 scrollWidth 不可比；图示另由下方专项检查
+            // SVG geometry is checked separately using its viewBox.
             if (e instanceof SVGElement && !(e instanceof SVGSVGElement)) return;
             if (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).display !== 'inline') overflowing.push(`${c.dataset.cardId}:${e.className}`);
           });
@@ -80,7 +73,6 @@ for (const size of sizes) {
     });
   });
 }
-
 for (const size of sizes) {
   test(`${size.name}：卡片很高时操作栏仍固定在可视区内(粘性)`, async ({ page }) => {
     await page.setViewportSize({ width: size.width, height: size.height });
@@ -92,12 +84,10 @@ for (const size of sizes) {
     const ab = (await card.locator('.actions').boundingBox())!;
     expect(ab.y + ab.height).toBeLessThanOrEqual(fb.y + fb.height + 1);
     await expect(card.getByRole('button', { name: '展开读' })).toBeInViewport({ ratio: 1 });
-    // 卡片内容可通过同一滚动容器读到末尾
     await feed.evaluate((e) => e.scrollBy(0, 400));
     await expect(card.locator('.takeaway')).toBeVisible();
   });
 }
-
 for (const width of [320, 390]) {
   test(`${width} 宽、特大字号：K011 三环图完整落在卡片与详情内`, async ({ page }) => {
     await page.setViewportSize({ width, height: 700 });
@@ -108,13 +98,12 @@ for (const width of [320, 390]) {
     const fig = card.locator('.fig-svg');
     await fig.scrollIntoViewIfNeeded();
     await expect(fig).toBeVisible();
-    await expect(fig).toHaveAttribute('aria-label', /博罗米三环图/);
+    await expect(fig).toHaveAttribute('aria-label', /博罗米三环.*图/);
     const fb = (await fig.boundingBox())!;
     const cb = (await card.boundingBox())!;
     expect(fb.width).toBeGreaterThan(150);
     expect(fb.x).toBeGreaterThanOrEqual(cb.x);
     expect(fb.x + fb.width).toBeLessThanOrEqual(cb.x + cb.width + 1);
-    // 所有标注都落在 viewBox 内(不被裁掉)
     const outside = await fig.evaluate((svg: SVGSVGElement) => {
       const vb = svg.viewBox.baseVal;
       return [...svg.querySelectorAll('text')]
@@ -124,12 +113,10 @@ for (const width of [320, 390]) {
     });
     expect(await card.locator('.fig-svg text').count()).toBeGreaterThanOrEqual(5);
     expect(outside).toEqual([]);
-
     await page.goto('/#/card/K011/more');
     const dfig = page.getByTestId('detail').locator('.fig');
     await dfig.scrollIntoViewIfNeeded();
     await expect(dfig.locator('.fig-credit')).toContainText('Lacan-Mathemes');
-    const o = await horizontalOverflow(page);
-    expect(o).toEqual({ docScroll: 0, bodyScroll: 0, bad: [] });
+    expect(await horizontalOverflow(page)).toEqual({ docScroll: 0, bodyScroll: 0, bad: [] });
   });
 }

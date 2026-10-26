@@ -4,6 +4,7 @@ import h from '../content/cards/03-history.json';
 import s from '../content/cards/04-speakers.json';
 import t from '../content/cards/05-themes.json';
 import k from '../content/cards/06-clinic.json';
+import readingOrder from '../content/reading-order.json';
 import agendaJson from '../content/agenda.json';
 import sourcesJson from '../content/sources.json';
 import speakersJson from '../content/speakers.json';
@@ -11,7 +12,18 @@ import termsJson from '../content/terms.json';
 import shelfJson from '../content/shelf.json';
 import type { Book, Card, Session, Source, Speaker, Term } from './types';
 
-export const cards = [q, c, h, s, t, k].flat() as unknown as Card[];
+const contentCards = [q, c, h, s, t, k].flat() as unknown as Card[];
+const contentById = new Map(contentCards.map((card) => [card.id, card]));
+// Stable IDs preserve existing bookmarks and notes while the learning order changes.
+if (
+  contentById.size !== contentCards.length ||
+  new Set(readingOrder).size !== readingOrder.length ||
+  readingOrder.length !== contentCards.length ||
+  readingOrder.some((id) => !contentById.has(id))
+) {
+  throw new Error('Reading order must contain every card exactly once.');
+}
+export const cards = readingOrder.map((id) => contentById.get(id)!);
 export const sessions = agendaJson.sessions as unknown as Session[];
 export const sources = sourcesJson.sources as Source[];
 export const speakers = speakersJson as Speaker[];
