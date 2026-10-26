@@ -14,3 +14,7 @@ Thumbs.db
 notes-export*.json
 personal-notes/
 local-backups/
+
+# Playwright output
+test-results/
+playwright-report/
