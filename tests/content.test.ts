@@ -19,7 +19,7 @@ describe('内容完整性', () => {
     expect(chapterIds.size).toBe(16);
     expect(speakers).toHaveLength(10);
     expect(terms).toHaveLength(13);
-    expect(sources).toHaveLength(25);
+    expect(sources).toHaveLength(26);
     expect(sessions).toHaveLength(15);
     expect(new Set(cards.map((c) => c.id)).size).toBe(cards.length);
     expect(cards.length).toBeGreaterThanOrEqual(60);
@@ -51,7 +51,7 @@ describe('内容完整性', () => {
     }
   });
 
-  it('16 章、10 讲者、13 术语、25 来源均被覆盖', () => {
+  it('16 章、10 讲者、13 术语、26 来源均被覆盖', () => {
     const covered = (pick: (c: (typeof cards)[number]) => string[]) => new Set(cards.flatMap(pick));
     const chapters = covered((c) => c.chapterIds);
     for (const id of chapterIds) expect(chapters.has(id), `章 ${id}`).toBe(true);

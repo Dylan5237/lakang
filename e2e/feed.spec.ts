@@ -106,7 +106,7 @@ test('搜索与筛选：关键词命中、仅看收藏、清除', async ({ page 
   await expect(page.getByTestId('filter-line')).toContainText('筛选后共 1 张');
   await expect(page.locator('.card[data-card-id]')).toHaveCount(1);
   await page.getByTestId('filter-line').getByRole('button', { name: '清除' }).click();
-  await expect(page.locator('.card[data-card-id]')).toHaveCount(68);
+  await expect(page.locator('.card[data-card-id]')).toHaveCount(70);
 });
 
 test('阶段筛选只留下该阶段卡片', async ({ page }) => {

@@ -42,7 +42,7 @@ npm run test:e2e     # Playwright 端到端(会先 build 并起 preview)
 
 ## 目录
 
-- `content/`：结构化内容（`cards/*.json` 68 张卡、`agenda.json`、`speakers.json`、`terms.json`、`shelf.json`、`sources.json`）与章节源文。
+- `content/`：结构化内容（`cards/*.json` 70 张卡、`agenda.json`、`speakers.json`、`terms.json`、`shelf.json`、`sources.json`）与章节源文。
 - `src/`：React 应用；`src/lib/` 为日程判定、存储、搜索、筛选、路由、PWA 等纯逻辑。
 - `tests/`：Vitest 单元测试；`e2e/`：Playwright 测试。
 - `references/`：原件与资料档案，**不会**被复制进公开站点；外部出版物不因列入书目而取得再发布许可。

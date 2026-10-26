@@ -54,7 +54,7 @@ for (const size of sizes) {
       });
     }
 
-    test('卡片流：全部 68 张的文字不横向溢出，操作按钮可达', async ({ page }) => {
+    test('卡片流：全部 70 张的文字不横向溢出，操作按钮可达', async ({ page }) => {
       await page.goto('/#/');
       await expect(page.getByTestId('feed')).toBeVisible();
       const stats = await page.evaluate(() => {
@@ -73,7 +73,7 @@ for (const size of sizes) {
         return { count: feed.querySelectorAll('.card[data-card-id]').length, taller, maxRatio: Number(maxRatio.toFixed(2)), overflowing: overflowing.slice(0, 5), vh };
       });
       test.info().annotations.push({ type: '卡片高度统计', description: JSON.stringify(stats) });
-      expect(stats.count).toBe(68);
+      expect(stats.count).toBe(70);
       expect(stats.overflowing).toEqual([]);
     });
   });

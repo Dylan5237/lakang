@@ -27,7 +27,7 @@ def unique_ids(rows: list, label: str) -> set[str]:
 def main() -> None:
     source_data = load('sources.json')
     sources = unique_ids(source_data['sources'], 'sources')
-    require(sources == {f'S{i:02}' for i in range(1, 26)}, 'Source baseline must contain S01-S25')
+    require(sources == {f'S{i:02}' for i in range(1, 27)}, 'Source baseline must contain S01-S26')
     for source in source_data['sources']:
         require(source['url'].startswith('https://'), f"Invalid source URL: {source['id']}")
 
