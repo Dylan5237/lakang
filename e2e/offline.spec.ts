@@ -12,9 +12,10 @@ test('离线冷启动：卡片、六组专题、长篇正文、日程与许可�
   try {
     let ctx=await chromium.launchPersistentContext(profile,opts);let page=ctx.pages()[0]??(await ctx.newPage());
     await page.goto(srv.url);await expect(page.getByTestId('offline-pill')).toBeVisible({timeout:30_000});
+    const initial = await page.evaluate(()=>location.hash.replace(/^#\/card\//,'').split('/')[0]);
     await page.goto(srv.url+'#/me');await expect(page.getByTestId('offline-state')).toContainText('离线已就绪');await ctx.close();
     await srv.close();ctx=await chromium.launchPersistentContext(profile,opts);page=ctx.pages()[0]??(await ctx.newPage());
-    await page.goto(srv.url);await expect(page.locator('.card[data-card-id="K001"] .card-title')).toBeVisible();await expect(page.getByTestId('offline-pill')).toBeVisible();
+    await page.goto(srv.url);await expect(page.locator(`.card[data-card-id="${initial}"] .card-title`)).toBeVisible();await expect(page.getByTestId('offline-pill')).toBeVisible();
     await page.goto(srv.url+'#/agenda/all');await expect(page.getByTestId('overview').locator('li')).toHaveCount(15);
     await page.goto(srv.url+'#/card/K020/more');await page.reload();await expect(page.getByTestId('detail').getByTestId('sources')).toBeVisible();
     await page.goto(srv.url+'#/card/K011/more');await expect(page.getByTestId('detail').locator('.fig-svg')).toBeVisible();await expect(page.getByTestId('detail').locator('.fig-credit a',{hasText:'MIT 许可'})).toBeVisible();
