@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "pending-local-import",
+  "status": "imported", "importedInCommit": "6795eda",
   "assets": [
     {"path":"references/originals/conference-notice.pdf","originalName":"会议通知 _ 第一届大湾区拉康派精神分析大会.pdf","bytes":11336535,"sha256":"0e045182ee4562e687b37b93e4bb270dcb7e7504f728aef920a333ed17dd1c93"},
     {"path":"references/originals/public-handbook-v2.html","originalName":"身体如何言说_大会随身研读手册.html","bytes":348730,"sha256":"b1e02713fef8e7fde749a4a6ede89b431d888418a8f164c0fad0f50858b90afc"},
