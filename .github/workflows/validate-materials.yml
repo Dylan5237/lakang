@@ -1,0 +1,29 @@
+name: Validate conference materials
+
+on:
+  push:
+    paths:
+      - 'content/**'
+      - 'scripts/validate_materials.py'
+      - '.github/workflows/validate-materials.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read the exact public commit
+        env:
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "https://github.com/${REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$COMMIT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate content IDs, links and agenda invariants
+        run: python3 scripts/validate_materials.py
