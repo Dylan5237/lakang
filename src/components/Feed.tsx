@@ -22,6 +22,7 @@ interface Props {
 export function Feed({ list, filterKey, routeCardId, filtered, onClearFilters }: Props) {
   const ref = useRef<HTMLElement>(null);
   const active = useRef<string | undefined>(undefined);
+  const target = useRef<{ id: string; timer: number } | null>(null);
   const ready = useRef(false);
   const user = useUser();
   const ids = useMemo(() => list.map((c) => c.id), [list]);
@@ -72,6 +73,11 @@ export function Feed({ list, filterKey, routeCardId, filtered, onClearFilters }:
         for (const e of entries) {
           if (!e.isIntersecting || !ready.current) continue;
           const id = (e.target as HTMLElement).dataset.cardId;
+          if (target.current && id !== target.current.id) continue;
+          if (target.current) {
+            window.clearTimeout(target.current.timer);
+            target.current = null;
+          }
           if (id && id !== active.current) {
             active.current = id;
             actions.setPosition(id);
@@ -88,9 +94,13 @@ export function Feed({ list, filterKey, routeCardId, filtered, onClearFilters }:
 
   useEffect(() => {
     stepper = (dir) => {
-      const i = ids.indexOf(active.current ?? '');
+      const i = ids.indexOf(target.current?.id ?? active.current ?? '');
       const next = ids[Math.min(ids.length - 1, Math.max(0, (i < 0 ? 0 : i) + dir))];
-      if (next) jump(next, true);
+      if (!next) return;
+      // 平滑滚动途中连按“下一张”要接着往后走；途中经过的卡片不写入位置
+      if (target.current) window.clearTimeout(target.current.timer);
+      target.current = { id: next, timer: window.setTimeout(() => (target.current = null), 900) };
+      jump(next, true);
     };
     return () => {
       stepper = null;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { cardById } from './data';
 import { STAGES } from './types';
 import { applyFilters, isFiltered, noFilters, type Filters } from './lib/filter';
@@ -41,9 +41,12 @@ export function App() {
   const filtered = isFiltered(filters);
 
   const feedCardId = route.name === 'feed' ? route.cardId : undefined;
+  // 仅在路由指向的卡片变化时检查：深链到被筛掉的卡片时清除筛选；筛选条件自身变化不触发
+  const listRef = useRef(list);
+  listRef.current = list;
   useEffect(() => {
-    if (feedCardId && filtered && cardById.has(feedCardId) && !list.some((c) => c.id === feedCardId)) setFilters(noFilters);
-  }, [feedCardId, filtered, list]);
+    if (feedCardId && cardById.has(feedCardId) && !listRef.current.some((c) => c.id === feedCardId)) setFilters(noFilters);
+  }, [feedCardId]);
 
   const detailCard = route.name === 'feed' && route.detail && route.cardId ? cardById.get(route.cardId) : undefined;
   const nav = [

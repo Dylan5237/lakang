@@ -243,7 +243,7 @@ dl {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px 8px;
+  padding: 10px 12px 0;
 }
 .card-inner {
   flex: 1;
@@ -334,6 +334,11 @@ dl {
 }
 .actions {
   flex: none;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  background: var(--bg);
+  padding: 4px 0 8px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1.2fr;
   gap: 6px;
@@ -866,6 +871,9 @@ legend {
   }
 }
 @media (max-height: 520px) and (orientation: landscape) {
+  .stage-row {
+    display: none;
+  }
   .topbar {
     padding-top: 2px;
   }
