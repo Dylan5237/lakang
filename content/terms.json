@@ -1,7 +1,7 @@
 [
   {"id":"T01","zh":"身体／有机体","original":"corps / organisme","text":"先辨别讲者讨论的是身体哪一层，不把理论区分误读为否认生物学。","sourceIds":["S01"],"chapterIds":["r01"]},
-  {"id":"T02","zh":"想象界","original":"imaginaire","text":"形象、轮廓与整体：身体形象、完整感与认同；在三环纽结里对应一致性（consistance）。","sourceIds":["S20"],"chapterIds":["r03"]},
-  {"id":"T03","zh":"符号界","original":"symbolique","text":"语言、命名与关系位置；在三环纽结里对应洞（trou）。意义取决于话语位置，不是固定的象征义。","sourceIds":["S20"],"chapterIds":["r03"]},
+  {"id":"T02","zh":"想象界","original":"imaginaire","text":"形象、轮廓与整体：身体形象、完整感与认同；拉康在三环纽结里侧重以一致性（consistance）刻画它。","sourceIds":["S20"],"chapterIds":["r03"]},
+  {"id":"T03","zh":"符号界","original":"symbolique","text":"语言、命名与关系位置；拉康在三环纽结里侧重以洞（trou）刻画它。意义取决于话语位置，不是固定的象征义。","sourceIds":["S20"],"chapterIds":["r03"]},
   {"id":"T04","zh":"实在界","original":"réel","text":"意义与形象收拢不了、仍在起作用的部分；“作为不可能而外存”（ek-sistence）。不是日常“现实”的同义词。","sourceIds":["S20"],"chapterIds":["r03"]},
   {"id":"T05","zh":"能指","original":"signifiant","text":"保留具体词音及与其他词的关系，不用概括的大意抹平原话。","sourceIds":["S19"],"chapterIds":["r04"]},
   {"id":"T06","zh":"享乐","original":"jouissance","text":"意义之外、落在身体上的东西，能指直接介入其中；不等同快乐或主观愿望，更不用来指责当事人“喜欢受苦”。","sourceIds":["S01","S20"],"chapterIds":["r05"]},
