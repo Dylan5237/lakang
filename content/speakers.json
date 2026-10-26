@@ -1,0 +1,82 @@
+[
+  {
+    "id": "expert-francoise",
+    "name": "弗朗索瓦丝·格罗格",
+    "original": "Françoise Gorog",
+    "thread": "跨语言、临床教学、歧义",
+    "intro": "通知列为精神病学家、哲学家、拉康派精神分析家及 EPFCL 创始人之一。",
+    "cardId": "K027"
+  },
+  {
+    "id": "expert-luc",
+    "name": "吕克·弗雪",
+    "original": "Luc Faucher",
+    "thread": "医院临床、汉语、身体",
+    "intro": "通知列为精神科医生、精神分析家、巴黎圣安娜医院精神分析部门主任。",
+    "cardId": "K029"
+  },
+  {
+    "id": "expert-mathias",
+    "name": "马蒂亚斯·格罗格",
+    "original": "Mathias Gorog",
+    "thread": "儿童青少年、家庭情境、情绪",
+    "intro": "通知列为儿童精神科医生、精神分析家。",
+    "cardId": "K031"
+  },
+  {
+    "id": "expert-jeanjacques",
+    "name": "让-雅克·格罗格",
+    "original": "Jean-Jacques Gorog",
+    "thread": "分析家的欲望、转移、概念精度",
+    "intro": "通知列为精神病学家、精神分析家及 EPFCL 创始人之一。",
+    "cardId": "K034"
+  },
+  {
+    "id": "expert-togawa",
+    "name": "十川幸司",
+    "original": "Koji Togawa／とがわ・こうじ",
+    "thread": "弗洛伊德阅读、心理空间、节奏",
+    "intro": "通知与出版社介绍列为精神分析家、精神科医生。",
+    "cardId": "K033"
+  },
+  {
+    "id": "expert-su",
+    "name": "苏国辉",
+    "original": "Kwok-Fai So",
+    "thread": "神经科学、抑郁研究、临床转化",
+    "intro": "通知突出其神经科学与中枢神经再生背景。",
+    "cardId": "K028"
+  },
+  {
+    "id": "expert-lin",
+    "name": "林康广",
+    "original": "Kangguang Lin",
+    "thread": "情感障碍、早期识别、精神科临床",
+    "intro": "香港中文大学（深圳）医学院教授（临床）。",
+    "cardId": "K030"
+  },
+  {
+    "id": "expert-xu",
+    "name": "徐雅珺",
+    "original": "",
+    "thread": "精神分析与艺术、翻译、当代中国",
+    "intro": "通知列为巴黎第八大学精神分析硕士、艺术项目“一个人的社会”发起人之一；也在翻译名单中。",
+    "cardId": "K032"
+  },
+  {
+    "id": "expert-gao",
+    "name": "高杰",
+    "original": "",
+    "thread": "言语与主体、身体之谜",
+    "intro": "通知列为 EPS 成员、拉康派执业分析家。",
+    "cardId": "K035"
+  },
+  {
+    "id": "expert-wang",
+    "name": "王润晨曦",
+    "original": "",
+    "thread": "精神病理论、翻译、“物”",
+    "intro": "通知列为 EPS 成员、拉康派执业分析家、巴黎西岱大学精神分析与精神病理学博士；也在翻译名单中。",
+    "cardId": "K036"
+  }
+]

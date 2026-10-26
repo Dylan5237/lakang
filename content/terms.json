@@ -1,0 +1,15 @@
+[
+  {"id":"T01","zh":"身体／有机体","original":"corps / organisme","text":"先辨别讲者讨论的是身体哪一层，不把理论区分误读为否认生物学。","sourceIds":["S01"],"chapterIds":["r01"]},
+  {"id":"T02","zh":"想象界","original":"imaginaire","text":"入门先看身体形象、完整感和认同，不是简单的幻想或胡思乱想。","sourceIds":["S20"],"chapterIds":["r03"]},
+  {"id":"T03","zh":"符号界","original":"symbolique","text":"留意语言、命名和关系位置，不是给每件事配一个象征意义。","sourceIds":["S20"],"chapterIds":["r03"]},
+  {"id":"T04","zh":"实在界","original":"réel","text":"不是日常“现实”的直接同义词。具体用法回到文本与论证。","sourceIds":["S20"],"chapterIds":["r03"]},
+  {"id":"T05","zh":"能指","original":"signifiant","text":"保留具体词音及与其他词的关系，不用概括的大意抹平原话。","sourceIds":["S19"],"chapterIds":["r04"]},
+  {"id":"T06","zh":"享乐","original":"jouissance","text":"不等同快乐或主观愿望，更不用来指责当事人“喜欢受苦”。","sourceIds":["S01"],"chapterIds":["r05"]},
+  {"id":"T07","zh":"症状／sinthome","original":"symptôme / sinthome","text":"拼写和译法须结合文本阶段，不能只因中文都写“症状”就抹掉差别。","sourceIds":["S19"],"chapterIds":["r05"]},
+  {"id":"T08","zh":"冲动／驱力","original":"pulsion","text":"本届会引用“冲动”，其他译本可能用“驱力”。不直接等同日常冲动行为。","sourceIds":["S01"],"chapterIds":["r04"]},
+  {"id":"T09","zh":"并入","original":"incorporation","text":"先问什么被并入什么，不预先当作内化、内摄或认同的同义词。","sourceIds":["S18"],"chapterIds":["r06"]},
+  {"id":"T10","zh":"歧义","original":"équivoque","text":"保留词音、多义、断句与语境，不化约为分析家临时想到的谐音。","sourceIds":["S19"],"chapterIds":["r07"]},
+  {"id":"T11","zh":"物","original":"la Chose / das Ding","text":"日常物品不是充分定义。原文入口为研讨班 VII 的 Das Ding 两节。","sourceIds":["S23"],"chapterIds":["r12"]},
+  {"id":"T12","zh":"节奏","original":"rythme","text":"不自动等同音乐、呼吸训练、会谈次数或说话快慢。先听讲者如何从互动走向概念。","sourceIds":["S11","S12"],"chapterIds":["r11"]},
+  {"id":"T13","zh":"临床演示／展示","original":"Présentation clinique","text":"本届未公布具体形式，不预设是完整治疗，不把片段反应当长期效果。","sourceIds":["S01"],"chapterIds":["r13"]}
+]
