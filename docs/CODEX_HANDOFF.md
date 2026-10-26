@@ -1,37 +1,34 @@
 # 项目接手入口
 
-2026-10-26：已从会前知识导航扩展为“拉康·随身读”。请先核对远端HEAD与PR #2，不按早期资料或70卡数量假设回退实现。
+当前为100张主卡+18张附录、四篇官方前瞻正文、六组精读专题。先读docs/IMPLEMENTATION_STATUS.md和PR #3最新实际结果，再核对远端main与本地工作树。
 
-## 先读
+## 本轮内容已完成，不重新生成
 
-1. `docs/IMPLEMENTATION_STATUS.md`：精确代码SHA、实际CI、未验设备和部署状态。
-2. `docs/editorial/2026-10-26-enthusiast-series.md`：六组30篇精读、新原文与具名研究、功能及颜色。
-3. `content/README.md`：现行JSON与旧章节/示例归档的区别。
-4. `docs/deployment/HTTPS_CHECKLIST.md`：服务器发布、HTTPS、离线与笔记迁移。
+官方前瞻仅据用户提供的wx-pdf-20261026.zip，正文在content/official/P01—P04.json；18张提炼卡在content/cards/13-official.json。正文与独立原文hash对应。保持“摄入”、原文问句和公开病例时间，不用通用知识补成讲者未说过的结论。
 
-## 当前结构
+主卡顺序以content/reading-order.json为准；content/retired-card-ids.json的18卡在附录。src/data.ts的cards是100张主卡，allCards是118条可访问资料；cardById与用户数据knownIDs包括附录。不得复用旧ID承载新文章，不得清洗旧收藏、笔记或备份。
 
-100卡：旧70卡ID保留，新增K074—K103；26术语；49来源记录；6组专题，每组5篇；10讲者；15日程区块；原16书架入口保留。
+## 发布与原始PDF
 
-- sources与terms各有一份扩展JSON，`src/data.ts`合并。不要只读旧sources.json便断言缺来源。
-- `series.json`声明专题顺序、基础卡与关联场次；`reading-order.json`为全量顺序。
-- detail中`### `为安全文本小标题；禁止为了排版开放任意HTML。
-- 专题继续入口读取原有已读数据，笔记/收藏键仍是lakang:v1。
-- `npm run build`前会自动重建靛蓝PNG图标，发布dist而非旧public。
+本轮代码没有操作生产服务器。已有HTTP地址是否已被更新，必须实际核实。
 
-## 部署状态要分清
+原文正文文字版已经可用；四个带图片版式的PDF尚未入库。拿到同一个用户ZIP后：
 
-用户已报告旧版公网HTTP站点部署完成：`http://43.139.159.100/lakang/`。本轮只更新仓库，不等于该服务器已更新，不宣称HTTPS配置完成。
+```sh
+python scripts/import_official_originals.py /path/to/wx-pdf-20261026.zip
+python scripts/import_official_originals.py /path/to/wx-pdf-20261026.zip --apply
+python scripts/validate_materials.py
+npm run typecheck
+npm test
+npm run build
+```
 
-本地部署Agent需先检查工作树与目标静态目录，保留旧版本；正常同步main、构建、按既有授权发布。HTTPS需要服务器有效证书与访问入口，不能用前端配置冒充。协议/域名变化前先提示用户导出原地址笔记，再在新地址导入。不能强推、丢弃本地改动或覆盖无关站点。
+确认public/originals/P01—P04.pdf及pdf-registry.json变更，按用户要求提交。构建后部署dist，保留现网备份；不得操作无关站点。导入前按钮不出现，不得先填不存在的PDF地址。PDF文件不纳入当前离线预缓存，文字原文可离线。
 
-## 继续工作的约束
+原文入口：#/previews；原文段落示例：#/previews/P03/original/P03-03；附录：#/previews/appendix。验收100主卡、四文章／18卡、原文返回、旧卡笔记／收藏、15日程、六专题与新主题。
 
-- 优先可读的论证、文本定位、概念关系和例子，不以卡数、字数或测试数代替知识质量。
-- 保留作者/理论取向区别；不要把米勒、EPFCL、AMP或相邻发展研究混为全学派共识。
-- 不回退已修复依赖；package-lock未因本轮内容/主题而改变。
-- 程序化布局和交互检查交给本地Agent；真机截图由用户提供，ChatGPT负责视觉审阅，不要求本地Agent读图。
-- 新的CI必须对应真实SHA；旧结果作为历史保留，不套用到新代码。
-- 已有会务时地保持，后续变化以主办方通知为准，未接入会务群。
+需HTTPS才能准备公网离线；换协议或域名前从旧地址导出本机笔记，再到新地址导入。详见docs/deployment/HTTPS_CHECKLIST.md。不得因localhost测试通过声称公网HTTP离线可用。
 
-回报必须包括真实提交、实际测试、服务器发布版本/地址（若执行）及未验证事项。
+## 保持纪律
+
+不覆盖工作树，不强推，不回退依赖修复。工程与内容来源检查分开，不以测试数量替代学习效果。真实手机截图由用户提供、ChatGPT审阅，本地Agent只负责实现、测试、日志与部署核对。实际回报提交SHA、部署SHA、访问地址、测试与尚未验证的项目。

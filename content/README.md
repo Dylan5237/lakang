@@ -1,18 +1,26 @@
-# 发布内容与研究归档
+# 当前内容与历史资料
 
-当前发布内容：`cards/*.json`（100卡）、`terms.json` + `terms-extension.json`（26术语）、`sources.json`的sources + `sources-extension.json`（49来源）、`series.json`（6组，每组5篇）、`reading-order.json`（完整稳定ID顺序）、`agenda.json`（15区块）、`speakers.json`与`shelf.json`。
+## 当前发布数据
 
-`src/data.ts`显式合并；扩展术语中的cardIds提供双向关联，不通过关键词猜测。专题导航与原卡片共用同一ID、笔记和收藏。
+- cards/*.json：118个可访问的稳定ID；不是118张主流卡。
+- reading-order.json：100张主卡的顺序，含K104—K121共18张官方前瞻卡。
+- retired-card-ids.json：18张移入附录的原卡。原内容不删除，ID不复用，旧笔记／收藏不清洗。
+- official/P01—P04.json：四篇用户提供官方前瞻的正文文字、段落ID、署名、讲者、日期、PDF页码与文件hash。
+- official/text-digests.json：从所给PDF正文独立提取的去空白SHA。改动文字需对照原件，不自动重算来使测试通过。
+- official/pdf-registry.json：仅登记已存在且校验相符的public/originals/Pxx.pdf。当前为空；正文可读不等于PDF已上传。
+- sources.json、sources-extension.json：S01—S49。S50—S53从四篇official元数据在src/data.ts生成，前台打开站内原文。
+- terms.json、terms-extension.json：26项背景术语；与官方原文区别显示。
+- series.json：六组共30篇精读（K074—K103）及基础卡／场次连接，本轮完整保留。
+- agenda.json：15个日程区块，不从前瞻文章擅自改会务安排。
 
-- K001—K073旧ID全部保留；K022—K024此前合并，不复用。
-- K074—K103是本次30篇分节精读，不是旧卡拆分计数。
-- 每篇detail使用`### `开头行作为小标题，其余仍为安全文本；不嵌入任意HTML。
-- 前台不堆来源真实性等级；原作者归属、出处和定位保留。
-- 来源中S38是编者工具，不假称外部论文；其他来源各记真实使用范围。
-- 新增来源不等于读过全部全文。没有取得的文本不代作者总结；新讲稿未公布不预告。
+src/data.ts的cards为100张主卡，allCards及cardById覆盖118条，retiredCards为18张附录。读取进度只计当前主卡；原卡深链和备份仍可解析。
 
-旧`chapters-*.md`、`toolkit.md`、`speakers.md`与`card-examples.json`保留为研究/交接归档，不用它们自动覆盖现行卡片。这些档案与现行数据的区别不应被删除。
+## 研究归档
 
-校验：`python scripts/validate_materials.py`、`npm test`。它们检验ID、链接、顺序与字段，不检验所有学术解释或真实学习效果。
+chapters-*.md、speakers.md、toolkit.md、card-examples.json等早期长手册与示例保留为历史资料，不自动覆盖当前JSON。历史文档的数量／版本说明由docs/IMPLEMENTATION_STATUS.md及最新提交记录解释。
 
-本轮详见`docs/editorial/2026-10-26-enthusiast-series.md`；部署与HTTP到HTTPS的笔记迁移见`docs/deployment/HTTPS_CHECKLIST.md`。
+## 编辑与原件
+
+官方卡只提炼其所属文章，不以通用知识补写原文未给出的结论。原文的问句、理论归属与病例时间保留。卡片中的背景术语、原文转录与编辑导读是不同层次。
+
+原PDF导入：python scripts/import_official_originals.py /path/to/wx-pdf-20261026.zip --apply。先按SHA核对再复制，不覆盖不同内容。完整替换理由见docs/editorial/2026-10-26-official-previews.md。

@@ -1,0 +1,26 @@
+/* Official previews share the existing indigo palette; no external assets are required. */
+.app .bottom-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.app .bottom-nav a { min-width: 0; }
+.official-context { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1rem; margin: .45rem 0 .7rem; color: var(--accent); font-size: .875rem; }
+.official-context a { min-height: 40px; display: inline-flex; align-items: center; }
+.original-link { font-weight: 650; }
+.archive-note { margin: .4rem 0 .8rem; padding: .65rem .8rem; background: var(--surface-2); border-left: 3px solid var(--accent); font-size: .875rem; }
+.archive-note a { display: inline-flex; align-items: center; min-height: 40px; margin-right: .6rem; }
+.previews .eyebrow { display: block; color: var(--accent); font-size: .8rem; font-weight: 650; letter-spacing: .05em; margin-bottom: .3rem; }
+.previews .page-head > * + * { margin-top: .5rem; }
+.article-meta { font-size: .85rem; color: var(--muted); line-height: 1.7; margin: .65rem 0; }
+.official-entry { border-top: 3px solid var(--accent); }
+.article-card-list { padding-left: 0; list-style: none; }
+.official-sequence { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 1rem 0; margin: 1rem 0; }
+.official-sequence p { color: var(--muted); font-size: .875rem; }
+.original-text { max-width: 42rem; margin: 0 auto; }
+.source-paragraph { scroll-margin-top: .75rem; margin: 1rem 0; padding: .8rem .9rem; border-left: 3px solid transparent; }
+.source-paragraph.selected { border-left-color: var(--accent); background: var(--accent-soft); }
+.source-paragraph > p:not(.source-page) { margin-top: .8rem; line-height: 1.9; white-space: pre-wrap; }
+.source-paragraph h2 { font-family: var(--serif); font-size: 1.15rem; margin-top: .5rem; }
+.source-page { font-size: .75rem; color: var(--muted); }
+.article-sessions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.previews .btn-row { display: flex; flex-wrap: wrap; gap: .35rem .6rem; }
+.previews h1, .previews h2, .official-context { overflow-wrap: anywhere; }
+.original-page .page-head h1 { font-size: 1.45rem; }
+@media (max-width: 360px) { .source-paragraph { padding: .6rem; } }
