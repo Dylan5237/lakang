@@ -28,7 +28,8 @@
 | 651b268 | CI 配置（`.github/workflows/ci.yml`） |
 | 2993ba9 | 重写 README 与本文件 |
 | cf1b00b | 广州脉络压成年表、概念组 +5、来源 S26、书架 B11 |
-| 本次提交 | Issue #1：6 张概念卡正向化、K011 三环图（SHA 见 `git log`） |
+| bbdcba4 | Issue #1：6 张概念卡正向化、K011 三环图 |
+| 574d0b5 | Issue #1 验收复核：一致性/洞/外存改为侧重配对，K010 症状减轻标明为理论论断 |
 
 ## 内容覆盖
 
@@ -72,8 +73,8 @@ Edge 持久化用户目录 + 子路径 `/lakang/` 静态服务：联网首访并
 - 真实安卓设备：未验。
 - 本次只在 Edge(Chromium)桌面的移动视口与触摸模拟下测试，不等同真机，尤其 iOS 的 Service Worker 与 localStorage 清理策略、安全区、微信 WebView。
 - 视觉评审：未做（按 AGENTS.md，本地 Agent 不做截图验收）。需要用户提供真机截图，交 ChatGPT 审阅：卡片流首屏与高卡片、详情页、日程（含 10/29 换场）、指南、我的、特大字号、深色主题、横屏；K011 三环图的交叉缺口、标注可读性（浅/深色）。
-- `.github/workflows/ci.yml`：已编写，在 GitHub 上未运行（未推送）。其中使用 Playwright 自带 Chromium 的路径本机未验；本机验证的是 Edge。
-- 生产部署：未运行。子路径部署仅在本地 `/lakang/` 静态服务上验证，未在真实 GitHub Pages 验证。
+- GitHub CI：`574d0b5` 已推送（普通 fast-forward），CI 运行 [40293343981](https://github.com/Dylan5237/lakang/actions/runs/40293343981) 成功：typecheck、29 个单测、56 个 e2e（Playwright 自带 Chromium，ubuntu）、build 全部通过；Validate conference materials [40293344013](https://github.com/Dylan5237/lakang/actions/runs/40293344013) 通过。注释仅为 actions Node 20 弃用与 ubuntu-latest 迁移提示。
+- 生产部署：未运行（用户决定发布时机）。K011 视觉验收由用户真机截图交 ChatGPT 审阅，不由本地 Agent 读图。子路径部署仅在本地 `/lakang/` 静态服务上验证，未在真实 GitHub Pages 验证。
 
 ## 构建与部署
 
