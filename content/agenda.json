@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "conference": "第一届大湾区拉康派精神分析大会",
+  "theme": "身体如何言说？",
+  "timezone": "Asia/Shanghai",
+  "location": "香港中文大学（深圳），深圳市龙岗区龙翔大道2001号",
+  "sourceId": "S01",
+  "sourceRevision": "2026-10-16",
+  "sessions": [
+    {"id":"d27-evening","date":"2026-10-27","day":27,"title":"晚间演讲","speaker":"弗朗索瓦丝·格罗格","speakerIds":["expert-francoise"],"start":"19:30","end":"21:00","venue":"科研楼 Rx104 室","note":"通知未列具体题目。","original":"","sourcePages":[3]},
+    {"id":"d28-opening","date":"2026-10-28","day":28,"title":"开幕、致辞、签署及合影","speaker":"主持人：林康广教授","speakerIds":["expert-lin","expert-su"],"start":"09:00","end":"09:25","venue":"行政楼 · 冼为坚国际会议中心","note":"09:00—09:10 领导致开幕辞；09:10—09:15 苏国辉院士致辞；09:15—09:20 香港中文大学（深圳）与巴黎圣安娜医院战略合作备忘录签署仪式；09:20—09:25 大合影。","original":"","sourcePages":[3,4]},
+    {"id":"d28-keynotes","date":"2026-10-28","day":28,"title":"两场开幕演讲","speaker":"苏国辉 · 吕克·弗雪","speakerIds":["expert-su","expert-luc"],"start":"09:30","end":"12:00","venue":"行政楼 · 冼为坚国际会议中心","note":"两讲共用此时段，通知未拆分各自时间。","original":"","talks":[{"speakerId":"expert-su","title":"枸杞糖肽对年青人的抗抑郁作用","original":"The anti-depressant effect of Goji glycopeptide on young people"},{"speakerId":"expert-luc","title":"血肉之躯","original":"En chair et en os"}],"sourcePages":[4]},
+    {"id":"d28-somatic","date":"2026-10-28","day":28,"title":"身体如何“替”精神说话？——精神科临床中的躯体化现象","speaker":"林康广","speakerIds":["expert-lin"],"start":"14:00","end":"15:00","venue":"科研楼 Rx104 室","note":"","original":"Comment le corps « parle » pour l’esprit ? Phénomène de somatisation en clinique psychiatrique","sourcePages":[5]},
+    {"id":"d28-clinical","date":"2026-10-28","day":28,"title":"临床演示","speaker":"马蒂亚斯·格罗格","speakerIds":["expert-mathias"],"start":"15:00","end":"18:00","venue":"科研楼 Rx104 室","note":"通知未说明临床演示的具体形式。","original":"Présentation clinique","sourcePages":[5]},
+    {"id":"d29-adolescent","date":"2026-10-29","day":29,"title":"身陷忧愁/依旧忧愁——青少年情绪障碍","speaker":"马蒂亚斯·格罗格","speakerIds":["expert-mathias"],"start":"09:00","end":"12:00","venue":"科研楼 Rx104 室","note":"","original":"En-corps tristes, troubles de l’humeur chez l’adolescent","sourcePages":[5]},
+    {"id":"d29-writing","date":"2026-10-29","day":29,"title":"书写与身体","speaker":"徐雅珺","speakerIds":["expert-xu"],"start":"14:00","end":"15:00","venue":"会议楼Ⅱ 401 室","note":"","original":"L’écriture et le corps","sourcePages":[6]},
+    {"id":"d29-clinical","date":"2026-10-29","day":29,"title":"临床演示","speaker":"弗朗索瓦丝·格罗格","speakerIds":["expert-francoise"],"start":"15:00","end":"18:00","venue":"会议楼Ⅱ 401 室","note":"通知未说明临床演示的具体形式。","original":"Présentation clinique","sourcePages":[6]},
+    {"id":"d29-rhythm","date":"2026-10-29","day":29,"title":"心的生命的诞生：节奏的精神分析","speaker":"十川幸司","speakerIds":["expert-togawa"],"start":"20:00","end":"21:30","venue":"会议楼Ⅱ 401 室","note":"","original":"La naissance de la vie psychique : le rythme en psychanalyse","sourcePages":[6]},
+    {"id":"d30-incorporation","date":"2026-10-30","day":30,"title":"“并入”如何影响身体？","speaker":"让-雅克·格罗格","speakerIds":["expert-jeanjacques"],"start":"09:00","end":"12:00","venue":"科研楼 Rx104 室","note":"","original":"Comment l’incorporation affecte les corps ?","sourcePages":[7]},
+    {"id":"d30-enigma","date":"2026-10-30","day":30,"title":"谜之身体","speaker":"高杰","speakerIds":["expert-gao"],"start":"14:00","end":"15:00","venue":"科研楼 Rx104 室","note":"","original":"Le corps énigmatique","sourcePages":[7]},
+    {"id":"d30-clinical","date":"2026-10-30","day":30,"title":"临床演示","speaker":"吕克·弗雪","speakerIds":["expert-luc"],"start":"15:00","end":"18:00","venue":"科研楼 Rx104 室","note":"通知未说明临床演示的具体形式。","original":"Présentation clinique","sourcePages":[7,8]},
+    {"id":"d31-equivocation","date":"2026-10-31","day":31,"title":"从咬伤到必死：当身体向你善言时歧义的作用","speaker":"弗朗索瓦丝·格罗格","speakerIds":["expert-francoise"],"start":"09:00","end":"12:00","venue":"科研楼 Rx104 室","note":"","original":"De la morsure à la mort sûre Rôle de l’équivoque quand le corps parle Bien à vous","sourcePages":[8]},
+    {"id":"d31-thing","date":"2026-10-31","day":31,"title":"身体与物","speaker":"王润晨曦","speakerIds":["expert-wang"],"start":"14:00","end":"15:00","venue":"科研楼 Rx104 室","note":"","original":"le corps et la Chose","sourcePages":[8]},
+    {"id":"d31-clinical","date":"2026-10-31","day":31,"title":"临床演示","speaker":"让-雅克·格罗格","speakerIds":["expert-jeanjacques"],"start":"15:00","end":"18:00","venue":"科研楼 Rx104 室","note":"通知未说明临床演示的具体形式。","original":"Présentation clinique","sourcePages":[9]}
+  ]
+}

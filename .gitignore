@@ -1,0 +1,16 @@
+# Local environment and build output
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Personal learning data must not enter the public repository
+notes-export*.json
+personal-notes/
+local-backups/
