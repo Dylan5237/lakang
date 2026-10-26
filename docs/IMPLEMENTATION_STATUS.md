@@ -12,6 +12,7 @@
 - 依据：S20（Gallagher 英译草稿）2026-10-26 核读 PDF 第 6—8、12—13、17—20、22—30、33—34、103—104、108、157、170、176—177、184 页；每张卡 `locators` 精确到课次与页码，S20 `editorialScope` 记录范围。术语 T02/T03/T04/T06 同步改为正向短释义（T06 增 S20）。
 - K011 新增三环图（`src/components/Figure.tsx`，内联 SVG，无运行时 TikZ/3D/动画）：布局取自 Graham Joncas《Lacan-Mathemes》`lacan RSI.tex`（MIT，许可全文 `public/licenses/lacan-mathemes-MIT.txt`，随 SW 预缓存）；交叉按原文第 17、22 页（符号压想象、想象压实在、实在压符号，两两不相扣）；只标 I/S/R、一致性/洞/外存、中心 a、想象∩符号“意义”，两种享乐的位置原文留待展开，图中不标。卡片与详情共用组件，详情附出处与许可；有 alt 与图注；随字号缩放，配色跟随主题。
 - 验收复核小修（Issue #1 评论 2026-10-26）：①一致性/洞/外存改写为拉康对想象/符号/实在的“侧重配对”，K007 详情补“每一环中心都有洞”（1974-12-17 课第 27、29 页）与“每一环里的三重性”（1975-05-13 课第 177 页），K008/K009/K011 图注、T02/T03 同步；②K010“潜意识可以促成症状的减轻”标明为拉康在第 20 页提出、留待展开的理论论断，不是疗效概括。
+- 依赖告警核查与修复（Issue #1 评论 6412015577）：CI `npm ci` 报 3 条（1 moderate、2 critical），本地对照官方 registry 审计确认为同一子树的 3 个包、4 条 advisory——vitest 3.2.7（GHSA-82fw-gwwq-j7x9）、@vitest/mocker 3.2.7（另含 GHSA-qxg6-89mg-rqv8）、tinypool 1.1.1（GHSA-5gmw-xhrv-c9v3、GHSA-85c8-ppgw-ccpr）。触发条件分别是 redirect mock 路径穿越、browser/manual mock 注册接口、pool/worker 选项中的不可信输入——本仓库测试只用 describe/it/expect 与 node 环境，均不涉及；`--omit=dev` 为 0，dist 产物经字符串检查不含 vitest/tinypool/mocker。修复：devDependencies vitest ^3.0.0 → ^4.1.12（SemVer 主版本，但未改任何代码与配置；vitest 4.1.12 不再依赖 tinypool）。升级后官方 registry 两个审计均 0 告警、退出码 0；typecheck、29 单测、build、56 e2e 复跑通过。注：本机默认 registry 为 npmmirror，其未实现 audit 接口（404），审计均显式 `--registry=https://registry.npmjs.org`；CI 直接用官方 registry，与修复前计数一致。
 - 未改：K012—K016、K018、K051 等；`content/toolkit.md` 中同名术语旧释义（站点不读取）。
 
 ## 提交
