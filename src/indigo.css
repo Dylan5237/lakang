@@ -1,0 +1,61 @@
+/* Editorial palette: a site identity, not an official colour of a school. */
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface-2: #eeedf3;
+  --fg: #24242b;
+  --muted: #626270;
+  --line: #dcdce5;
+  --accent: #34365c;
+  --accent-fg: #ffffff;
+  --accent-soft: #ececf4;
+}
+:root[data-theme='dark'] {
+  --bg: #171923;
+  --surface: #202330;
+  --surface-2: #2a2e3e;
+  --fg: #eeeef4;
+  --muted: #b1b4c5;
+  --line: #3d4257;
+  --accent: #b9bce8;
+  --accent-fg: #171923;
+  --accent-soft: #30344f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #171923;
+    --surface: #202330;
+    --surface-2: #2a2e3e;
+    --fg: #eeeef4;
+    --muted: #b1b4c5;
+    --line: #3d4257;
+    --accent: #b9bce8;
+    --accent-fg: #171923;
+    --accent-soft: #30344f;
+  }
+}
+.detail-text h3 {
+  margin: 1.6em 0 .55em;
+  padding-top: .7em;
+  border-top: 1px solid var(--line);
+  color: var(--accent);
+  font-size: 1.08em;
+  line-height: 1.55;
+}
+.detail-text p { margin-bottom: .85em; }
+.study-path { border-top: 3px solid var(--accent); }
+.study-kicker { color: var(--accent); font-size: .8rem; letter-spacing: .08em; }
+.study-path h2 { margin: .45rem 0 .65rem; }
+.study-path > p { margin-bottom: .65rem; }
+.study-path ol { padding-left: 1.5rem; margin: .8rem 0; }
+.study-path li a { display: inline-block; min-height: 44px; padding: .45rem .1rem; line-height: 1.6; }
+.study-start, .series-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: .5rem .75rem; border-radius: 8px; }
+.study-start { background: var(--accent); color: var(--accent-fg); text-decoration: none; }
+.series-meta { color: var(--accent); font-size: .85rem; line-height: 1.6; margin-bottom: .5rem; }
+.series-nav { margin: 1rem 0; padding: .75rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.series-nav p { margin-bottom: .35rem; }
+.series-links { display: flex; flex-wrap: wrap; gap: .25rem .5rem; }
+.series-links a { max-width: 100%; overflow-wrap: anywhere; }
+.http-note { font-size: .75rem; line-height: 1.4; color: var(--muted); padding: .1rem 0 .35rem; }
+.study-intro { max-width: 46rem; }
+@media print { .series-nav { break-inside: avoid; } }

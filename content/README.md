@@ -1,26 +1,18 @@
-# 内容入口与编辑顺序
+# 发布内容与研究归档
 
-2026-10-26 内容重编版：70张卡、18术语、40来源、16书架入口；15个日程区块不变。
+当前发布内容：`cards/*.json`（100卡）、`terms.json` + `terms-extension.json`（26术语）、`sources.json`的sources + `sources-extension.json`（49来源）、`series.json`（6组，每组5篇）、`reading-order.json`（完整稳定ID顺序）、`agenda.json`（15区块）、`speakers.json`与`shelf.json`。
 
-## 当前发布数据
+`src/data.ts`显式合并；扩展术语中的cardIds提供双向关联，不通过关键词猜测。专题导航与原卡片共用同一ID、笔记和收藏。
 
-- `cards/*.json`：当前70张卡的正文、详情、理论归属与关联。稳定ID不随阅读顺序改变。
-- `reading-order.json`：默认学习顺序。先基础、分场知识与进阶，再历史讲者和会场工具。每个卡ID恰好出现一次。
-- `terms.json`：18个正向释义，与卡片双向连接。
-- `sources.json`：来源登记；`editorialScope`为内部编辑范围，不渲染成首屏自证标签。
-- `shelf.json`：16个具体阅读入口。
-- `agenda.json`：2026-10-16版会议通知的15个区块，本轮未更改。
+- K001—K073旧ID全部保留；K022—K024此前合并，不复用。
+- K074—K103是本次30篇分节精读，不是旧卡拆分计数。
+- 每篇detail使用`### `开头行作为小标题，其余仍为安全文本；不嵌入任意HTML。
+- 前台不堆来源真实性等级；原作者归属、出处和定位保留。
+- 来源中S38是编者工具，不假称外部论文；其他来源各记真实使用范围。
+- 新增来源不等于读过全部全文。没有取得的文本不代作者总结；新讲稿未公布不预告。
 
-## 留档资料，不再作为当前发布正文覆盖回去
+旧`chapters-*.md`、`toolkit.md`、`speakers.md`与`card-examples.json`保留为研究/交接归档，不用它们自动覆盖现行卡片。这些档案与现行数据的区别不应被删除。
 
-`chapters-*.md`、`speakers.md`、`toolkit.md`及`card-examples.json`保留早期资料与12张示例的历史状态。它们不是本轮新增知识的完整镜像；出现不同表述时先看当前卡片及对应的编辑记录，不能自动把旧章节重新切片覆盖新卡。
+校验：`python scripts/validate_materials.py`、`npm test`。它们检验ID、链接、顺序与字段，不检验所有学术解释或真实学习效果。
 
-本轮变更依据：`docs/reviews/2026-10-26-content-audit.md`。
-修订及材料范围：`docs/editorial/2026-10-26-content-revision.md`。
-编者工具与原创例子：`docs/editorial/learning-tools.md`。
-
-## 修改时的约束
-
-每个新主张由确实支持它的文本承担；题名、目录和机构主页只证明其能支持的事项。先给读者知识和例子，必要限定自然写进句子。相邻研究须署名，不归为本届讲者的未公开观点。不得用引用编号代替学术判断，也不得用测试通过代替读者理解验证。
-
-执行 `python scripts/validate_materials.py`、`npm run typecheck`、`npm test`、`npm run build` 和相应 e2e。它们检查数据与行为，不自动证明解释无误。
+本轮详见`docs/editorial/2026-10-26-enthusiast-series.md`；部署与HTTP到HTTPS的笔记迁移见`docs/deployment/HTTPS_CHECKLIST.md`。
