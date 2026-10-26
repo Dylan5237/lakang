@@ -1,0 +1,6 @@
+{
+  "P01": {"sha256":"789168b237f0393b96bd127460d5ec2a9b42ac8bc0d55651b22a81c089770c10","charactersWithoutWhitespace":1532,"bodyPages":[2,3]},
+  "P02": {"sha256":"a3cdad7b62fa4df473ead74c341ee00390f50f7b9e35100537e7feea5128633a","charactersWithoutWhitespace":1685,"bodyPages":[2,3]},
+  "P03": {"sha256":"27437492eef5a6f789088bc491cd17fd59d2464aa1f8d329db588d2a7f802044","charactersWithoutWhitespace":832,"bodyPages":[2]},
+  "P04": {"sha256":"e3a2a554ca3af07e8fe78e7c5178dd762f6a7ede750e192bbc9e4bd38c0a2526","charactersWithoutWhitespace":789,"bodyPages":[2,3]}
+}
