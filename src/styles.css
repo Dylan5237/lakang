@@ -316,6 +316,53 @@ dl {
   font-weight: 600;
   line-height: 1.6;
 }
+.fig {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: center;
+}
+.fig-svg {
+  display: block;
+  width: min(100%, 15em);
+  margin: 0 auto;
+  font-family: var(--font);
+}
+.fig-ring {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 0.07;
+}
+.fig-gap {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 0.21;
+}
+.fig-svg text {
+  fill: var(--fg);
+}
+.fig-svg .fig-sub,
+.fig-svg .fig-region {
+  fill: var(--muted);
+}
+.fig-mark {
+  font-style: italic;
+  font-family: var(--serif);
+}
+.fig figcaption {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: left;
+}
+.fig-credit {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8125rem;
+}
 .card-sessions {
   display: flex;
   flex-wrap: wrap;

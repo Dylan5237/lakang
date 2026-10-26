@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { cards, sessions, sources, speakers, terms, shelf, cardById, sessionById, sourceById, speakerById, termById } from '../src/data';
 import { STAGES } from '../src/types';
+import { figureIds } from '../src/components/Figure';
 
 const root = join(__dirname, '..', 'content');
 const chapterText = readdirSync(root)
@@ -12,7 +13,7 @@ const chapterText = readdirSync(root)
 const chapterIds = new Set([...chapterText.matchAll(/^## (r\d{2})｜/gm)].map((m) => m[1]));
 
 const publicText = (c: (typeof cards)[number]) =>
-  [c.title, c.body, c.takeaway, ...c.detail, c.question ?? '', c.action ?? ''].join('\n');
+  [c.title, c.body, c.takeaway, ...c.detail, c.question ?? '', c.action ?? '', c.figure?.alt ?? '', c.figure?.caption ?? ''].join('\n');
 
 describe('内容完整性', () => {
   it('规模与唯一 ID', () => {
@@ -96,6 +97,19 @@ describe('内容完整性', () => {
       const text = JSON.stringify(x);
       for (const w of banned) expect(text.includes(w), `${x.id} 含「${w}」`).toBe(false);
     }
+  });
+
+  it('图示 ID 存在，替代文字/图注齐全，许可文件随站发布', () => {
+    const withFig = cards.filter((c) => c.figure);
+    expect(withFig.map((c) => c.id)).toContain('K011');
+    for (const c of withFig) {
+      expect(figureIds.has(c.figure!.id), `${c.id}→${c.figure!.id}`).toBe(true);
+      expect(c.figure!.alt.length, `${c.id} 缺 alt`).toBeGreaterThan(20);
+      expect(c.figure!.caption.length, `${c.id} 缺图注`).toBeGreaterThan(0);
+    }
+    const license = readFileSync(join(__dirname, '..', 'public', 'licenses', 'lacan-mathemes-MIT.txt'), 'utf8');
+    expect(license).toContain('MIT License');
+    expect(license).toContain('Graham Joncas');
   });
 
   it('虚构示例均有标记，且详情有说明', () => {

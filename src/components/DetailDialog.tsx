@@ -4,6 +4,7 @@ import { closeDetail, hrefs, navigate } from '../lib/router';
 import { actions, useUser } from '../lib/store';
 import { NOTE_MAX } from '../lib/storage';
 import { Rich } from './Rich';
+import { Figure } from './Figure';
 import { Sheet } from './Sheet';
 import { IconCheck, IconExternal, IconStar } from './Icons';
 
@@ -35,6 +36,7 @@ function DetailBody({ card, fav, read, note }: { card: Card; fav: boolean; read:
         {card.fictional && <span className="chip-tag">虚构示例</span>}
       </div>
       <Rich className="card-body" text={card.body} />
+      {card.figure && <Figure figure={card.figure} credit />}
       <p className="takeaway">{card.takeaway}</p>
       {card.detail.length > 0 && <Rich className="detail-text" text={card.detail.join('\n')} />}
       {card.question && (

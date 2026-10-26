@@ -1,5 +1,11 @@
 export type Stage = 'question' | 'concept' | 'history' | 'speakers' | 'themes' | 'clinic';
 
+export interface CardFigure {
+  id: string;
+  alt: string;
+  caption: string;
+}
+
 export interface Card {
   id: string;
   stage: Stage;
@@ -11,6 +17,7 @@ export interface Card {
   question?: string;
   action?: string;
   fictional?: boolean;
+  figure?: CardFigure;
   sourceIds: string[];
   locators?: Record<string, string>;
   chapterIds: string[];

@@ -4,6 +4,7 @@ import { STAGES, type Card } from '../types';
 import { hrefs, navigate } from '../lib/router';
 import { actions } from '../lib/store';
 import { Rich } from './Rich';
+import { Figure } from './Figure';
 import { IconCheck, IconNote, IconStar } from './Icons';
 
 interface Props {
@@ -32,6 +33,7 @@ function CardViewBase({ card, index, total, fav, read, hasNote }: Props) {
         </div>
         <h2 className="card-title">{card.title}</h2>
         <Rich className="card-body" text={card.body} />
+        {card.figure && <Figure figure={card.figure} />}
         <p className="takeaway">{card.takeaway}</p>
         {linked.length > 0 && (
           <p className="card-sessions">

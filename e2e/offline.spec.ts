@@ -42,6 +42,12 @@ test('离线冷启动：联网访问一次 → 关闭浏览器 → 断网重开�
     await page.goto(srv.url + '#/card/K020/more');
     await page.reload();
     await expect(page.getByTestId('detail').getByTestId('sources')).toBeVisible();
+    // K011 三环图与随图的 MIT 许可文本均可离线取得
+    await page.goto(srv.url + '#/card/K011/more');
+    await expect(page.getByTestId('detail').locator('.fig-svg')).toBeVisible();
+    await expect(page.getByTestId('detail').locator('.fig-credit a', { hasText: 'MIT 许可' })).toBeVisible();
+    const license = await page.evaluate(() => fetch('licenses/lacan-mathemes-MIT.txt').then((r) => r.text()));
+    expect(license).toContain('Graham Joncas');
     await ctx.close();
   } finally {
     await srv.close().catch(() => undefined);

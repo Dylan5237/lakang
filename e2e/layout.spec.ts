@@ -67,6 +67,8 @@ for (const size of sizes) {
           if (c.offsetHeight > vh + 1) taller++;
           maxRatio = Math.max(maxRatio, c.offsetHeight / vh);
           c.querySelectorAll<HTMLElement>('*').forEach((e) => {
+            // SVG 子元素的 clientWidth 以用户单位计，与 scrollWidth 不可比；图示另由下方专项检查
+            if (e instanceof SVGElement && !(e instanceof SVGSVGElement)) return;
             if (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).display !== 'inline') overflowing.push(`${c.dataset.cardId}:${e.className}`);
           });
         });
@@ -93,5 +95,41 @@ for (const size of sizes) {
     // 卡片内容可通过同一滚动容器读到末尾
     await feed.evaluate((e) => e.scrollBy(0, 400));
     await expect(card.locator('.takeaway')).toBeVisible();
+  });
+}
+
+for (const width of [320, 390]) {
+  test(`${width} 宽、特大字号：K011 三环图完整落在卡片与详情内`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 700 });
+    await page.goto('/#/me');
+    await page.getByRole('button', { name: '特大' }).click();
+    await page.goto('/#/card/K011');
+    const card = page.locator('.card[data-card-id="K011"]');
+    const fig = card.locator('.fig-svg');
+    await fig.scrollIntoViewIfNeeded();
+    await expect(fig).toBeVisible();
+    await expect(fig).toHaveAttribute('aria-label', /博罗米三环图/);
+    const fb = (await fig.boundingBox())!;
+    const cb = (await card.boundingBox())!;
+    expect(fb.width).toBeGreaterThan(150);
+    expect(fb.x).toBeGreaterThanOrEqual(cb.x);
+    expect(fb.x + fb.width).toBeLessThanOrEqual(cb.x + cb.width + 1);
+    // 所有标注都落在 viewBox 内(不被裁掉)
+    const outside = await fig.evaluate((svg: SVGSVGElement) => {
+      const vb = svg.viewBox.baseVal;
+      return [...svg.querySelectorAll('text')]
+        .map((t) => ({ t: t.textContent, b: t.getBBox() }))
+        .filter(({ b }) => b.x < vb.x || b.y < vb.y || b.x + b.width > vb.x + vb.width || b.y + b.height > vb.y + vb.height)
+        .map(({ t }) => t);
+    });
+    expect(await card.locator('.fig-svg text').count()).toBeGreaterThanOrEqual(5);
+    expect(outside).toEqual([]);
+
+    await page.goto('/#/card/K011/more');
+    const dfig = page.getByTestId('detail').locator('.fig');
+    await dfig.scrollIntoViewIfNeeded();
+    await expect(dfig.locator('.fig-credit')).toContainText('Lacan-Mathemes');
+    const o = await horizontalOverflow(page);
+    expect(o).toEqual({ docScroll: 0, bodyScroll: 0, bad: [] });
   });
 }
