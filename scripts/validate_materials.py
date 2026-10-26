@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
-"""Validate archive links, current cards, reading order and fixed agenda constraints."""
+"""Validate archive links, current cards, series and fixed agenda constraints."""
 from __future__ import annotations
 import json
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
-
 ROOT = Path(__file__).resolve().parents[1]
-
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise ValueError(message)
-
 def load(name: str):
     return json.loads((ROOT / 'content' / name).read_text(encoding='utf-8'))
-
 def unique_ids(rows: list, label: str) -> set[str]:
     require(isinstance(rows, list), f'{label}: expected list')
     ids = [row['id'] for row in rows]
     require(len(ids) == len(set(ids)), f'{label}: duplicate IDs')
     return set(ids)
-
 def main() -> None:
-    source_data = load('sources.json')
-    sources = unique_ids(source_data['sources'], 'sources')
-    require(sources == {f'S{i:02}' for i in range(1, 41)}, 'Source baseline must contain S01-S40')
-    for source in source_data['sources']:
+    source_rows = load('sources.json')['sources'] + load('sources-extension.json')
+    sources = unique_ids(source_rows, 'sources')
+    require(sources == {f'S{i:02}' for i in range(1, 50)}, 'Sources must contain S01-S49')
+    for source in source_rows:
         require(source['url'].startswith('https://'), f"Invalid source URL: {source['id']}")
     chapter_text = '\n'.join(p.read_text(encoding='utf-8') for p in sorted((ROOT / 'content').glob('chapters-*.md')))
     chapter_list = re.findall(r'^## (r\d{2})｜', chapter_text, flags=re.M)
@@ -35,8 +30,7 @@ def main() -> None:
     require(len(chapter_list) == len(chapters), 'Duplicate source chapter')
     for sid in re.findall(r'\[(S\d{2})\]', chapter_text):
         require(sid in sources, f'Unknown chapter source: {sid}')
-    speaker_text = (ROOT / 'content' / 'speakers.md').read_text(encoding='utf-8')
-    speaker_list = re.findall(r'^## (expert-[a-z]+)｜', speaker_text, flags=re.M)
+    speaker_list = re.findall(r'^## (expert-[a-z]+)｜', (ROOT / 'content' / 'speakers.md').read_text(encoding='utf-8'), flags=re.M)
     speakers = set(speaker_list)
     require(len(speakers) == len(speaker_list) == 10, 'Must contain 10 unique speakers')
     agenda = load('agenda.json')
@@ -65,10 +59,10 @@ def main() -> None:
         require(isinstance(rows, list), f'{path.name}: expected list')
         cards.extend(rows)
     card_ids = unique_ids(cards, 'current cards')
-    expected_ids = {f'K{i:03}' for i in range(1, 74)} - {'K022', 'K023', 'K024'}
-    require(card_ids == expected_ids, 'Preserve all 70 stable card IDs')
-    terms = unique_ids(load('terms.json'), 'terms')
-    require(terms == {f'T{i:02}' for i in range(1, 19)}, 'Must contain T01-T18')
+    require(card_ids == {f'K{i:03}' for i in range(1, 104)} - {'K022', 'K023', 'K024'}, 'Keep old IDs plus K074-K103')
+    term_rows = load('terms.json') + load('terms-extension.json')
+    terms = unique_ids(term_rows, 'terms')
+    require(terms == {f'T{i:02}' for i in range(1, 27)}, 'Must contain T01-T26')
     for card in examples + cards:
         require(bool(card['title']) and bool(card['body']), f"Empty card: {card['id']}")
         for field, allowed in [('sourceIds', sources), ('chapterIds', chapters), ('speakerIds', speakers), ('sessionIds', sessions)]:
@@ -79,14 +73,26 @@ def main() -> None:
         require(card['id'] not in card.get('relatedCardIds', []), f"Self reference: {card['id']}")
         require(set(card.get('termIds', [])) <= terms, f"Broken term: {card['id']}")
         require(set(card.get('locators', {})) <= set(card['sourceIds']), f"Orphan locator: {card['id']}")
+        for cid in re.findall(r'\bK\d{3}\b', json.dumps(card, ensure_ascii=False)):
+            require(cid in card_ids, f"Unknown embedded card: {card['id']} -> {cid}")
     order = load('reading-order.json')
     require(isinstance(order, list) and len(order) == len(card_ids) and set(order) == card_ids, 'Reading order must include each card exactly once')
     require(order[:4] == ['K001', 'K002', 'K003', 'K004'], 'Opening route changed unexpectedly')
-    for row in load('terms.json') + load('shelf.json'):
+    for row in term_rows + load('shelf.json'):
         require(set(row['sourceIds']) <= sources, f"Broken reference: {row['id']}")
-    print(f'PASS: {len(chapters)} chapters, {len(speakers)} speakers, {len(sources)} sources, {len(sessions)} agenda blocks, {len(examples)} example cards, {len(cards)} current cards, {len(terms)} terms; reading order complete')
+        require(set(row.get('cardIds', [])) <= card_ids, f"Broken term card: {row['id']}")
+    series = load('series.json')
+    require(len(unique_ids(series, 'series')) == 6, 'Must contain six series')
+    seen = []
+    for item in series:
+        require(len(item['cardIds']) == 5, f"Series must contain five readings: {item['id']}")
+        require(set(item['cardIds'] + item['foundationIds']) <= card_ids, f"Broken series card: {item['id']}")
+        require(set(item['sessionIds']) <= sessions, f"Broken series session: {item['id']}")
+        seen.extend(item['cardIds'])
+    require(len(seen) == len(set(seen)) == 30, 'Duplicate or missing series reading')
+    require(set(seen) == {f'K{i:03}' for i in range(74, 104)}, 'Series must cover K074-K103')
+    print(f'PASS: {len(cards)} cards; {len(terms)} terms; {len(sources)} sources; {len(series)} series; {len(sessions)} agenda blocks; all links and stable IDs checked')
     print('Structure checks do not establish scholarly accuracy or reader comprehension.')
-
 if __name__ == '__main__':
     try:
         main()
