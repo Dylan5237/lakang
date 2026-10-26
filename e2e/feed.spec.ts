@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
-import readingOrder from '../content/reading-order.json';
+import { readFileSync } from 'node:fs';
+// Playwright executes in native Node ESM, not Vite's JSON module pipeline.
+const readingOrder = JSON.parse(readFileSync(new URL('../content/reading-order.json', import.meta.url), 'utf8')) as string[];
 const activeId = async (page: Page) => (await page.evaluate(() => location.hash)).replace(/^#\/card\//, '').split('/')[0];
 test.beforeEach(async ({ page }) => { await page.goto('/'); await expect(page.getByTestId('feed')).toBeVisible(); await expect.poll(() => activeId(page)).toBe('K001'); });
 test('首次进入停在第一张未读卡；下一张按钮和 j/k 可切换', async ({ page }) => {

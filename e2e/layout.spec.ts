@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import readingOrder from '../content/reading-order.json';
+import { readFileSync } from 'node:fs';
+const readingOrder = JSON.parse(readFileSync(new URL('../content/reading-order.json', import.meta.url), 'utf8')) as string[];
 const sizes = [
   { name: '320x640', width: 320, height: 640 }, { name: '375x667', width: 375, height: 667 }, { name: '390x844', width: 390, height: 844 }, { name: '430x932', width: 430, height: 932 }, { name: '横屏 667x375', width: 667, height: 375 }, { name: '横屏 844x390', width: 844, height: 390 },
 ];
