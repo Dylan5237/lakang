@@ -1,32 +1,23 @@
 # 拉康 · 随身读
 
-面向参会者与拉康爱好者的移动阅读站：短卡上下刷、分节精读、六组专题路径、五天大会日程、搜索、收藏/笔记/已读、离线缓存。纯静态PWA，没有后端、账号、社区或实时AI诊疗。
+移动优先的会前知识卡与拉康理论精读：上下刷、官方前瞻原文、六组专题、五天日程、收藏／已读／笔记、阅读位置和离线阅读。纯静态PWA，无账号、后台或病例上传。
 
-100张卡（原70张保留，新增30篇精读），26术语，49条来源记录，6组专题，每组5篇；10位讲者、15个日程区块。来源含独立登记的编者工具，不将数量当作学术质量或学习效果证明。
+## 当前内容
 
-## 从问题进入
+- 100张主卡：82张原有知识卡与18张官方前瞻提炼卡。
+- 18张重复方法／会务卡移入附录；旧ID、收藏、笔记与备份不丢失。所有可访问资料合计118条，不与主卡数量混淆。
+- 四篇官方文章：《血肉之躯》《精神分析与歧义》《摄入如何影响身体？》《儿童抑郁症的客体》。独立“前瞻”菜单、文章续读与段落级原文跳转。
+- 六组专题30篇精读保持：欲望、身体、症状、分析过程、艺术与社会、阅读地图。
+- 26术语、53来源记录、10讲者、15日程区块。大会为2026年10月27—31日，日程固定Asia/Shanghai。
 
-| 专题 | 阅读主线 |
-|---|---|
-| 为什么满足了，仍然在欲望？ | 需要/要求/欲望、他者、客体小a、幻想、驱力 |
-| 我有一个身体 | 镜像、两种理想、Radiophonie精读、言说回响、镜子与纽结 |
-| 已经懂了，为什么还会重复？ | 症状、隐喻/转喻、重复与修通、乔伊斯、纽结 |
-| 分析中的一句话 | 言说位置、移情、被假定知道、歧义、逻辑时间 |
-| 从分析室走出去 | 四种话语、知识、艺术、爱情、分析伦理 |
-| 怎样继续读 | 文本节点、语言结构、学派差异、卡特尔、反例 |
+## 运行与测试
 
-进入“专题”可直接选组，不必刷完全部基础卡。首屏保留一个问题和要点，展开后读论证、例子与文本；前后篇、继续未读、基础补课和场次链接相互衔接。教学例子不冒充病例，具名研究不冒充本届讲稿。
+使用Node22（远端CI实际使用22.23.3）及Python3。原有依赖锁不变。
 
-大会：第一届大湾区拉康派精神分析大会《身体如何言说？》，2026-10-27—31，香港中文大学（深圳）。日程统一按Asia/Shanghai；10/28上午与10/29下午/晚间换场保留；两场开幕演讲共享09:30—12:00，不虚构各自时间。
-
-## 运行
-
-已验证CI使用Node22；本地采用满足锁定依赖要求的Node版本，不将“任意Node20”当兼容保证。
-
-```bash
+```sh
 npm ci
-python scripts/validate_materials.py
 npm run dev
+python scripts/validate_materials.py
 npm run typecheck
 npm test
 npm run build
@@ -34,33 +25,34 @@ npm run preview
 npm run test:e2e
 ```
 
-`npm run build`先重建靛蓝PNG图标，再进行类型检查、Vite生产构建和Service Worker生成。不要跳过prebuild后只复制旧public图标。
+Playwright本地默认Edge；使用自带Chromium时先安装浏览器，设置PW_CHANNEL为空。CI已经这样运行。npm run build包含靛蓝图标生成，产物在dist。
 
-e2e本地默认已安装的Microsoft Edge；使用Playwright Chromium时，先`npx playwright install chromium`，再`PW_CHANNEL= npm run test:e2e`。PowerShell先`$env:PW_CHANNEL=''`。最新真实测试记录见`docs/IMPLEMENTATION_STATUS.md`，不将文档中的历史结果套用于未验新提交。
+## 原文与原始PDF
 
-## 部署与离线
+四篇正文文字版已内置，保留文章署名与讲者区别、原用语及论证顺序。图片、封面与公众号版式不在文字版内。来源正文及hash在content/official/；每张提炼卡记录原文段落与PDF页码。
 
-构建产物为`dist/`全部文件，`base:'./'`和hash路由支持`/lakang/`子路径，不要求路由重写。源码、references和个人备份不要复制到公开目录。
+原始PDF目前未注册。用户提供的wx-pdf-20261026.zip可由维护者一次导入：
 
-用户已报告旧版部署于`http://43.139.159.100/lakang/`。仓库提交不等于服务器发布；本次内容/主题更新没有登录服务器、配置证书或上传新dist。
+```sh
+python scripts/import_official_originals.py /path/to/wx-pdf-20261026.zip --apply
+python scripts/validate_materials.py
+npm run build
+```
 
-公网HTTP不能作为本站生产离线能力已验的依据。需要有效HTTPS和浏览器允许缓存，首次联网显示“离线已就绪”后再实测关闭浏览器、断网重开。外部原文链接仍需联网，站内专题正文已内嵌可缓存。sw.js与index.html不要长期不可更新的强缓存；更新需用户确认后重载。
+工具校验精确文件名及SHA，再写入public/originals并启用PDF查看／保存按钮；不覆盖不同文件。无--apply为只读预览。原PDF不纳入预缓存，文字原文可离线。
 
-详细步骤、证书要求与验收清单见`docs/deployment/HTTPS_CHECKLIST.md`。
+## 部署与本机数据
 
-## 本地数据
+只发布dist全部内容；relative base与hash路由支持/lakang/子路径。生产部署由维护者执行，合并代码不等于上线。Service Worker需要HTTPS或localhost，sw.js不要强缓存；公网HTTP会说明离线不可用。
 
-收藏、已读、笔记、阅读位置和显示设置仍使用localStorage键`lakang:v1`。原70卡ID保留；新专题进度复用已读记录，无云端同步。
+收藏、已读、笔记、位置、字号与主题保存在lakang:v1，不上传。我的页支持备份导入导出，附录ID仍有效。换域名或HTTP→HTTPS前在旧地址导出，再去新地址导入。笔记仅记录自己的学习，不录入可识别个案。
 
-**HTTP切HTTPS或更换域名，会进入另一份浏览器本地数据。先从旧地址“我的→导出备份”，再到新地址导入。** 不要在未备份前直接使旧入口永久不可达。备份包含笔记，请勿公开；本站不收集真实个案资料。
+## 资料与协作
 
-## 目录与协作
+- content/cards/*.json为原有／新卡正文；reading-order.json与retired-card-ids.json划分主卡和附录。
+- content/official/为四篇官方前瞻正文、来源元数据和PDF注册；正文对照不依赖外网。
+- references/为研究档案，不整体发布；各文献版权分别处理。
+- docs/editorial/2026-10-26-official-previews.md记载18张替换理由、原文范围与编辑处理。
+- docs/IMPLEMENTATION_STATUS.md、docs/CODEX_HANDOFF.md记载真实提交、验证及发布边界。
 
-- `content/cards/`：12组现行卡片；`series.json`专题路径，`reading-order.json`默认顺序。
-- `content/sources.json`及`sources-extension.json`：来源；`terms.json`及`terms-extension.json`：术语与显式反链。
-- `src/`：React应用；`src/indigo.css`为靛蓝/纸白/墨黑及暗色主题。
-- `tests/`、`e2e/`：结构、逻辑、导航、小屏、主题对比度与离线回归。
-- `references/`：原件与历史资料，不因归档而获得再发布授权。
-- `docs/editorial/2026-10-26-enthusiast-series.md`：本轮内容、文本使用范围与设计记录。
-
-见`AGENTS.md`、`docs/CODEX_HANDOFF.md`。不强推、不覆写他人工作树；学术准确、真实学习效果、实机体验与程序测试分别说明。靛蓝是本站视觉选择，不宣称拉康派有统一官方色。
+本站不是官方会务渠道或诊疗服务；会务变化以主办方通知为准。深靛蓝是本站视觉选择，并非学派官方颜色。
