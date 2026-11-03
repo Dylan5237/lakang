@@ -2,7 +2,12 @@
 """把临床演示记录 HTML 转成站点使用的 JSON。
 
 记录本身是私人资料：输入和输出都不进仓库，输出只上传到服务器受密码保护的路径。
-用法：python scripts/build_clinical.py <记录.html> <输出.json>
+用法：python scripts/build_clinical.py <记录.html> <输出.json> [要点.json]
+
+可选的要点文件按案例 id 整体替换 HTML 里的要点卡，结构：
+{"case1": [{"title": "...", "layer": "record|said|editor|glossary", "intro": "...",
+            "cards": [{"tag": "...", "who": "...", "refs": ["c1s3"], "quote": false, "text": "..."}]}]}
+text 是纯文本：**加粗**、换行、以“- ”开头的行成列表；脚本负责转义并转成 b/br/ul/li。
 """
 from __future__ import annotations
 import html
@@ -77,6 +82,42 @@ def rich(node: Node) -> str:
     return re.sub(r'^(\s|<br>)+|(\s|<br>)+$', '', ''.join(out)).replace('<br> ', '<br>')
 
 
+def markup(text: str) -> str:
+    """Plain text with **bold**, line breaks and '- ' bullets -> whitelisted HTML."""
+    def inline(s: str) -> str:
+        return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', html.escape(s, quote=False))
+    out, items = [], []
+    for line in text.strip().split('\n'):
+        if line.startswith('- '):
+            items.append(f'<li>{inline(line[2:].strip())}</li>')
+            continue
+        if items:
+            out.append('<ul>' + ''.join(items) + '</ul>')
+            items = []
+        out.append(inline(line.strip()) + '<br>')
+    if items:
+        out.append('<ul>' + ''.join(items) + '</ul>')
+    return re.sub(r'(<br>)+$', '', re.sub(r'<br>(<ul>)', r'\1', ''.join(out)))
+
+
+def apply_notes(data: dict, notes: dict) -> None:
+    for case in data['cases']:
+        if case['id'] not in notes:
+            continue
+        ids = {s['id'] for s in case['sections']}
+        groups = []
+        for g in notes[case['id']]:
+            cards = []
+            for c in g['cards']:
+                bad = [r for r in c.get('refs', []) if r not in ids]
+                if bad:
+                    raise ValueError(f"{case['id']} {g['title']} {c.get('tag')}: unknown section {bad}")
+                cards.append({'tag': c.get('tag', ''), 'quote': bool(c.get('quote')), 'html': markup(c['text']),
+                              'who': c.get('who', ''), 'refs': c.get('refs', [])})
+            groups.append({'title': g['title'], 'layer': g.get('layer', 'record'), 'intro': g.get('intro', ''), 'cards': cards})
+        case['groups'] = groups
+
+
 def parse(source: str) -> dict:
     tree = Tree()
     tree.feed(source)
@@ -134,9 +175,11 @@ def parse(source: str) -> dict:
 
 
 def main() -> None:
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in (3, 4):
         sys.exit(__doc__)
     data = parse(open(sys.argv[1], encoding='utf-8').read())
+    if len(sys.argv) == 4:
+        apply_notes(data, json.load(open(sys.argv[3], encoding='utf-8')))
     with open(sys.argv[2], 'w', encoding='utf-8', newline='\n') as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
     for c in data['cases']:

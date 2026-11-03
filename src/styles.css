@@ -189,3 +189,17 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .note.folded .note-body { max-height: 7.5em; overflow: hidden; -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
 .note-more { margin-top: .25rem; min-height: 40px; padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; cursor: pointer; }
 .note.quote { margin: 0 0 .7rem; border: 0; border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; background: var(--analyst-bg); font-size: 1rem; }
+
+/* 要点分层：原话摘要 / 现场判断 / 编者延伸 / 概念背景 */
+.note-group h2 { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.layer-badge { font-size: .68rem; letter-spacing: .04em; font-weight: 600; padding: .05rem .5rem; border-radius: 999px; border: 1px solid currentColor; }
+.note-intro { margin: -.25rem 0 .7rem; font-size: .8rem; color: var(--muted); }
+.note-who { display: inline-block; margin-right: .5rem; padding: 0 .45rem; border-radius: 6px; background: var(--supervisor-bg); color: var(--supervisor); font-weight: 700; }
+.note-refs { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 0; }
+.note-refs a {
+  display: inline-flex; align-items: center; min-height: 40px; min-width: 40px; padding: 0 .7rem; border-radius: 999px;
+  background: var(--bg); border: 1px solid var(--line); font-size: .78rem; text-decoration: none;
+}
+.layer-editor .note, .layer-glossary .note { background: transparent; border-style: dashed; }
+.layer-editor h2 .layer-badge { color: var(--note); }
+.layer-glossary h2 .layer-badge { color: var(--muted); }

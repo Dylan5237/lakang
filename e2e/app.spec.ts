@@ -93,3 +93,16 @@ for (const width of [320, 390]) for (const scale of [1, 1.45]) {
     }
   });
 }
+
+test('要点分层：显示层级与发言人，点节号跳到对应对话', async ({ page }) => {
+  const c = archive().cases[0];
+  const g = c.groups.find((x) => x.cards.some((k) => k.refs?.length))!;
+  const card = g.cards.find((k) => k.refs?.length)!;
+  const target = card.refs![0]; const n = c.sections.findIndex((s) => s.id === target) + 1;
+  await unlock(page, `#/case/${c.id}/notes`);
+  if (g.layer) await expect(page.getByTestId('notes').locator(`[data-layer="${g.layer}"] .layer-badge`)).toBeVisible();
+  if (card.who) await expect(page.getByTestId('notes').locator('.note-who', { hasText: card.who }).first()).toBeVisible();
+  await page.getByTestId('notes').locator(`.note-refs a[href$="/s/${target}"]`).first().click();
+  await expect(page.getByTestId('talk')).toBeVisible();
+  await expect(page.getByTestId('open-toc')).toContainText(`${n}/${c.sections.length}`);
+});

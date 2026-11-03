@@ -19,7 +19,8 @@ export const fake: Archive = {
     legend: [{ role: 'analyst', text: '分析师 = 测试分析师（法语，经口译）' }, { role: 'patient', text: '来访者 = 虚构' }],
     discussionLabel: '督导讨论 · 约 30 分钟',
     sections: [1, 2, 3, 4, 5, 6].map((n) => section(c, n, n > 4 ? 'discussion' : 'interview')),
-    groups: [{ title: '📌 案例核心', cards: [
+    groups: [{ title: '现场判断', layer: 'said', intro: '按原话转述。', cards: [{ tag: '判断', who: '督导', quote: false, html: '虚构判断', refs: [`c${c}s4`] }] },
+      { title: '📌 案例核心', cards: [
       { tag: '画像', quote: false, html: '<b>虚构</b><br>简短说明' },
       { tag: '长卡', quote: false, html: '很长的说明，'.repeat(60) + '<ul><li>一</li><li>二</li></ul>' },
       { tag: '', quote: true, html: '"一句引语"' }] }],

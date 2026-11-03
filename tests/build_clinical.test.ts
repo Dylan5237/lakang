@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Archive } from '../src/types';
@@ -37,5 +37,22 @@ describe('scripts/build_clinical.py', () => {
     expect(card.html).toBe('<b>要点</b><br>说明 斜体 &lt;img&gt;<ul><li>一</li></ul>');
     expect(quote).toMatchObject({ quote: true, tag: '' });
     expect(JSON.stringify(data)).not.toMatch(/<(script|i|img)\b/);
+  });
+
+  it('要点文件按案例替换要点卡：分层、发言人、节引用，文本标记转成白名单 HTML', () => {
+    const out2 = join(mkdtempSync(join(tmpdir(), 'clinical-')), 'out.json');
+    execFileSync(python, ['scripts/build_clinical.py', 'tests/fixtures/sample.html', out2, 'tests/fixtures/notes.json']);
+    const d = JSON.parse(readFileSync(out2, 'utf8')) as Archive;
+    expect(d.cases[0].groups).toEqual([{ title: '现场判断', layer: 'said', intro: '说明', cards: [
+      { tag: '判断', who: '督导', refs: ['c1s2'], quote: false, html: '<b>要点</b> &lt;i&gt;x&lt;/i&gt;<br>第二行<ul><li>一</li><li>二</li></ul>' },
+      { tag: '', who: '', refs: [], quote: true, html: '“引语”' }] }]);
+    expect(d.cases[1].groups).toEqual(data.cases[1].groups); // cases without notes keep their original cards
+  });
+
+  it('要点引用了不存在的节时报错，不生成数据', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'clinical-'));
+    const bad = join(dir, 'bad.json');
+    writeFileSync(bad, JSON.stringify({ case1: [{ title: 't', cards: [{ text: 'x', refs: ['c2s1'] }] }] }));
+    expect(() => execFileSync(python, ['scripts/build_clinical.py', 'tests/fixtures/sample.html', join(dir, 'o.json'), bad], { stdio: 'pipe' })).toThrow(/unknown section/);
   });
 });
