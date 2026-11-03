@@ -24,14 +24,14 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
     <div className="hero-glow" aria-hidden="true" />
     <header className="hero">
       <div className="hero-top">
-        <span className="eyebrow">拉康随身读</span>
+        <span className="eyebrow">拉康精神分析学习卡</span>
         <div className="hero-tools">
           <SearchAllButton archive={archive} />
           <SettingsButton />
           {archive && <button type="button" className="ghost" onClick={onLock}>锁定</button>}
         </div>
       </div>
-      <h1>拉康学习站</h1>
+      <h1>拉康随身读</h1>
       <p className="hero-sub">概念 · 术语 · 临床演示记录</p>
     </header>
     <section aria-labelledby="learn-h"><h2 id="learn-h" className="section-h">学习</h2>

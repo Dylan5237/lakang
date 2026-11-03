@@ -19,6 +19,7 @@ test('案例锁屏：错误密码被拒；正确后进入；锁定后需重新�
 
 test('学习模块无需密码：首页入口、词典与概念卡直接可用', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByTestId('home').getByRole('heading', { level: 1 })).toHaveText('拉康随身读'); // agreed site name
   await expect(page.getByTestId('modules')).toBeVisible();
   await expect(page.getByTestId('locked-cases')).toBeVisible(); // clinical stays locked
   const glow = await page.locator('.hero-glow').evaluate((e) => { const r = e.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
