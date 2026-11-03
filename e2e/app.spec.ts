@@ -21,6 +21,8 @@ test('学习模块无需密码：首页入口、词典与概念卡直接可用',
   await page.goto('/');
   await expect(page.getByTestId('modules')).toBeVisible();
   await expect(page.getByTestId('locked-cases')).toBeVisible(); // clinical stays locked
+  const glow = await page.locator('.hero-glow').evaluate((e) => { const r = e.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
+  expect(glow).toEqual({ left: 0, right: glow.vw, vw: glow.vw }); // full-bleed background, no padded-container edge
   await page.getByTestId('module-terms').click();
   await expect(page.getByTestId('terms')).toBeVisible();
   await expect(page.getByTestId('terms').locator('.term-list li')).toHaveCount(32);
@@ -96,7 +98,10 @@ test('闪卡复习：翻面评分、完成汇总、进度仅存本机', async ({
   const first = page.getByTestId('flip').locator('.front strong');
   await expect(first).toBeVisible();
   await page.getByTestId('flip').click();
-  await expect(page.getByTestId('flip').locator('.back')).toBeVisible();
+  // the 3D flip animates; wait until the answer face has settled at card size (regression: class collision shrank it to 44px)
+  await expect.poll(async () => page.getByTestId('flip').locator('.answer').evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBeGreaterThan(200);
+  await expect.poll(async () => page.getByTestId('flip').locator('.answer').evaluate((e) => Math.round(e.getBoundingClientRect().height))).toBeGreaterThan(200);
+  await expect(page.getByTestId('flip').locator('.answer')).toBeVisible();
   await expect(page.getByRole('button', { name: '记得' })).toBeEnabled();
   await page.getByRole('button', { name: '忘了' }).click();
   await expect(page.getByTestId('review')).toContainText('2/12');

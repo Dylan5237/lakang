@@ -21,6 +21,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
   const due = dueCount(items, readSched());
   const resume = progress.position && cardById.has(progress.position) ? cardById.get(progress.position)! : undefined;
   return <main className="home" data-testid="home">
+    <div className="hero-glow" aria-hidden="true" />
     <header className="hero">
       <div className="hero-top">
         <span className="eyebrow">拉康随身读</span>

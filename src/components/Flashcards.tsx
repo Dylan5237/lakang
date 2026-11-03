@@ -71,7 +71,7 @@ export function Flashcards() {
             {current.sub && <small>{current.sub}</small>}
             <span className="tap-hint">点一下看答案</span>
           </span>
-          <span className="face back" aria-hidden={!flipped}>
+          <span className="face answer" aria-hidden={!flipped}>
             <em className="kind">答案</em>
             <span>{current.back}</span>
           </span>
