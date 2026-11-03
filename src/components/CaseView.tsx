@@ -7,7 +7,7 @@ import { Talk } from './Talk';
 export function CaseView({ c, tab, sectionId }: { c: Case; tab: 'talk' | 'notes'; sectionId?: string }) {
   return <main className="case" data-testid="case">
     <header className="appbar">
-      <a className="back" href={hrefs.home()} aria-label="返回案例列表">‹</a>
+      <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>{c.label}</h1><p>{c.date}</p></div>
       <SettingsButton />
     </header>

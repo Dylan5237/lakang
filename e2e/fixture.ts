@@ -38,7 +38,8 @@ export async function serveArchive(page: Page, body: Archive | null = fake) {
       : route.fulfill({ status: 403, body: '' }));
 }
 
-export async function unlock(page: Page, hash = '') {
+/** The lock only gates the clinical module: navigate to a case route, then unlock. */
+export async function openCase(page: Page, hash = '#/case/case1') {
   await serveArchive(page);
   await page.goto('/' + hash);
   await page.getByTestId('key').fill(KEY);

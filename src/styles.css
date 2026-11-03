@@ -73,8 +73,8 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .cases { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
 .case-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.1rem 1rem; box-shadow: 0 1px 2px rgb(0 0 0 / .04); }
 .case-no { font-size: .75rem; color: var(--accent); font-weight: 700; letter-spacing: .1em; }
-.case-card h2 { margin: .15rem 0 .1rem; font-size: 1.3rem; }
-.case-card h2 a { display: flex; align-items: center; min-height: 44px; color: inherit; text-decoration: none; }
+.case-card h2, .case-card h3 { margin: .15rem 0 .1rem; font-size: 1.3rem; }
+.case-card h2 a, .case-card h3 a { display: flex; align-items: center; min-height: 44px; color: inherit; text-decoration: none; }
 .case-meta { margin: 0; color: var(--muted); font-size: .9rem; }
 .case-stats { margin: .35rem 0 0; color: var(--muted); font-size: .8rem; }
 .case-progress { margin-top: .75rem; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
@@ -253,3 +253,60 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 }
 .note-area:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .sheet-foot { display: flex; gap: .5rem; margin-top: .6rem; }
+
+/* 学习层：模块入口 / 词典 / 概念卡 */
+.section-h { font-size: .8rem; letter-spacing: .12em; color: var(--muted); margin: 1.25rem 0 .5rem; }
+.modules { display: grid; gap: .6rem; }
+.module, .case-card.locked {
+  display: flex; flex-direction: column; gap: .2rem; padding: .8rem 1rem .7rem; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 1px 2px rgb(0 0 0 / .04);
+}
+.module strong, .case-card.locked strong { font-size: 1.05rem; }
+.module > span, .case-card.locked > span { color: var(--muted); font-size: .82rem; }
+.module-go { color: var(--accent) !important; font-weight: 600; }
+.page { max-width: 42rem; margin: 0 auto; padding: max(.75rem, env(safe-area-inset-top)) 1rem 3rem; }
+.page-head h1 { margin: .2rem 0 .3rem; font-size: 1.5rem; }
+.page-head .btn-link { display: inline-flex; align-items: center; min-height: 44px; }
+.orig { color: var(--muted); font-size: .85em; font-style: italic; }
+.term-list { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .45rem; }
+.term-list li { min-width: 0; }
+.term-list a > * { min-width: 0; max-width: 100%; }
+.term-list a {
+  min-width: 0; overflow: hidden;
+  display: flex; flex-direction: column; gap: .15rem; padding: .5rem .8rem; min-height: 44px; justify-content: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: var(--ink);
+}
+.term-list strong { font-size: .95rem; }
+.term-brief { display: block; max-width: 100%; color: var(--muted); font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.terms .lead { font-size: 1.02rem; font-weight: 600; }
+.para { line-height: 1.85; overflow-wrap: anywhere; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .8rem 1rem; margin: .8rem 0; }
+.panel h2 { margin: 0 0 .5rem; font-size: .85rem; letter-spacing: .08em; color: var(--muted); }
+.case-links { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; }
+.case-links a { display: flex; align-items: center; min-height: 44px; font-size: .92rem; line-height: 1.5; }
+.kref { font-weight: 600; }
+.kref::before { content: "‹"; margin-right: 1px; color: var(--muted); }
+.kref::after { content: "›"; margin-left: 1px; color: var(--muted); }
+
+/* 概念卡页 */
+.cards { display: flex; flex-direction: column; min-height: 100dvh; }
+.card-page { flex: 1; padding: .75rem .25rem 1rem; }
+.card-page h1 { font-size: 1.35rem; line-height: 1.45; margin: .3rem 0 .6rem; }
+.card-page .eyebrow { color: var(--accent); font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
+.takeaway {
+  margin: .9rem 0 0; padding: .7rem .9rem; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0;
+  background: var(--analyst-bg); font-weight: 600; line-height: 1.7;
+}
+.card-more { margin-top: .9rem; border-top: 1px dashed var(--line); padding-top: .4rem; }
+.card-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--accent); font-weight: 600; }
+.card-more[open] summary { margin-bottom: .4rem; }
+.qa { margin: .7rem 0; padding: .55rem .8rem; background: var(--surface); border-radius: 10px; }
+.qa strong { color: var(--accent); margin-right: .4rem; }
+.chips-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .7rem 0 0; }
+.chips-row .btn { font-size: .82rem; padding: 0 .7rem; min-height: 40px; }
+.sources { font-size: .78rem; color: var(--muted); line-height: 1.8; overflow-wrap: anywhere; }
+.card-nav { display: flex; gap: .6rem; padding: .5rem 1rem calc(.75rem + env(safe-area-inset-bottom)); }
+.card-nav .btn { flex: 1; }
+.toc-group { list-style: none; margin: .9rem 0 .25rem; font-size: .75rem; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
+.card-fav { font-size: 1.2rem; line-height: 1; }
+.appbar .card-fav.on { color: var(--accent); }

@@ -13,3 +13,13 @@ export interface Case {
   discussionLabel: string | null; sections: Section[]; groups: NoteGroup[];
 }
 export interface Archive { title: string; notice: string[]; cases: Case[] }
+
+/* 公开学习层（随站点发布，来自 content/） */
+export interface StudySource { id: string; title: string; url: string; date: string; publisher: string }
+export interface StudyCard {
+  id: string; stage: string; stageLabel: string; topic: string; title: string; body: string; takeaway: string;
+  detail: string[]; question: string | null; action: string | null; termIds: string[];
+  sourceIds: string[]; locators: Record<string, string>; relatedCardIds: string[];
+}
+export interface CaseLink { case: string; section: string; note: string }
+export interface Term { id: string; zh: string; original: string; brief: string; detail?: string; sourceIds: string[]; related?: string[]; caseLinks?: CaseLink[] }
