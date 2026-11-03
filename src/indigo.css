@@ -67,3 +67,7 @@
 .learn-steps summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--accent); }
 .learn-steps ol { padding-left: 1.25rem; }
 .learn-steps ol li { margin: .35rem 0; }
+
+/* 临床演示记录（私人，按密码从服务器读取） */
+.clinical-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.clinical-frame { display: block; width: 100%; height: calc(100dvh - 9.5rem); border: 1px solid var(--line, #ccc); border-radius: 8px; background: #fff; }

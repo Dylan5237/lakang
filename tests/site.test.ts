@@ -19,6 +19,7 @@ describe('学习站框架', () => {
     expect(parseHash(hrefs.feed())).toEqual({ name: 'feed' });
     expect(parseHash(hrefs.terms())).toEqual({ name: 'terms' });
     expect(parseHash(hrefs.archive())).toEqual({ name: 'archive' });
+    expect(parseHash(hrefs.clinical())).toEqual({ name: 'clinical' });
     expect(parseHash('#/card/K010/more')).toEqual({ name: 'feed', cardId: 'K010', detail: true });
     expect(parseHash('#/guide/terms')).toEqual({ name: 'terms' });
     expect(parseHash('#/guide/speakers')).toEqual({ name: 'archive' });

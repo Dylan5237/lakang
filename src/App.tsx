@@ -13,8 +13,9 @@ import { GuidePage } from './components/GuidePage';
 import { HomePage } from './components/HomePage';
 import { TermsPage } from './components/TermsPage';
 import { ArchivePage } from './components/ArchivePage';
+import { ClinicalPage } from './components/ClinicalPage';
 import { PreviewsPage } from './components/PreviewsPage';
-import { IconBook, IconCards, IconDown, IconHome, IconNote, IconSearch, IconUp, IconUser } from './components/Icons';
+import { IconBook, IconCards, IconDown, IconHome, IconLock, IconNote, IconSearch, IconUp, IconUser } from './components/Icons';
 import { MePage } from './components/MePage';
 import './official.css';
 const FONT_SIZES = ['100%', '112.5%', '125%', '145%'];
@@ -52,6 +53,7 @@ export function App() {
     { name: 'feed', label: '卡片', href: hrefs.feed(), Icon: IconCards },
     { name: 'guide', label: '专题', href: hrefs.guide(), Icon: IconBook },
     { name: 'terms', label: '术语', href: hrefs.terms(), Icon: IconNote },
+    { name: 'clinical', label: '临床', href: hrefs.clinical(), Icon: IconLock },
     { name: 'me', label: '我的', href: hrefs.me(), Icon: IconUser },
   ] as const;
   // Archive pages (agenda, previews) belong under the home tab.
@@ -67,7 +69,7 @@ export function App() {
       {filtered && <p className="filter-line" data-testid="filter-line">{archiveCard ? (retiredCardIds.has(archiveCard.id) ? '附录卡片 · 不计入学习进度' : '会议归档卡片 · 不计入学习进度') : `筛选后共 ${list.length} 张`}<button type="button" onClick={clear}>{archiveCard ? '返回卡片流' : '清除'}</button></p>}
     </header>}
     {route.name === 'feed' && <Feed list={list} filterKey={filterKey + (archiveCard ? `:archive:${archiveCard.id}` : '')} routeCardId={route.cardId} filtered={filtered} onClearFilters={clear} />}
-    {route.name === 'home' && <HomePage offlineReady={pwa.offlineReady} />}{route.name === 'terms' && <TermsPage />}{route.name === 'archive' && <ArchivePage />}
+    {route.name === 'home' && <HomePage offlineReady={pwa.offlineReady} />}{route.name === 'terms' && <TermsPage />}{route.name === 'archive' && <ArchivePage />}{route.name === 'clinical' && <ClinicalPage />}
     {route.name === 'previews' && <PreviewsPage articleId={route.articleId} original={route.original} paragraphId={route.paragraphId} />}
     {route.name === 'agenda' && <AgendaPage day={route.day} sessionId={route.sessionId} />}{route.name === 'guide' && <GuidePage tab={route.tab} />}{route.name === 'me' && <MePage />}
     <nav className="bottom-nav" aria-label="主导航">{nav.map(({ name, label, href, Icon }) => <a key={name} href={href} aria-current={tab === name ? 'page' : undefined} className={tab === name ? 'on' : ''}><Icon /><span>{label}</span></a>)}</nav>

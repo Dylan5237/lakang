@@ -70,6 +70,12 @@ export const IconHome = (p: SVGProps<SVGSVGElement>) => (
     <path d="M4 10.5L12 4l8 6.5V20h-5.5v-5.5h-5V20H4z" />
   </svg>
 );
+export const IconLock = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+    <path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5" />
+  </svg>
+);
 export const IconUser = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <circle cx="12" cy="8.5" r="3.6" />

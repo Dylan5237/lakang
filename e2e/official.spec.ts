@@ -26,12 +26,12 @@ test('旧卡收藏笔记保留，附录可读，主流进度不受附录污染',
   await page.goto('/#/cards');await page.getByTestId('open-filter').click();const sheet=page.getByRole('dialog',{name:'搜索与筛选'});await sheet.getByRole('button',{name:/仅看收藏/}).click();await sheet.getByRole('searchbox').fill('K064');await expect(sheet.locator('.hit-list li')).toHaveCount(1);await sheet.getByTestId('apply-filters').click();await expect(page.locator('.card[data-card-id="K064"]')).toBeVisible();
   await page.goto('/#/previews/appendix');await expect(page.getByTestId('appendix').locator('.entries > li')).toHaveCount(18);
 });
-for(const width of [320,390])test(`${width}宽特大字号：前瞻目录、原文和五项菜单不溢出`,async({page})=>{
+for(const width of [320,390])test(`${width}宽特大字号：前瞻目录、原文和六项菜单不溢出`,async({page})=>{
   await page.setViewportSize({width,height:700});await page.goto('/#/me');await page.getByRole('button',{name:'特大',exact:true}).click();
   for(const hash of ['#/previews','#/previews/P01','#/previews/P02/original','#/previews/P03/original/P03-06','#/previews/appendix']){
     await page.goto('/'+hash);await expect(page.locator('main')).toBeVisible();
     const overflow=await page.locator('main').evaluate((main)=>({page:document.documentElement.scrollWidth-document.documentElement.clientWidth,main:main.scrollWidth-main.clientWidth}));expect(overflow,hash).toEqual({page:0,main:0});
-    const nav=await page.locator('.bottom-nav a').evaluateAll((els)=>els.map((e)=>{const r=e.getBoundingClientRect();return {w:r.width,h:r.height,right:r.right};}));expect(nav).toHaveLength(5);for(const r of nav){expect(r.w).toBeGreaterThanOrEqual(40);expect(r.h).toBeGreaterThanOrEqual(40);expect(r.right).toBeLessThanOrEqual(width+1);}
+    const nav=await page.locator('.bottom-nav a').evaluateAll((els)=>els.map((e)=>{const r=e.getBoundingClientRect();return {w:r.width,h:r.height,right:r.right};}));expect(nav).toHaveLength(6);for(const r of nav){expect(r.w).toBeGreaterThanOrEqual(40);expect(r.h).toBeGreaterThanOrEqual(40);expect(r.right).toBeLessThanOrEqual(width+1);}
   }
 });
 test('原文及附录离线冷启动：服务器关闭后仍能读，笔记仍属于旧卡',async()=>{

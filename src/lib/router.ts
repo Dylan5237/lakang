@@ -3,6 +3,7 @@ export type Route =
   | { name: 'home' }
   | { name: 'terms' }
   | { name: 'archive' }
+  | { name: 'clinical' }
   | { name: 'feed'; cardId?: string; detail?: boolean }
   | { name: 'agenda'; day?: string; sessionId?: string }
   | { name: 'guide'; tab?: string }
@@ -17,6 +18,7 @@ export function parseHash(hash: string): Route {
     case 'card': return parts[1] ? { name: 'feed', cardId: parts[1], detail: parts[2] === 'more' } : { name: 'feed' };
     case 'terms': return { name: 'terms' };
     case 'archive': return { name: 'archive' };
+    case 'clinical': return { name: 'clinical' };
     case 'agenda': return { name: 'agenda', day: parts[1], sessionId: parts[2] };
     // Old guide tabs moved: terms got their own page, speakers went to the conference archive.
     case 'guide': return parts[1] === 'terms' ? { name: 'terms' } : parts[1] === 'speakers' ? { name: 'archive' } : { name: 'guide', tab: parts[1] };
@@ -26,7 +28,7 @@ export function parseHash(hash: string): Route {
   }
 }
 export const hrefs = {
-  home: () => '#/', feed: () => '#/cards', terms: () => '#/terms', archive: () => '#/archive', card: (id: string) => `#/card/${id}`, detail: (id: string) => `#/card/${id}/more`,
+  home: () => '#/', feed: () => '#/cards', terms: () => '#/terms', archive: () => '#/archive', clinical: () => '#/clinical', card: (id: string) => `#/card/${id}`, detail: (id: string) => `#/card/${id}/more`,
   agenda: (day?: string, sessionId?: string) => `#/agenda${day ? `/${day}` : ''}${sessionId ? `/${sessionId}` : ''}`,
   guide: (tab?: string) => `#/guide${tab ? `/${tab}` : ''}`,
   previews: (id?: string) => `#/previews${id ? `/${id}` : ''}`,
