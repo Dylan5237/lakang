@@ -1,6 +1,7 @@
 import { hrefs, navigate } from '../lib/router';
 import type { Case } from '../types';
 import { Notes } from './Notes';
+import { SettingsButton } from './Settings';
 import { Talk } from './Talk';
 
 export function CaseView({ c, tab, sectionId }: { c: Case; tab: 'talk' | 'notes'; sectionId?: string }) {
@@ -8,6 +9,7 @@ export function CaseView({ c, tab, sectionId }: { c: Case; tab: 'talk' | 'notes'
     <header className="appbar">
       <a className="back" href={hrefs.home()} aria-label="返回案例列表">‹</a>
       <div className="appbar-title"><h1>{c.label}</h1><p>{c.date}</p></div>
+      <SettingsButton />
     </header>
     <nav className="tabs" aria-label="视图">
       {(['talk', 'notes'] as const).map((t) => <a key={t} href={t === 'talk' ? hrefs.talk(c.id) : hrefs.notes(c.id)}

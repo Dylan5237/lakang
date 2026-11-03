@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { NOTE_MAX, readNotes, saveNote } from '../lib/notes';
 import { findHits, highlight, savePosition } from '../lib/reading';
 import { hrefs } from '../lib/router';
 import type { Case, Section, Turn } from '../types';
@@ -22,6 +23,9 @@ export function Talk({ c, sectionId }: { c: Case; sectionId?: string }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [hitIndex, setHitIndex] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
+  const [notes, setNotes] = useState(readNotes);
+  const [noteFor, setNoteFor] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
   const [active, setActive] = useState(sectionId ?? c.sections[0]?.id);
   const scroller = useRef<HTMLDivElement>(null);
   const hits = useMemo(() => findHits(c.sections, query), [c, query]);
@@ -56,6 +60,8 @@ export function Talk({ c, sectionId }: { c: Case; sectionId?: string }) {
   }, [hitIndex, hits]);
 
   const firstDiscussion = c.sections.find((s) => s.part === 'discussion')?.id;
+  const openNote = (id: string) => { setNoteFor(id); setDraft(notes[id] ?? ''); };
+  const noteSection = noteFor ? c.sections.find((s) => s.id === noteFor) : undefined;
 
   return <>
     <div className="toolbar">
@@ -75,7 +81,7 @@ export function Talk({ c, sectionId }: { c: Case; sectionId?: string }) {
     <div className="progress" aria-hidden="true"><span style={{ width: `${((activeIdx + 1) / c.sections.length) * 100}%` }} /></div>
     <div className="talk" ref={scroller} data-testid="talk">
       {c.sections.map((s, si) => <SectionView key={s.id} s={s} index={si} c={c} query={query} hitAt={hitAt} currentHit={hits[hitIndex]}
-        divider={s.id === firstDiscussion ? c.discussionLabel ?? '讨论' : null} onNext={(id) => jumpTo(id)} />)}
+        divider={s.id === firstDiscussion ? c.discussionLabel ?? '讨论' : null} onNext={(id) => jumpTo(id)} hasNote={Boolean(notes[s.id])} onNote={openNote} />)}
     </div>
     <Sheet open={tocOpen} title="目录" onClose={() => setTocOpen(false)} testId="toc">
       <ol className="toc">{c.sections.map((s, i) => <li key={s.id}>
@@ -86,17 +92,31 @@ export function Talk({ c, sectionId }: { c: Case; sectionId?: string }) {
           <span className="toc-title">{s.title}</span><span className="toc-time">{s.time} · {s.turns.length} 段</span>
         </button></li>)}</ol>
     </Sheet>
+    <Sheet open={noteFor !== null} title={noteSection ? `笔记 · ${noteSection.title}` : '笔记'} onClose={() => setNoteFor(null)} testId="note-sheet">
+      <textarea className="note-area" data-testid="note-text" value={draft} maxLength={NOTE_MAX} aria-label="笔记内容"
+        placeholder="写下自己的理解、问题或联想…" onChange={(e) => setDraft(e.target.value)} />
+      <p className="hint">{draft.length}/{NOTE_MAX} · 只保存在这台设备上，不上传。</p>
+      <div className="sheet-foot">
+        <button type="button" className="btn primary" data-testid="note-save" onClick={() => { if (noteFor) saveNote(noteFor, draft); setNotes(readNotes()); setNoteFor(null); }}>保存</button>
+        {noteFor && notes[noteFor] && <button type="button" className="btn danger" onClick={() => { saveNote(noteFor, ''); setNotes(readNotes()); setNoteFor(null); }}>删除</button>}
+      </div>
+    </Sheet>
   </>;
 }
 
-function SectionView({ s, index, c, query, hitAt, currentHit, divider, onNext }: {
+function SectionView({ s, index, c, query, hitAt, currentHit, divider, onNext, hasNote, onNote }: {
   s: Section; index: number; c: Case; query: string; hitAt: Map<string, number>;
   currentHit?: { sectionId: string; index: number }; divider: string | null; onNext: (id: string) => void;
+  hasNote: boolean; onNote: (id: string) => void;
 }) {
   const next = c.sections[index + 1];
   return <section className="sec" data-section-id={s.id}>
     {divider && <div className="part-divider"><span>{divider}</span></div>}
-    <header className="sec-head"><h2>{s.title}</h2>{s.time && <span className="sec-time">{s.time}</span>}</header>
+    <header className="sec-head">
+      <h2>{s.title}</h2>
+      <span className="sec-time">{s.time}</span>
+      <button type="button" className={`note-btn ${hasNote ? 'has' : ''}`} aria-label="写笔记" aria-pressed={hasNote} onClick={() => onNote(s.id)}>笔记</button>
+    </header>
     {s.turns.map((t, i) => <Bubble key={i} turn={t} query={query} hit={hitAt.get(`${s.id}:${i}`) ?? null}
       current={currentHit?.sectionId === s.id && currentHit.index === i} />)}
     {next && <button type="button" className="next-sec" onClick={() => onNext(next.id)}>下一节 · {next.title}</button>}

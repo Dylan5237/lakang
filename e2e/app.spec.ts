@@ -92,3 +92,61 @@ test('要点分层：显示层级与发言人，点节号跳到对应对话', as
   await expect(page.getByTestId('talk')).toBeVisible();
   await expect(page.getByTestId('open-toc')).toContainText(`${n}/${c.sections.length}`);
 });
+
+test('显示设置：主题与字号立即生效，刷新后保留', async ({ page }) => {
+  await unlock(page);
+  await page.getByRole('button', { name: '显示设置' }).first().click();
+  const settings = page.getByTestId('settings');
+  await settings.getByRole('button', { name: '深色' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await settings.getByRole('button', { name: '特大' }).click();
+  await expect(await page.evaluate(() => document.documentElement.style.fontSize)).toBe('145%');
+  await page.keyboard.press('Escape');
+  await page.reload(); await expect(page.getByTestId('home')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(await page.evaluate(() => document.documentElement.style.fontSize)).toBe('145%');
+  await page.getByRole('button', { name: '显示设置' }).first().click();
+  await page.getByTestId('settings').getByRole('button', { name: '跟随系统' }).click();
+  await page.getByTestId('settings').getByRole('button', { name: '标准' }).click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'dark');
+});
+
+test('节笔记：写入有标记，首页列出并可跳回，删除后消失', async ({ page }) => {
+  const c = archive().cases[0]; const first = c.sections[0];
+  await unlock(page, `#/case/${c.id}`);
+  const btn = page.locator(`[data-section-id="${first.id}"]`).getByRole('button', { name: '写笔记' });
+  await btn.click();
+  await page.getByTestId('note-text').fill('我的学习笔记：注意口译转述这一层。');
+  await page.getByTestId('note-save').click();
+  await expect(page.locator(`[data-section-id="${first.id}"] .note-btn.has`)).toBeVisible();
+  await page.getByRole('link', { name: '返回案例列表' }).click();
+  const myNotes = page.getByTestId('my-notes');
+  await expect(myNotes).toContainText('我的学习笔记');
+  await myNotes.locator('a').first().click();
+  await expect(page.getByTestId('talk')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => location.hash)).toContain(first.id);
+  await page.locator(`[data-section-id="${first.id}"]`).getByRole('button', { name: '写笔记' }).click();
+  await page.getByRole('button', { name: '删除' }).click();
+  await expect(page.locator(`[data-section-id="${first.id}"] .note-btn.has`)).toHaveCount(0);
+  await page.getByRole('link', { name: '返回案例列表' }).click();
+  await expect(page.getByTestId('my-notes')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('lakang:notes'))).toBe('{}');
+});
+
+test('全局搜索：跨案例命中并跳到对应对话/要点（虚构数据专用）', async ({ page }) => {
+  test.skip(Boolean(process.env.LAKANG_REAL_JSON), '虚构数据专用');
+  await unlock(page);
+  await page.getByRole('button', { name: '搜索全部' }).click();
+  const results = page.getByTestId('global-search-results');
+  await page.getByTestId('global-search-input').fill('父亲');
+  await expect(page.getByTestId('global-search-count')).toContainText('处');
+  await expect(results.locator('a.hit').first()).toBeVisible();
+  await results.locator('a[href*="/case/case2/"]').first().click();
+  await expect(page.getByTestId('talk')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => location.hash)).toContain('case2');
+  await page.getByRole('link', { name: '返回案例列表' }).click();
+  await page.getByRole('button', { name: '搜索全部' }).click();
+  await page.getByTestId('global-search-input').fill('虚构判断');
+  await results.locator('a[href$="/notes"]').first().click();
+  await expect(page.getByTestId('notes')).toBeVisible();
+});

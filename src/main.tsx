@@ -1,7 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { applySettings, readSettings } from './lib/settings';
 import './styles.css';
+
+// Reading preferences persist across visits; apply before first paint.
+applySettings(readSettings());
 
 // The previous version installed a service worker under this scope; retire it so stale pages are not served.
 if ('serviceWorker' in navigator) {

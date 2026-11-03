@@ -9,7 +9,7 @@ export function savePosition(caseId: string, sectionId: string): void {
   try { localStorage.setItem(POS, JSON.stringify({ ...readPositions(), [caseId]: sectionId })); } catch { /* storage blocked */ }
 }
 
-const norm = (s: string) => s.normalize('NFKC').toLowerCase();
+export const norm = (s: string) => s.normalize('NFKC').toLowerCase();
 
 export interface Hit { sectionId: string; index: number }
 
@@ -23,6 +23,18 @@ export function findHits(sections: Section[], query: string): Hit[] {
     if (tokens.every((k) => text.includes(k))) hits.push({ sectionId: s.id, index });
   });
   return hits;
+}
+
+/** Short text around the first match, for search result lists. */
+export function snippet(text: string, query: string, len = 56): string {
+  const tokens = norm(query).split(/\s+/).filter(Boolean);
+  if (!tokens.length) return text;
+  const low = norm(text);
+  if (low.length !== text.length) return text.slice(0, len);
+  const at = tokens.map((t) => low.indexOf(t)).filter((i) => i >= 0);
+  if (!at.length) return text.slice(0, len);
+  const start = Math.max(0, Math.min(...at) - 12);
+  return (start > 0 ? '…' : '') + text.slice(start, start + len) + '…';
 }
 
 /** Split text into plain/match segments for highlighting. */
