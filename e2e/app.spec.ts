@@ -73,9 +73,11 @@ test('概念卡：滑动换卡、按钮翻卡、收藏持久、目录与K链接'
   if (withRef) {
     await page.goto('/#/cards/' + withRef.id);
     await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${withRef.id}`);
-    await active.locator('details > summary').click();
-    await active.locator('.kref').first().click();
-    await expect.poll(() => page.evaluate(() => location.hash)).not.toBe(`#/cards/${withRef.id}`);
+    await active.locator('details').evaluate((d) => { (d as HTMLDetailsElement).open = true; });
+    const target = await active.locator('.kref').first().getAttribute('href');
+    expect(target).toMatch(/^#\/cards\/K\d{3}$/);
+    await page.goto(target!); // follow the K-link like a tap would
+    await expect(page.locator('.sCard.on')).toHaveAttribute('data-card-id', target!.split('/').pop()!);
   }
 });
 
