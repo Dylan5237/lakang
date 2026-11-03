@@ -1,51 +1,32 @@
 import { useSyncExternalStore } from 'react';
+
 export type Route =
   | { name: 'home' }
-  | { name: 'terms' }
-  | { name: 'archive' }
-  | { name: 'clinical' }
-  | { name: 'feed'; cardId?: string; detail?: boolean }
-  | { name: 'agenda'; day?: string; sessionId?: string }
-  | { name: 'guide'; tab?: string }
-  | { name: 'previews'; articleId?: string; original?: boolean; paragraphId?: string }
-  | { name: 'me' };
+  | { name: 'case'; caseId: string; tab: 'talk' | 'notes'; sectionId?: string };
+
 export function parseHash(hash: string): Route {
   let parts: string[];
   try { parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent); }
   catch { return { name: 'home' }; }
-  switch (parts[0]) {
-    case 'cards': return { name: 'feed' };
-    case 'card': return parts[1] ? { name: 'feed', cardId: parts[1], detail: parts[2] === 'more' } : { name: 'feed' };
-    case 'terms': return { name: 'terms' };
-    case 'archive': return { name: 'archive' };
-    case 'clinical': return { name: 'clinical' };
-    case 'agenda': return { name: 'agenda', day: parts[1], sessionId: parts[2] };
-    // Old guide tabs moved: terms got their own page, speakers went to the conference archive.
-    case 'guide': return parts[1] === 'terms' ? { name: 'terms' } : parts[1] === 'speakers' ? { name: 'archive' } : { name: 'guide', tab: parts[1] };
-    case 'previews': return { name: 'previews', articleId: parts[1], original: parts[2] === 'original', paragraphId: parts[3] };
-    case 'me': return { name: 'me' };
-    default: return { name: 'home' };
-  }
+  if (parts[0] !== 'case' || !parts[1]) return { name: 'home' };
+  if (parts[2] === 'notes') return { name: 'case', caseId: parts[1], tab: 'notes' };
+  return { name: 'case', caseId: parts[1], tab: 'talk', sectionId: parts[2] === 's' ? parts[3] : undefined };
 }
+
 export const hrefs = {
-  home: () => '#/', feed: () => '#/cards', terms: () => '#/terms', archive: () => '#/archive', clinical: () => '#/clinical', card: (id: string) => `#/card/${id}`, detail: (id: string) => `#/card/${id}/more`,
-  agenda: (day?: string, sessionId?: string) => `#/agenda${day ? `/${day}` : ''}${sessionId ? `/${sessionId}` : ''}`,
-  guide: (tab?: string) => `#/guide${tab ? `/${tab}` : ''}`,
-  previews: (id?: string) => `#/previews${id ? `/${id}` : ''}`,
-  original: (id: string, paragraphId?: string) => `#/previews/${id}/original${paragraphId ? `/${paragraphId}` : ''}`,
-  me: () => '#/me',
+  home: () => '#/',
+  talk: (caseId: string, sectionId?: string) => `#/case/${caseId}${sectionId ? `/s/${sectionId}` : ''}`,
+  notes: (caseId: string) => `#/case/${caseId}/notes`,
 };
-const notify = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
-export function navigate(href: string, opts: { replace?: boolean } = {}): void {
+
+export function navigate(href: string, replace = false): void {
   if (href === location.hash) return;
-  if (opts.replace) history.replaceState(history.state, '', href); else history.pushState({ lk: 1 }, '', href);
-  notify();
+  if (replace) history.replaceState(null, '', href); else history.pushState(null, '', href);
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
 }
-export function closeDetail(cardId: string): void {
-  if (history.state?.lk) history.back(); else navigate(hrefs.card(cardId), { replace: true });
-}
+
 function subscribe(cb: () => void) {
   window.addEventListener('hashchange', cb); window.addEventListener('popstate', cb);
   return () => { window.removeEventListener('hashchange', cb); window.removeEventListener('popstate', cb); };
 }
-export function useHash(): string { return useSyncExternalStore(subscribe, () => location.hash, () => ''); }
+export const useHash = () => useSyncExternalStore(subscribe, () => location.hash, () => '');

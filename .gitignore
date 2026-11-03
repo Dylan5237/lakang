@@ -18,3 +18,9 @@ local-backups/
 # Playwright output
 test-results/
 playwright-report/
+
+# Clinical records are private: never commit the source HTML or the generated JSON
+public/private/
+clinical*.json
+!tests/fixtures/*.json
+clinical-demos*.html
