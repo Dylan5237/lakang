@@ -13,8 +13,3 @@ export interface Case {
   discussionLabel: string | null; sections: Section[]; groups: NoteGroup[];
 }
 export interface Archive { title: string; notice: string[]; cases: Case[] }
-
-export const ROLES: { id: Role; label: string }[] = [
-  { id: 'analyst', label: '分析师' }, { id: 'patient', label: '来访者' }, { id: 'supervisor', label: '督导' },
-  { id: 'doctor', label: '医生' }, { id: 'note', label: '说明' },
-];

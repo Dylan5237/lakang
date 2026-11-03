@@ -1,4 +1,4 @@
-import type { Role, Section } from '../types';
+import type { Section } from '../types';
 
 /** Only ids are stored locally; no record text ever leaves memory. */
 const POS = 'lakang:position';
@@ -14,12 +14,11 @@ const norm = (s: string) => s.normalize('NFKC').toLowerCase();
 export interface Hit { sectionId: string; index: number }
 
 /** Turns matching every whitespace-separated token, in reading order. */
-export function findHits(sections: Section[], query: string, roles: Set<Role>): Hit[] {
+export function findHits(sections: Section[], query: string): Hit[] {
   const tokens = norm(query).split(/\s+/).filter(Boolean);
   if (!tokens.length) return [];
   const hits: Hit[] = [];
   for (const s of sections) s.turns.forEach((t, index) => {
-    if (!roles.has(t.role)) return;
     const text = norm(t.text);
     if (tokens.every((k) => text.includes(k))) hits.push({ sectionId: s.id, index });
   });
@@ -42,9 +41,3 @@ export function highlight(text: string, query: string): { text: string; match: b
   }
   return out;
 }
-
-export const roleCounts = (sections: Section[]) => {
-  const c: Partial<Record<Role, number>> = {};
-  for (const s of sections) for (const t of s.turns) c[t.role] = (c[t.role] ?? 0) + 1;
-  return c;
-};

@@ -92,7 +92,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .tabs a { flex: 1; display: grid; place-items: center; min-height: 40px; border-radius: 8px; color: var(--muted); text-decoration: none; font-weight: 600; }
 .tabs a.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 
-.toolbar { display: flex; align-items: center; gap: .4rem; padding: 0 .75rem .4rem; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: .4rem; padding: 0 .75rem .4rem; }
 .tool {
   flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
   min-width: 44px; min-height: 44px; padding: 0 .55rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); cursor: pointer;
@@ -103,19 +103,6 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .tool.icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .tool.on { border-color: var(--accent); color: var(--accent); }
 .tool:disabled { opacity: .4; }
-.chips { flex: 1; min-width: 0; display: flex; gap: .35rem; overflow-x: auto; scrollbar-width: none; padding: 2px; }
-.chips::-webkit-scrollbar { display: none; }
-.chip {
-  flex: none; display: inline-flex; align-items: center; gap: .3rem; min-height: 40px; padding: 0 .75rem;
-  border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .85rem; cursor: pointer; white-space: nowrap;
-}
-.chip small { color: var(--muted); font-size: .7rem; }
-.chip.on { color: #fff; border-color: transparent; }
-.chip.on small { color: rgb(255 255 255 / .8); }
-.chip.analyst.on { background: var(--analyst); } .chip.patient.on { background: var(--patient); }
-.chip.supervisor.on { background: var(--supervisor); } .chip.doctor.on { background: var(--doctor); } .chip.note.on { background: var(--note); }
-@media (prefers-color-scheme: dark) { .chip.on, .chip.on small { color: #111; } }
-
 .searchbar { display: flex; align-items: center; gap: .4rem; padding: 0 .75rem .4rem; }
 .searchbar input { flex: 1; min-width: 0; min-height: 44px; padding: 0 .9rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 1rem; }
 .search-count { flex: none; min-width: 3.5em; text-align: center; font-size: .8rem; color: var(--muted); }
@@ -154,7 +141,6 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .turn.doctor { --c: var(--doctor); --cb: var(--doctor-bg); }
 .turn-note { margin: .75rem 1.5rem; text-align: center; font-size: .82rem; color: var(--note); }
 .turn.current .bubble p, .turn-note.current { outline: 2px solid var(--accent); outline-offset: 2px; }
-.empty { color: var(--muted); font-size: .85rem; text-align: center; }
 .next-sec {
   display: block; width: 100%; margin: 1rem 0 1.5rem; min-height: 44px; padding: .5rem 1rem; border: 1px dashed var(--line);
   border-radius: 12px; background: none; color: var(--muted); font-size: .85rem; cursor: pointer; text-align: center;

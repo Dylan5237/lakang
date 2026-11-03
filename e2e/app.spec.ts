@@ -36,19 +36,6 @@ test('对话：目录跳转、阅读位置记忆与继续阅读', async ({ page 
   await expect.poll(() => page.locator(`[data-section-id="${target.id}"] .sec-head`).evaluate((h) => h.getBoundingClientRect().top)).toBeLessThan(260);
 });
 
-test('说话人筛选：首次点击只看该说话人，再点恢复全部', async ({ page }) => {
-  await unlock(page, '#/case/case1');
-  const talk = page.getByTestId('talk');
-  await expect(talk.locator('.turn').first()).toBeVisible();
-  const total = await talk.locator('.turn, .turn-note').count();
-  const chip = page.getByRole('group', { name: '按说话人筛选' }).getByRole('button', { name: /^来访者/ });
-  await chip.click();
-  await expect(talk.locator('.turn.analyst')).toHaveCount(0);
-  expect(await talk.locator('.turn.patient').count()).toBeGreaterThan(0);
-  await chip.click();
-  await expect(talk.locator('.turn, .turn-note')).toHaveCount(total);
-});
-
 test('搜索：高亮命中、计数并跳到命中处', async ({ page }) => {
   test.skip(Boolean(process.env.LAKANG_REAL_JSON), '虚构数据专用');
   await unlock(page, '#/case/case1');
@@ -81,7 +68,6 @@ for (const width of [320, 390]) for (const scale of [1, 1.45]) {
       const r = await page.evaluate(() => {
         const vw = document.documentElement.clientWidth; const bad: string[] = [];
         document.querySelectorAll<HTMLElement>('main *').forEach((el) => {
-          if (el.closest('.chips')) return; // the chip row scrolls horizontally by design
           const b = el.getBoundingClientRect(); if (b.width && b.right > vw + 1) bad.push(`${el.tagName}.${el.className}`);
         });
         const small = [...document.querySelectorAll<HTMLElement>('main button, main a, main input')]
