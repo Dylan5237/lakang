@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { cards } from '../data';
+import { studyCardIds, studyCards } from '../data';
 import type { Card } from '../types';
 import { randomFeed } from '../lib/random-feed';
 import { hrefs, navigate } from '../lib/router';
@@ -130,18 +130,18 @@ export function Feed({ list, filterKey, routeCardId, filtered, onClearFilters }:
     if (e.key === 'j' || e.key === 'J') stepFeed(1);
     if (e.key === 'k' || e.key === 'K') stepFeed(-1);
   };
-  const readCount = user.read.filter((id) => cards.some((c) => c.id === id)).length;
+  const readCount = user.read.filter((id) => studyCardIds.has(id)).length;
   return <main className="feed" ref={ref} tabIndex={0} aria-label="随机知识卡片，上下滑动切换；j/k 切换" onKeyDown={onKey} data-testid="feed" data-order="random">
     {ordered.map((c, i) => <CardView key={c.id} card={c} index={i} total={ordered.length} fav={user.favorites.includes(c.id)} read={user.read.includes(c.id)} hasNote={Boolean(user.notes[c.id])} />)}
     <section className="card end" data-end>
       <div className="card-inner">
         {list.length === 0 ? <><h2 className="card-title">没有符合条件的卡片</h2><p className="card-body">换一个筛选条件，或清除后继续随机刷卡。</p></>
-          : <><h2 className="card-title">这一轮刷完了</h2><p className="card-body">本轮随机排列、不重复。已读 {readCount} / {cards.length} 张；可以重新洗牌再刷一轮，或进入专题连续精读。</p></>}
+          : <><h2 className="card-title">这一轮刷完了</h2><p className="card-body">本轮随机排列、不重复。已读 {readCount} / {studyCards.length} 张；可以重新洗牌再刷一轮，或进入专题连续精读。</p></>}
       </div>
       <div className="end-actions">
         {filtered && <button type="button" className="btn" onClick={onClearFilters}>清除筛选</button>}
         {list.length > 0 && <button type="button" className="btn" onClick={restart}>再随机一轮</button>}
-        <button type="button" className="btn" onClick={() => navigate(hrefs.agenda())}>看日程</button>
+        <button type="button" className="btn" onClick={() => navigate(hrefs.home())}>回学习首页</button>
       </div>
     </section>
   </main>;

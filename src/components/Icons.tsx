@@ -65,6 +65,11 @@ export const IconBook = (p: SVGProps<SVGSVGElement>) => (
     <path d="M5 17a3 3 0 013-3h10" />
   </svg>
 );
+export const IconHome = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M4 10.5L12 4l8 6.5V20h-5.5v-5.5h-5V20H4z" />
+  </svg>
+);
 export const IconUser = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <circle cx="12" cy="8.5" r="3.6" />

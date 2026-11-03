@@ -46,6 +46,12 @@ if (cardById.size !== allCards.length || activeCardIds.size !== readingOrder.len
 }
 export const cards = readingOrder.map((id) => cardById.get(id)!);
 export const retiredCards = retiredIds.map((id) => cardById.get(id)!);
+// The conference is over: its previews, speaker cards and logistics stay reachable in the archive, outside the study feed.
+const conferenceTopics = new Set(['大会主线', '广州脉络', '讲题对读', '观察工具']);
+export const isConferenceCard = (card: Card) => card.stage === 'official' || card.stage === 'speakers' || conferenceTopics.has(card.topic);
+export const studyCards = cards.filter((card) => !isConferenceCard(card));
+export const conferenceCards = cards.filter(isConferenceCard);
+export const studyCardIds = new Set(studyCards.map((card) => card.id));
 export const sessions = agendaJson.sessions as unknown as Session[];
 const officialSources: Source[] = officialArticles.map((a) => ({
   id: a.sourceId, title: a.fullTitle, publisher: `${a.publisher} · 前瞻署名：${a.byline}`, date: a.publishedAt,

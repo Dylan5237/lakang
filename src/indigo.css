@@ -59,3 +59,11 @@
 .http-note { font-size: .75rem; line-height: 1.4; color: var(--muted); padding: .1rem 0 .35rem; }
 .study-intro { max-width: 46rem; }
 @media print { .series-nav { break-inside: avoid; } }
+
+/* 学习首页 */
+.section-h { font-size: 1.05rem; margin: 1.25rem 0 .5rem; }
+.home .page-head .pill { margin-left: .5rem; }
+.learn-steps details { margin-top: .5rem; }
+.learn-steps summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--accent); }
+.learn-steps ol { padding-left: 1.25rem; }
+.learn-steps ol li { margin: .35rem 0; }

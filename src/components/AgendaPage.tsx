@@ -131,6 +131,7 @@ export function AgendaPage({ day, sessionId }: { day?: string; sessionId?: strin
   return (
     <main className="page agenda" data-testid="agenda">
       <header className="page-head">
+        <a className="btn-link" href={hrefs.archive()}>返回大会归档</a>
         <h1>日程</h1>
         <p className="muted">
           {conference.name} · {conference.theme}

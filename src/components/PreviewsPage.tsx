@@ -24,12 +24,12 @@ export function PreviewsPage({ articleId, original, paragraphId }: { articleId?:
   }, [articleId, original, validParagraph?.id]);
 
   if (articleId === 'appendix') return <main ref={page} className="page previews" data-testid="appendix">
-    <header className="page-head"><a className="btn-link" href={hrefs.previews()}>返回官方前瞻</a><h1>附录与会场工具</h1><p className="muted">这18张已退出主卡流；原文、旧链接、收藏和笔记仍保留。</p></header>
+    <header className="page-head"><a className="btn-link" href={hrefs.previews()}>返回官方前瞻</a><h1>附录</h1><p className="muted">这18张已退出卡片流；原文、旧链接、收藏和笔记仍保留。</p></header>
     <ul className="entries">{retiredCards.map((c) => <li key={c.id} className="entry"><h2><a href={hrefs.detail(c.id)}>{c.title}</a></h2><p>{c.takeaway}</p><p className="muted">{c.id}{user.favorites.includes(c.id) ? ' · 已收藏' : ''}{user.notes[c.id] ? ' · 有笔记' : ''}</p></li>)}</ul>
   </main>;
   if (articleId && !article) return <main className="page" data-testid="previews"><h1>未找到这篇前瞻</h1><a className="btn-link" href={hrefs.previews()}>返回前瞻目录</a></main>;
   if (!article) return <main ref={page} className="page previews" data-testid="previews">
-    <header className="page-head"><span className="eyebrow">大会官方文章精选</span><h1>官方前瞻</h1><p className="muted">四篇文章，十八张提炼卡。先读卡，也能随时回到原文。</p></header>
+    <header className="page-head"><a className="btn-link" href={hrefs.archive()}>返回大会归档</a><span className="eyebrow">大会官方文章精选</span><h1>官方前瞻</h1><p className="muted">四篇文章，十八张提炼卡。先读卡，也能随时回到原文。</p></header>
     <ul className="entries" data-testid="official-articles">{officialArticles.map((a) => {
       const read = a.cardIds.filter((id) => user.read.includes(id)).length;
       const next = a.cardIds.find((id) => !user.read.includes(id)) ?? a.cardIds[0];

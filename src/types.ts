@@ -20,5 +20,7 @@ export interface OfficialArticle {
 }
 export const STAGES: { id: Stage; label: string }[] = [
   { id: 'official', label: '官方前瞻' }, { id: 'question', label: '问题' }, { id: 'concept', label: '概念' },
-  { id: 'history', label: '广州脉络' }, { id: 'speakers', label: '讲者' }, { id: 'themes', label: '议题' }, { id: 'clinic', label: '临床' },
+  { id: 'history', label: '阅读地图' }, { id: 'speakers', label: '讲者' }, { id: 'themes', label: '议题' }, { id: 'clinic', label: '临床' },
 ];
+// Stages offered in the study feed; official/speakers cards live in the conference archive.
+export const STUDY_STAGES = STAGES.filter((s) => s.id !== 'official' && s.id !== 'speakers');

@@ -22,7 +22,7 @@ export function StudyPaths() {
               <ol>{item.cardIds.map((id) => <li key={id}><a href={hrefs.detail(id)}>{cardById.get(id)?.title}</a>{done.has(id) && <span className="muted"> · 已读</span>}</li>)}</ol>
               <p className="muted">基础补课</p>
               <div className="series-links">{item.foundationIds.map((id) => <a className="btn-link" key={id} href={hrefs.card(id)}>{cardById.get(id)?.title}</a>)}</div>
-              {item.sessionIds.length > 0 && <p className="muted">关联场次：{item.sessionIds.map((id, i) => {
+              {item.sessionIds.length > 0 && <p className="muted">大会归档 · 关联场次：{item.sessionIds.map((id, i) => {
                 const session = sessionById.get(id)!;
                 return <span key={id}>{i > 0 && '；'}<a href={hrefs.agenda(String(session.day), id)}>{session.date.slice(5)} {session.title}</a></span>;
               })}</p>}

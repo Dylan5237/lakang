@@ -1,11 +1,11 @@
-import { officialArticleByCard, retiredCardIds } from '../data';
+import { isConferenceCard, officialArticleByCard, retiredCardIds } from '../data';
 import type { Card } from '../types';
 import { hrefs, navigate } from '../lib/router';
 const go = (href: string) => (e: React.MouseEvent) => { e.preventDefault(); navigate(href); };
 export function CardOrigin({ card }: { card: Card }) {
   const article = officialArticleByCard.get(card.id);
-  if (retiredCardIds.has(card.id)) return <p className="archive-note" data-testid="archive-note">已移入附录 · 原收藏与笔记保留 <a href={hrefs.previews('appendix')}>查看附录</a> <a href={hrefs.feed()}>回到主卡流</a></p>;
-  if (!article) return null;
+  if (retiredCardIds.has(card.id)) return <p className="archive-note" data-testid="archive-note">已移入附录 · 原收藏与笔记保留 <a href={hrefs.previews('appendix')}>查看附录</a> <a href={hrefs.feed()}>回到卡片流</a></p>;
+  if (!article) return isConferenceCard(card) ? <p className="archive-note" data-testid="archive-note">会议归档卡片 · 不在学习卡片流中 <a href={hrefs.archive()}>会议归档</a> <a href={hrefs.feed()}>回到卡片流</a></p> : null;
   return <div className="official-context" data-testid="official-origin">
     <a href={hrefs.previews(article.id)} onClick={go(hrefs.previews(article.id))}>前瞻 {article.order} · {article.title}</a>
     <a className="original-link" href={hrefs.original(article.id, card.evidenceIds?.[0])} onClick={go(hrefs.original(article.id, card.evidenceIds?.[0]))}>查看原文</a>

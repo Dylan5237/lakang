@@ -3,11 +3,12 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { copyDist, serve } from './server';
-test('独立前瞻菜单、四篇文章、18官方卡与100主卡均可达',async({page})=>{
-  await page.goto('/');await expect(page.locator('.card[data-card-id]')).toHaveCount(100);
-  await page.getByRole('navigation',{name:'主导航'}).getByRole('link',{name:'前瞻',exact:true}).click();await expect(page.getByTestId('official-articles').locator('li')).toHaveCount(4);
+import { studyOrder } from './study-ids';
+test('大会归档：四篇前瞻、18官方卡可达，学习卡片流不含归档卡',async({page})=>{
+  await page.goto('/#/cards');await expect(page.locator('.card[data-card-id]')).toHaveCount(studyOrder.length);await expect(page.locator('.card[data-card-id="K104"]')).toHaveCount(0);
+  await page.goto('/');await page.getByTestId('home').getByRole('link',{name:'2026 大会归档'}).click();await expect(page.getByTestId('archive')).toBeVisible();await page.getByTestId('archive').getByRole('link',{name:/官方前瞻/}).click();await expect(page.getByTestId('official-articles').locator('li')).toHaveCount(4);
   await page.locator('[data-article-id="P03"]').getByRole('link',{name:'卡片目录'}).click();await expect(page.getByTestId('official-article').locator('.article-card-list > li')).toHaveCount(5);await expect(page.getByRole('heading',{name:'摄入如何影响身体？',exact:true})).toBeVisible();
-  await page.goto('/#/');await page.getByRole('group',{name:'阶段'}).getByRole('button',{name:'官方前瞻'}).click();await expect(page.locator('.card[data-card-id]')).toHaveCount(18);
+  await page.goto('/#/card/K104');await expect(page.locator('.card[data-card-id]')).toHaveCount(1);await expect(page.getByTestId('filter-line')).toContainText('会议归档卡片');
 });
 test('提炼卡一键定位原文，后退回到原卡，不把提炼冒充原文',async({page})=>{
   await page.goto('/#/card/K114/more');const dlg=page.getByTestId('detail');await expect(dlg).toBeVisible();await dlg.getByRole('link',{name:'查看原文',exact:true}).click();
@@ -21,8 +22,8 @@ test('文章内连续阅读、已读续读与原文全文',async({page})=>{
 });
 test('旧卡收藏笔记保留，附录可读，主流进度不受附录污染',async({page})=>{
   await page.goto('/');await page.evaluate(()=>localStorage.setItem('lakang:v1',JSON.stringify({version:1,favorites:['K064'],read:['K064'],notes:{K064:'旧卡原有笔记'},position:'K064',settings:{theme:'light',fontLevel:0}})));await page.reload();
-  await page.goto('/#/me');await expect(page.getByText('已读 0 / 100 张',{exact:false})).toBeVisible();await expect(page.getByText('旧卡原有笔记')).toBeVisible();await page.getByRole('link',{name:/一页笔记/}).click();await expect(page.getByTestId('detail').getByLabel('我的笔记')).toHaveValue('旧卡原有笔记');await expect(page.getByTestId('detail').getByTestId('archive-note')).toBeVisible();
-  await page.goto('/#/');await page.getByTestId('open-filter').click();const sheet=page.getByRole('dialog',{name:'搜索与筛选'});await sheet.getByRole('button',{name:/仅看收藏/}).click();await sheet.getByRole('searchbox').fill('K064');await expect(sheet.locator('.hit-list li')).toHaveCount(1);await sheet.getByTestId('apply-filters').click();await expect(page.locator('.card[data-card-id="K064"]')).toBeVisible();
+  await page.goto('/#/me');await expect(page.getByText(`已读 0 / ${studyOrder.length} 张`,{exact:false})).toBeVisible();await expect(page.getByText('旧卡原有笔记')).toBeVisible();await page.getByRole('link',{name:/一页笔记/}).click();await expect(page.getByTestId('detail').getByLabel('我的笔记')).toHaveValue('旧卡原有笔记');await expect(page.getByTestId('detail').getByTestId('archive-note')).toBeVisible();
+  await page.goto('/#/cards');await page.getByTestId('open-filter').click();const sheet=page.getByRole('dialog',{name:'搜索与筛选'});await sheet.getByRole('button',{name:/仅看收藏/}).click();await sheet.getByRole('searchbox').fill('K064');await expect(sheet.locator('.hit-list li')).toHaveCount(1);await sheet.getByTestId('apply-filters').click();await expect(page.locator('.card[data-card-id="K064"]')).toBeVisible();
   await page.goto('/#/previews/appendix');await expect(page.getByTestId('appendix').locator('.entries > li')).toHaveCount(18);
 });
 for(const width of [320,390])test(`${width}宽特大字号：前瞻目录、原文和五项菜单不溢出`,async({page})=>{

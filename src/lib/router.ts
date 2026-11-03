@@ -1,5 +1,8 @@
 import { useSyncExternalStore } from 'react';
 export type Route =
+  | { name: 'home' }
+  | { name: 'terms' }
+  | { name: 'archive' }
   | { name: 'feed'; cardId?: string; detail?: boolean }
   | { name: 'agenda'; day?: string; sessionId?: string }
   | { name: 'guide'; tab?: string }
@@ -8,18 +11,22 @@ export type Route =
 export function parseHash(hash: string): Route {
   let parts: string[];
   try { parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent); }
-  catch { return { name: 'feed' }; }
+  catch { return { name: 'home' }; }
   switch (parts[0]) {
+    case 'cards': return { name: 'feed' };
     case 'card': return parts[1] ? { name: 'feed', cardId: parts[1], detail: parts[2] === 'more' } : { name: 'feed' };
+    case 'terms': return { name: 'terms' };
+    case 'archive': return { name: 'archive' };
     case 'agenda': return { name: 'agenda', day: parts[1], sessionId: parts[2] };
-    case 'guide': return { name: 'guide', tab: parts[1] };
+    // Old guide tabs moved: terms got their own page, speakers went to the conference archive.
+    case 'guide': return parts[1] === 'terms' ? { name: 'terms' } : parts[1] === 'speakers' ? { name: 'archive' } : { name: 'guide', tab: parts[1] };
     case 'previews': return { name: 'previews', articleId: parts[1], original: parts[2] === 'original', paragraphId: parts[3] };
     case 'me': return { name: 'me' };
-    default: return { name: 'feed' };
+    default: return { name: 'home' };
   }
 }
 export const hrefs = {
-  feed: () => '#/', card: (id: string) => `#/card/${id}`, detail: (id: string) => `#/card/${id}/more`,
+  home: () => '#/', feed: () => '#/cards', terms: () => '#/terms', archive: () => '#/archive', card: (id: string) => `#/card/${id}`, detail: (id: string) => `#/card/${id}/more`,
   agenda: (day?: string, sessionId?: string) => `#/agenda${day ? `/${day}` : ''}${sessionId ? `/${sessionId}` : ''}`,
   guide: (tab?: string) => `#/guide${tab ? `/${tab}` : ''}`,
   previews: (id?: string) => `#/previews${id ? `/${id}` : ''}`,

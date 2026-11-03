@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-const readingOrder = JSON.parse(readFileSync(new URL('../content/reading-order.json', import.meta.url), 'utf8')) as string[];
+import { studyOrder } from './study-ids';
 const sizes = [
   { name: '320x640', width: 320, height: 640 }, { name: '375x667', width: 375, height: 667 }, { name: '390x844', width: 390, height: 844 }, { name: '430x932', width: 430, height: 932 }, { name: '横屏 667x375', width: 667, height: 375 }, { name: '横屏 844x390', width: 844, height: 390 },
 ];
@@ -24,14 +23,14 @@ for(const size of sizes) {
     for(const level of [0,3]) {
       test(`全部页面无横向溢出，触控目标 ≥40px（字号档 ${level}）`,async({page})=>{
         await page.goto('/#/me'); await page.getByRole('button',{name:level===0?'标准':'特大'}).click();
-        for(const h of ['#/','#/agenda/all','#/agenda/28','#/guide','#/guide/speakers','#/guide/terms','#/guide/shelf','#/me']) {
+        for(const h of ['#/','#/cards','#/terms','#/archive','#/agenda/all','#/agenda/28','#/guide','#/guide/shelf','#/me']) {
           await page.goto('/'+h); await expect(page.locator('main').first()).toBeVisible(); expect(await horizontalOverflow(page),`${h} 横向溢出`).toEqual({docScroll:0,bodyScroll:0,bad:[]});
         }
-        await page.goto('/#/'); expect(await smallTargets(page,'.act, .icon-btn, .bottom-nav a, .chip')).toEqual([]);
+        await page.goto('/#/cards'); expect(await smallTargets(page,'.act, .icon-btn, .bottom-nav a, .chip')).toEqual([]);
       });
     }
-    test('全部100张文字不横向溢出，操作按钮可达',async({page})=>{
-      await page.goto('/#/'); await expect(page.getByTestId('feed')).toBeVisible();
+    test('全部学习卡文字不横向溢出，操作按钮可达',async({page})=>{
+      await page.goto('/#/cards'); await expect(page.getByTestId('feed')).toBeVisible();
       const stats=await page.evaluate(()=>{
         const feed=document.querySelector<HTMLElement>('[data-testid="feed"]')!,vh=feed.clientHeight; let taller=0,maxRatio=0;const overflowing:string[]=[];
         feed.querySelectorAll<HTMLElement>('.card[data-card-id]').forEach(c=>{
@@ -40,7 +39,7 @@ for(const size of sizes) {
         });
         return {count:feed.querySelectorAll('.card[data-card-id]').length,taller,maxRatio:Number(maxRatio.toFixed(2)),overflowing:overflowing.slice(0,5),vh};
       });
-      test.info().annotations.push({type:'卡片高度统计',description:JSON.stringify(stats)});expect(stats.count).toBe(readingOrder.length);expect(stats.overflowing).toEqual([]);
+      test.info().annotations.push({type:'卡片高度统计',description:JSON.stringify(stats)});expect(stats.count).toBe(studyOrder.length);expect(stats.overflowing).toEqual([]);
     });
   });
 }

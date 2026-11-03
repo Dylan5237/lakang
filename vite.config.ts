@@ -10,7 +10,7 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: '拉康 · 随身读｜专题精读与大会日程',
+        name: '拉康随身读｜拉康精神分析学习卡',
         short_name: '拉康随身读',
         lang: 'zh-CN', start_url: './', scope: './', display: 'standalone',
         background_color: '#f7f6f2', theme_color: '#f7f6f2',

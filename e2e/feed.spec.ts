@@ -1,13 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-const readingOrder = JSON.parse(readFileSync(new URL('../content/reading-order.json', import.meta.url), 'utf8')) as string[];
+import { stageIds, studyOrder as readingOrder } from './study-ids';
 // Fixed RNG only in these regression tests: Fisher-Yates with zero rotates left by one.
 // Product code uses Math.random; dedicated random-feed tests cover other permutations.
 const [first, second, third, fourth] = readingOrder.slice(1);
 const activeId = async (page: Page) => (await page.evaluate(() => location.hash)).replace(/^#\/card\//, '').split('/')[0];
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { Math.random = () => 0; });
-  await page.goto('/'); await expect(page.getByTestId('feed')).toBeVisible();
+  await page.goto('/#/cards'); await expect(page.getByTestId('feed')).toBeVisible();
   await expect.poll(() => activeId(page)).toBe(first);
 });
 test('随机队列的下一张按钮和j/k切换，回退恢复上一张', async ({ page }) => {
@@ -40,7 +39,7 @@ test('收藏/已读/笔记写入本地存储，刷新后保留', async ({ page }
 });
 test('阅读位置：随机队列第4张刷新后仍停在该张', async ({ page }) => {
   for (let i = 0; i < 3; i++) await page.getByRole('button', { name: '下一张' }).click();
-  await expect.poll(() => activeId(page)).toBe(fourth); await page.goto('/#/'); await page.reload(); await expect.poll(() => activeId(page)).toBe(fourth);
+  await expect.poll(() => activeId(page)).toBe(fourth); await page.goto('/#/cards'); await page.reload(); await expect.poll(() => activeId(page)).toBe(fourth);
 });
 test('展开读：详情含出处，返回键关闭并恢复展开按钮焦点', async ({ page }) => {
   const open = page.locator(`.card[data-card-id="${first}"]`).getByRole('button', { name: '展开读' });
@@ -55,15 +54,17 @@ test('直接打开详情仍精确落在指定卡片', async ({ page }) => {
 test('搜索与筛选：关键词命中、仅看收藏、清除', async ({ page }) => {
   await page.locator(`.card[data-card-id="${first}"]`).getByRole('button', { name: '收藏' }).click(); await page.getByTestId('open-filter').click();
   const sheet = page.getByRole('dialog', { name: '搜索与筛选' }); await expect(sheet).toBeVisible();
-  await sheet.getByRole('searchbox').fill('K002'); await expect(sheet.locator('.hit-list li').first()).toBeVisible(); await sheet.getByRole('searchbox').fill('');
+  await sheet.getByRole('searchbox').fill('K003'); await expect(sheet.locator('.hit-list li').first()).toBeVisible(); await sheet.getByRole('searchbox').fill('');
   await sheet.getByRole('button', { name: /收藏/ }).first().click(); await sheet.getByTestId('apply-filters').click();
   await expect(page.getByTestId('filter-line')).toContainText('筛选后共 1 张'); await expect(page.locator('.card[data-card-id]')).toHaveCount(1);
   await page.getByTestId('filter-line').getByRole('button', { name: '清除' }).click(); await expect(page.locator('.card[data-card-id]')).toHaveCount(readingOrder.length);
 });
-test('阶段筛选只在两张临床知识卡中随机，工具不混入', async ({ page }) => {
-  await page.getByRole('group', { name: '阶段' }).getByRole('button', { name: '临床', exact: true }).click(); await expect(page.locator('.card[data-card-id]')).toHaveCount(2);
+test('阶段筛选只在该阶段的学习卡中随机，大会归档卡不混入', async ({ page }) => {
+  const want = stageIds('question');
+  await page.getByRole('group', { name: '阶段' }).getByRole('button', { name: '问题', exact: true }).click(); await expect(page.locator('.card[data-card-id]')).toHaveCount(want.length);
   const ids = await page.locator('.card[data-card-id]').evaluateAll((els) => els.map((e) => e.getAttribute('data-card-id')));
-  expect(ids.sort()).toEqual(['K056', 'K057']);
+  expect(ids.sort()).toEqual([...want].sort()); expect(ids).not.toContain('K002');
+  await expect(page.getByRole('group', { name: '阶段' }).getByRole('button', { name: '官方前瞻', exact: true })).toHaveCount(0);
 });
 test('仅看未读下标为已读，当前卡和队列不会立刻变化', async ({ page }) => {
   await page.getByTestId('open-filter').click(); const sheet = page.getByRole('dialog', { name: '搜索与筛选' });

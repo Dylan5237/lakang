@@ -53,6 +53,6 @@ describe('官方前瞻与替换契约', () => {
   it('原文路径含稳定段落锚点，无未知文章或PDF假链接', () => {
     for (const a of officialArticles) for(const p of a.paragraphs) expect(parseHash(hrefs.original(a.id,p.id))).toEqual({name:'previews',articleId:a.id,original:true,paragraphId:p.id});
     for (const [id,path] of Object.entries(officialPdfs)) { const a=officialArticles.find((x)=>x.id===id)!; expect(a).toBeDefined(); expect(path).toBe(`./originals/${id}.pdf`); expect(createHash('sha256').update(readFileSync(new URL(`../public/originals/${id}.pdf`,import.meta.url))).digest('hex')).toBe(a.sha256); }
-    expect(parseHash('#/previews/%zz')).toEqual({name:'feed'});
+    expect(parseHash('#/previews/%zz')).toEqual({name:'home'});
   });
 });
