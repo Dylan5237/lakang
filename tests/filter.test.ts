@@ -13,7 +13,7 @@ describe('筛选与起始卡', () => {
     expect(list.map((c) => c.id)).toEqual(readingOrder.filter((id) => studyCards.some((c) => c.id === id)));
     expect(list.some(isConferenceCard)).toBe(false);
     expect(studyCards.length + conferenceCards.length).toBe(cards.length);
-    expect(conferenceCards.map((c) => c.id)).toEqual(expect.arrayContaining(['K002', 'K020', 'K104', 'K121', 'K028']));
+    expect(conferenceCards.map((c) => c.id)).toEqual(expect.arrayContaining(['K002', 'K020', 'K104', 'K121', 'K028', 'K039']));
   });
   it('按阶段/主题/讲者/收藏/未读组合筛选，保留相对阅读顺序', () => {
     const concepts = applyFilters({ ...noFilters, stage: 'concept' }, user);

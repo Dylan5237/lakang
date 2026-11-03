@@ -13,7 +13,7 @@
 - series.json：六组共30篇精读（K074—K103）及基础卡／场次连接，本轮完整保留。
 - agenda.json：15个日程区块，不从前瞻文章擅自改会务安排。
 
-src/data.ts的cards为100张主卡，allCards及cardById覆盖118条，retiredCards为18张附录。读取进度只计当前主卡；原卡深链和备份仍可解析。
+src/data.ts的cards为100张主卡；会后其中33张大会卡（isConferenceCard）只在大会归档出现，studyCards为67张学习卡，卡片流与进度只计学习卡。allCards及cardById覆盖118条，retiredCards为18张附录。读取进度只计当前主卡；原卡深链和备份仍可解析。
 
 ## 研究归档
 

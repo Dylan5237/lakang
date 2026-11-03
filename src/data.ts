@@ -48,7 +48,9 @@ export const cards = readingOrder.map((id) => cardById.get(id)!);
 export const retiredCards = retiredIds.map((id) => cardById.get(id)!);
 // The conference is over: its previews, speaker cards and logistics stay reachable in the archive, outside the study feed.
 const conferenceTopics = new Set(['大会主线', '广州脉络', '讲题对读', '观察工具']);
-export const isConferenceCard = (card: Card) => card.stage === 'official' || card.stage === 'speakers' || conferenceTopics.has(card.topic);
+// K039 only compares a 2026 talk with earlier papers; it has no standalone study reading.
+const conferenceIds = new Set(['K039']);
+export const isConferenceCard = (card: Card) => card.stage === 'official' || card.stage === 'speakers' || conferenceTopics.has(card.topic) || conferenceIds.has(card.id);
 export const studyCards = cards.filter((card) => !isConferenceCard(card));
 export const conferenceCards = cards.filter(isConferenceCard);
 export const studyCardIds = new Set(studyCards.map((card) => card.id));
