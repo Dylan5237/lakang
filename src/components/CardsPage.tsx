@@ -43,23 +43,31 @@ export function CardsPage({ cardId }: { cardId?: string }) {
     jumpTo(cardId, false); // long jumps: instant, scroll-snap cancels long smooth scrolls
   }, [cardId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The observer decides which card is active; it also marks cards read and keeps the hash in sync.
+  // The reading band (45% of the viewport height) decides which card is active during scrolling;
+  // a plain scroll handler is deterministic where an IntersectionObserver can flip-flop between neighbours.
+  const activeRef = useRef(active); activeRef.current = active;
   useEffect(() => {
     const root = scroller.current; if (!root) return;
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) {
-        const id = (e.target as HTMLElement).dataset.cardId!;
-        if (id === active) continue;
-        selfId.current = id;
-        setActive(id);
-        setProgress(visitCard(id));
-        history.replaceState(null, '', hrefs.cards(id));
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const y = root.scrollTop + root.clientHeight * 0.45;
+      let current: string | null = null;
+      for (const el of root.querySelectorAll<HTMLElement>('[data-card-id]')) {
+        if (el.offsetTop <= y) current = el.dataset.cardId!; else break;
       }
-    }, { root, rootMargin: '-42% 0px -52% 0px' });
-    root.querySelectorAll('[data-card-id]').forEach((n) => io.observe(n));
-    return () => io.disconnect();
-  }, [active]);
+      if (!current || current === activeRef.current) return;
+      selfId.current = current;
+      setActive(current);
+      setProgress(visitCard(current));
+      history.replaceState(null, '', hrefs.cards(current));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check); };
+    root.addEventListener('scroll', onScroll, { passive: true });
+    check();
+    return () => { root.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, []);
 
   useEffect(() => {
     setProgress(visitCard(active));
