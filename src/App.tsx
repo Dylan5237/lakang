@@ -3,6 +3,7 @@ import { clearKey } from './lib/api';
 import { hrefs, navigate, parseHash, useHash } from './lib/router';
 import type { Archive } from './types';
 import { CardsPage } from './components/CardsPage';
+import { Flashcards } from './components/Flashcards';
 import { CaseView } from './components/CaseView';
 import { Home } from './components/Home';
 import { LockScreen } from './components/LockScreen';
@@ -19,6 +20,7 @@ export function App() {
   }
   if (route.name === 'terms') return <TermsPage termId={route.termId} />;
   if (route.name === 'cards') return <CardsPage cardId={route.cardId} />;
+  if (route.name === 'review') return <Flashcards />;
   const lock = () => { clearKey(); setArchive(null); navigate(hrefs.home(), true); };
   return <Home archive={archive} onLock={lock} />;
 }

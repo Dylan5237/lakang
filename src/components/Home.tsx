@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { exportNotes, readNotes } from '../lib/notes';
 import { readPositions } from '../lib/reading';
 import { hrefs } from '../lib/router';
+import { buildItems, dueCount, readSched } from '../lib/review';
 import { cardById, readProgress, studyCards, terms } from '../lib/study';
 import type { Archive } from '../types';
 import { SearchAllButton } from './GlobalSearch';
@@ -15,7 +16,9 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
   const noteItems = archive ? archive.cases.flatMap((c) =>
     c.sections.filter((s) => notes[s.id]).map((s) => ({ c, s, text: notes[s.id] }))) : [];
   const progress = readProgress();
+  const items = useMemo(buildItems, []);
   const readCount = progress.read.filter((id) => cardById.has(id)).length;
+  const due = dueCount(items, readSched());
   const resume = progress.position && cardById.has(progress.position) ? cardById.get(progress.position)! : undefined;
   return <main className="home" data-testid="home">
     <header className="hero">
@@ -28,15 +31,22 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
         </div>
       </div>
       <h1>拉康学习站</h1>
-      <p className="muted">概念、术语与临床演示记录，配合使用。</p>
+      <p className="hero-sub">概念 · 术语 · 临床演示记录</p>
     </header>
     <section aria-labelledby="learn-h"><h2 id="learn-h" className="section-h">学习</h2>
       <div className="modules" data-testid="modules">
         <a className="module" href={hrefs.cards(resume?.id)} data-testid="module-cards">
+          <span className="m-ico ico-cards" aria-hidden="true">卡</span>
           <strong>概念卡</strong><span>{studyCards.length} 张 · 已读 {readCount}</span>
           <span className="module-go">{resume ? `继续《${resume.title.slice(0, 12)}》` : '开始'}</span>
         </a>
+        <a className="module" href={hrefs.review()} data-testid="module-review">
+          <span className="m-ico ico-review" aria-hidden="true">复</span>
+          <strong>闪卡复习</strong><span>{due} 张到期 · 按记忆曲线安排</span>
+          <span className="module-go">{due ? '开始复习' : '暂无到期'}</span>
+        </a>
         <a className="module" href={hrefs.terms()} data-testid="module-terms">
+          <span className="m-ico ico-terms" aria-hidden="true">词</span>
           <strong>术语词典</strong><span>{terms.length} 条 · 含案例回链</span><span className="module-go">查阅</span>
         </a>
       </div>

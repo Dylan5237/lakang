@@ -288,11 +288,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .kref::before { content: "‹"; margin-right: 1px; color: var(--muted); }
 .kref::after { content: "›"; margin-left: 1px; color: var(--muted); }
 
-/* 概念卡页 */
-.cards { display: flex; flex-direction: column; min-height: 100dvh; }
-.card-page { flex: 1; padding: .75rem .25rem 1rem; }
-.card-page h1 { font-size: 1.35rem; line-height: 1.45; margin: .3rem 0 .6rem; }
-.card-page .eyebrow { color: var(--accent); font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
+
 .takeaway {
   margin: .9rem 0 0; padding: .7rem .9rem; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0;
   background: var(--analyst-bg); font-weight: 600; line-height: 1.7;
@@ -310,3 +306,122 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .toc-group { list-style: none; margin: .9rem 0 .25rem; font-size: .75rem; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
 .card-fav { font-size: 1.2rem; line-height: 1; }
 .appbar .card-fav.on { color: var(--accent); }
+
+/* ===== 精修：字体、首页、滑动卡组、闪卡 ===== */
+:root { --display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif; }
+
+/* 首页 hero */
+.hero { position: relative; padding: .9rem .25rem 1.1rem; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -40% -30% auto auto; width: 70%; height: 130%; pointer-events: none;
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--accent) 26%, transparent), transparent),
+    radial-gradient(closest-side at 30% 70%, color-mix(in srgb, var(--supervisor) 20%, transparent), transparent);
+  filter: blur(28px); opacity: .8;
+}
+.hero > * { position: relative; }
+.hero h1 {
+  margin: .3rem 0 .35rem; font-family: var(--display); font-size: 2.1rem; font-weight: 700; letter-spacing: .04em;
+  background: linear-gradient(120deg, var(--ink), var(--accent) 65%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub { margin: 0; color: var(--muted); letter-spacing: .28em; font-size: .78rem; }
+
+/* 模块入口 */
+.modules { display: grid; gap: .7rem; }
+.module { position: relative; display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: .8rem; align-items: center; padding: .85rem 1rem; }
+.module .m-ico {
+  grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
+  font-family: var(--display); font-size: 1.15rem; color: #fff;
+}
+.ico-cards { background: linear-gradient(135deg, var(--analyst), color-mix(in srgb, var(--analyst) 55%, #000)); }
+.ico-review { background: linear-gradient(135deg, var(--supervisor), color-mix(in srgb, var(--supervisor) 55%, #000)); }
+.ico-terms { background: linear-gradient(135deg, var(--patient), color-mix(in srgb, var(--patient) 55%, #000)); }
+@media (prefers-color-scheme: dark) { .module .m-ico { color: #15120f; } }
+.module strong { font-size: 1.02rem; }
+.module > span:nth-of-type(2) { grid-column: 2; color: var(--muted); font-size: .78rem; }
+.module-go { grid-column: 3; grid-row: 1 / span 2; color: var(--accent); font-weight: 700; font-size: .85rem; }
+.module:active { transform: scale(.985); }
+
+/* 滑动卡组（概念卡） */
+.deck { display: flex; flex-direction: column; height: 100dvh; max-width: 42rem; margin: 0 auto; }
+.deck-bar { padding-bottom: .3rem; }
+.feed {
+  flex: 1; overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory;
+  padding: 0 1rem; scrollbar-width: none;
+}
+.feed::-webkit-scrollbar { display: none; }
+.sCard {
+  min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always;
+  display: flex; padding: .8rem 0 5.2rem;
+}
+.card-inner {
+  width: 100%; margin: auto 0; padding: 1.15rem 1.25rem 1.25rem; border-radius: 20px;
+  background: var(--surface); border: 1px solid var(--line);
+  box-shadow: 0 10px 30px -18px rgb(0 0 0 / .35), 0 2px 6px rgb(0 0 0 / .05);
+  transition: opacity .25s, transform .25s;
+}
+.sCard:not(.on) .card-inner { opacity: .45; transform: scale(.965); }
+.sCard.on .card-inner { border-top: 3px solid var(--accent); }
+.sCard .card-title { font-family: var(--display); font-size: 1.42rem; line-height: 1.5; margin: .35rem 0 .7rem; }
+.sCard .eyebrow { display: flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .75rem; font-weight: 700; letter-spacing: .12em; }
+.stage-dot { width: 8px; height: 8px; border-radius: 50%; }
+.s-concept .stage-dot { background: var(--analyst); } .s-themes .stage-dot { background: var(--doctor); }
+.s-history .stage-dot { background: var(--supervisor); } .s-clinic .stage-dot { background: var(--patient); }
+.s-question .stage-dot { background: var(--note); }
+.sCard .takeaway {
+  position: relative; margin: 1rem 0 0; padding: .8rem 1rem .8rem 1.6rem;
+  border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--analyst-bg);
+  font-family: var(--display); font-size: 1.02rem;
+}
+.sCard .takeaway::before { content: "『"; position: absolute; left: .45rem; top: .55rem; color: var(--accent); opacity: .5; }
+.card-nav { justify-content: center; gap: .8rem; padding: 0 1rem calc(.8rem + env(safe-area-inset-bottom)); }
+.card-nav .btn { min-width: 8.5rem; box-shadow: 0 6px 18px -10px rgb(0 0 0 / .5); }
+
+/* 闪卡复习 */
+.review { display: flex; flex-direction: column; height: 100dvh; }
+.review-progress { position: relative; height: 4px; background: var(--line); margin: 0 1rem; border-radius: 4px; overflow: hidden; }
+.review-progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--supervisor), var(--accent)); transition: width .3s; }
+.review-progress em { position: absolute; right: 0; top: -1.65rem; font-style: normal; font-size: .78rem; color: var(--muted); }
+.flip {
+  flex: 1; margin: 1.6rem 1rem 1rem; position: relative; border: 0; padding: 0; cursor: pointer;
+  perspective: 1200px; text-align: center; font: inherit; color: var(--ink); background: none;
+}
+.flip .face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8rem;
+  padding: 1.4rem; border-radius: 22px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+  box-shadow: 0 14px 34px -20px rgb(0 0 0 / .45);
+}
+.flip .front {
+  background: linear-gradient(150deg, color-mix(in srgb, var(--supervisor) 82%, #000), color-mix(in srgb, var(--patient) 70%, #000) 130%);
+  color: #f7f4ff;
+}
+.flip .front strong { font-family: var(--display); font-size: 1.7rem; line-height: 1.4; }
+.flip .front small { opacity: .8; font-style: italic; }
+.flip .kind { font-size: .72rem; letter-spacing: .3em; opacity: .75; font-style: normal; }
+.flip .tap-hint { position: absolute; bottom: 1.1rem; font-size: .75rem; opacity: .7; }
+.flip .back {
+  transform: rotateY(180deg); background: var(--surface); border: 1px solid var(--line);
+  font-size: 1.05rem; line-height: 1.9; overflow-y: auto;
+}
+.flip.flipped .front { transform: rotateY(180deg); }
+.flip.flipped .back { transform: rotateY(0); }
+.rate { display: flex; gap: .6rem; padding: 0 1rem calc(1rem + env(safe-area-inset-bottom)); opacity: .35; transition: opacity .25s; }
+.rate.show { opacity: 1; }
+.rate .btn { flex: 1; }
+.rate .again { border-color: #b0563f; color: #b0563f; }
+.rate .good { border-color: var(--doctor); color: var(--doctor); }
+.rate .easy { border-color: var(--supervisor); color: var(--supervisor); }
+.hint.center { text-align: center; padding: 0 1rem 1rem; margin: 0; }
+.review-done { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; padding: 2rem; text-align: center; }
+.done-mark {
+  display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%;
+  background: linear-gradient(140deg, var(--doctor), color-mix(in srgb, var(--doctor) 55%, #000));
+  color: #fff; font-size: 2.4rem;
+}
+.tally { display: flex; gap: 1rem; font-size: .95rem; }
+.tally .again { color: #b0563f; } .tally .good { color: var(--doctor); } .tally .easy { color: var(--supervisor); }
+@media (prefers-reduced-motion: reduce) {
+  .flip .face, .card-inner, .module, .review-progress span { transition: none; }
+}

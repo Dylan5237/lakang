@@ -44,28 +44,41 @@ test('术语案例回链：未解锁先到锁屏，解锁后落在对应节', as
   await expect(page.getByTestId('talk')).toBeVisible();
 });
 
-test('概念卡：翻卡更新进度、收藏持久、目录跳转、正文K链接', async ({ page }) => {
+test('概念卡：滑动换卡、按钮翻卡、收藏持久、目录与K链接', async ({ page }) => {
+  const active = page.locator('.sCard.on');
   await page.goto('/#/cards');
-  await expect(page.getByTestId('card-page')).toHaveAttribute('data-card-id', cardOrder[0]);
-  await page.getByRole('button', { name: '下一张' }).click();
-  await expect(page.getByTestId('card-page')).toHaveAttribute('data-card-id', cardOrder[1]);
-  await expect(page.getByRole('button', { name: '上一张' })).toBeEnabled();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${cardOrder[0]}`);
+  await expect(active).toHaveAttribute('data-card-id', cardOrder[0]);
+  await page.getByRole('button', { name: '下一张 ›' }).click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${cardOrder[1]}`);
+  await expect(page.getByRole('button', { name: '‹ 上一张' })).toBeEnabled();
+
+  // real touch swipe advances the deck by exactly one card
+  const box = (await page.getByTestId('feed').boundingBox())!;
+  const cdp = await page.context().newCDPSession(page);
+  const x = box.x + box.width / 2; let y = box.y + box.height * 0.8;
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  for (let i = 0; i < 10; i++) { y -= 42; await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y }] }); await page.waitForTimeout(16); }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${cardOrder[2]}`);
+
   await page.getByTestId('card-fav').click();
   await expect(page.getByTestId('card-fav')).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
-  await expect(page.getByTestId('card-page')).toHaveAttribute('data-card-id', cardOrder[1]); // position kept
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${cardOrder[2]}`); // position kept
   await expect(page.getByTestId('card-fav')).toHaveAttribute('aria-pressed', 'true');
+
   await page.getByTestId('open-card-toc').click();
   await expect(page.getByTestId('card-toc').locator('ol > li button')).toHaveCount(studyCards.length);
   await page.getByTestId('card-toc').locator('button', { hasText: studyCards[studyCards.length - 1].title }).click();
-  await expect(page.getByTestId('card-page')).toHaveAttribute('data-card-id', studyCards[studyCards.length - 1].id);
-  expect(await page.getByRole('button', { name: '下一张' }).isDisabled()).toBe(true);
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${studyCards[studyCards.length - 1].id}`);
+  expect(await page.getByRole('button', { name: '下一张 ›' }).isDisabled()).toBe(true);
   const withRef = studyCards.find((c) => /K\d{3}/.test(`${c.body} ${c.detail.join(' ')}`));
   if (withRef) {
     await page.goto('/#/cards/' + withRef.id);
-    const sum = page.getByTestId('card-page').locator('details > summary');
-    if (await sum.count()) await sum.click();
-    await page.getByTestId('card-page').locator('.kref').first().click();
+    await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${withRef.id}`);
+    await active.locator('details > summary').click();
+    await active.locator('.kref').first().click();
     await expect.poll(() => page.evaluate(() => location.hash)).not.toBe(`#/cards/${withRef.id}`);
   }
 });
@@ -73,9 +86,31 @@ test('概念卡：翻卡更新进度、收藏持久、目录跳转、正文K链�
 test('概念卡：术语与相关卡互链可达', async ({ page }) => {
   const withTerms = studyCards.find((c) => c.termIds.length > 0)!;
   await page.goto('/#/cards/' + withTerms.id);
-  await page.getByTestId('card-page').locator('details > summary').click();
-  await page.getByTestId('card-page').locator('.chips-row .btn').first().click(); // a term chip
+  const active = page.locator('.sCard.on');
+  await active.locator('details > summary').click();
+  await active.locator('.chips-row .btn').first().click(); // a term chip
   await expect(page.getByTestId('term-detail')).toBeVisible();
+});
+
+test('闪卡复习：翻面评分、完成汇总、进度仅存本机', async ({ page }) => {
+  await page.goto('/#/review');
+  await expect(page.getByTestId('flip')).toBeVisible();
+  const first = page.getByTestId('flip').locator('.front strong');
+  await expect(first).toBeVisible();
+  await page.getByTestId('flip').click();
+  await expect(page.getByTestId('flip').locator('.back')).toBeVisible();
+  await expect(page.getByRole('button', { name: '记得' })).toBeEnabled();
+  await page.getByRole('button', { name: '忘了' }).click();
+  await expect(page.getByTestId('review')).toContainText('2/12');
+  for (let i = 1; i < 12; i++) { await page.getByTestId('flip').click(); await page.getByRole('button', { name: '很熟' }).click(); }
+  await expect(page.getByTestId('review-done')).toBeVisible();
+  await expect(page.getByTestId('review-done')).toContainText('记得 0');
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lakang:review') ?? '{}'));
+  expect(Object.keys(stored).length).toBe(12);
+  expect(JSON.stringify(stored)).not.toContain('能指'); // ids and schedule only, no card text
+  await page.reload();
+  await expect(page.getByTestId('flip')).toBeVisible();
+  await expect(page.getByTestId('review')).toContainText('1/12');
 });
 
 test('服务器无记录时提示不可用', async ({ page }) => {
@@ -210,11 +245,12 @@ for (const width of [320, 390]) for (const scale of [1, 1.45]) {
           const b = el.getBoundingClientRect(); if (b.width && b.right > vw + 1) bad.push(`${el.tagName}.${el.className}`);
         });
         const small = [...document.querySelectorAll<HTMLElement>('main button, main a, main input')]
-          .filter((e) => e.offsetParent && !e.closest('.note-body, .para, .sources')) // inline text links are content, not controls
-          .map((e) => e.getBoundingClientRect()).filter((b) => b.height < 40 || b.width < 40).length;
+          .filter((e) => e.offsetParent && !e.closest('.note-body, .para, .sources') && !e.closest('.sCard:not(.on)')) // inline text links are content; off-screen deck cards are scaled
+          .map((e) => ({ t: (e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 6), b: e.getBoundingClientRect() }))
+          .filter(({ b }) => b.height < 40 || b.width < 40).map(({ t, b }) => `${t} ${Math.round(b.width)}x${Math.round(b.height)}`);
         return { scroll: document.documentElement.scrollWidth - vw, bad: bad.slice(0, 3), small };
       });
-      expect(r, hash).toEqual({ scroll: 0, bad: [], small: 0 });
+      expect(r, hash).toEqual({ scroll: 0, bad: [], small: [] });
     }
   });
 }

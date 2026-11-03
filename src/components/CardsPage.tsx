@@ -1,23 +1,68 @@
-import { useEffect, useState } from 'react';
-import { hrefs, navigate } from '../lib/router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { hrefs } from '../lib/router';
 import { cardById, cardOrder, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
+import type { StudyCard } from '../types';
 import { LinkedText } from './LinkedText';
 import { Sheet } from './Sheet';
 
+/** Swipe feed: full-height snap cards, the scroller is the deck. */
 export function CardsPage({ cardId }: { cardId?: string }) {
   const [progress, setProgress] = useState(readProgress);
   const [tocOpen, setTocOpen] = useState(false);
-  const id = cardId && cardById.has(cardId) ? cardId : cardId ? cardOrder[0] : (progress.position && cardById.has(progress.position) ? progress.position : cardOrder[0]);
-  const card = cardById.get(id)!;
-  const index = cardOrder.indexOf(id);
+  const [active, setActive] = useState(() => {
+    const start = cardId && cardById.has(cardId) ? cardId : (readProgress().position && cardById.has(readProgress().position!) ? readProgress().position : cardOrder[0]);
+    return start!;
+  });
+  const scroller = useRef<HTMLDivElement>(null);
+  const index = cardOrder.indexOf(active);
+  const readCount = progress.read.filter((id) => cardById.has(id)).length;
 
-  useEffect(() => { setProgress(visitCard(id)); }, [id]);
-
+  const jumpTo = (id: string, smooth = true) => {
+    const el = scroller.current?.querySelector<HTMLElement>(`[data-card-id="${id}"]`);
+    el?.scrollIntoView({ behavior: smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto', block: 'start' });
+  };
   const go = (dir: 1 | -1) => {
     const next = cardOrder[Math.min(cardOrder.length - 1, Math.max(0, index + dir))];
-    if (next !== id) navigate(hrefs.cards(next));
+    if (next !== active) jumpTo(next);
   };
+
+  // Deep link / module entry: land on the requested card (or the saved position) and sync the hash once.
+  const firstRun = useRef(true);
   useEffect(() => {
+    const target = cardId && cardById.has(cardId) ? cardId : active;
+    jumpTo(target, false);
+    history.replaceState(null, '', hrefs.cards(target));
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    firstRun.current = false;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Later hash-driven navigations (links from other pages, K-refs) move the deck;
+  // hash changes the observer itself emits (selfId) must not re-trigger the jump.
+  const selfId = useRef<string | null>(null);
+  useEffect(() => {
+    if (firstRun.current || !cardId || !cardById.has(cardId) || cardId === active || cardId === selfId.current) return;
+    jumpTo(cardId, false); // long jumps: instant, scroll-snap cancels long smooth scrolls
+  }, [cardId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // The observer decides which card is active; it also marks cards read and keeps the hash in sync.
+  useEffect(() => {
+    const root = scroller.current; if (!root) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) {
+        const id = (e.target as HTMLElement).dataset.cardId!;
+        if (id === active) continue;
+        selfId.current = id;
+        setActive(id);
+        setProgress(visitCard(id));
+        history.replaceState(null, '', hrefs.cards(id));
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
+      }
+    }, { root, rootMargin: '-42% 0px -52% 0px' });
+    root.querySelectorAll('[data-card-id]').forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, [active]);
+
+  useEffect(() => {
+    setProgress(visitCard(active));
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'j' || e.key === 'ArrowRight') go(1);
@@ -27,20 +72,50 @@ export function CardsPage({ cardId }: { cardId?: string }) {
     return () => window.removeEventListener('keydown', onKey);
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const fav = progress.favorites.includes(id);
-  const readCount = progress.read.filter((x) => cardById.has(x)).length;
-  return <main className="page cards" data-testid="cards">
-    <header className="appbar">
+  const fav = progress.favorites.includes(active);
+  const byStage = useMemo(() => Object.values(studyCards.reduce<Record<string, { label: string; items: { id: string; title: string }[] }>>((acc, c) => {
+    (acc[c.stageLabel] ??= { label: c.stageLabel, items: [] }).items.push({ id: c.id, title: c.title });
+    return acc;
+  }, {})), [studyCards]);
+  const read = new Set(progress.read);
+
+  return <main className="page deck" data-testid="cards">
+    <header className="appbar deck-bar">
       <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
-      <div className="appbar-title"><h1>概念卡</h1><p>已读 {readCount}/{studyCards.length} · {index + 1}/{cardOrder.length}</p></div>
+      <div className="appbar-title"><h1>概念卡</h1><p>已读 {readCount}/{studyCards.length} · {index + 1}/{cardOrder.length} · 上下滑动换卡</p></div>
       <button type="button" className={`tool icon ${fav ? 'on' : ''}`} aria-label={fav ? '取消收藏' : '收藏'} aria-pressed={fav}
-        onClick={() => setProgress(toggleFavorite(id))} data-testid="card-fav">{fav ? '★' : '☆'}</button>
+        onClick={() => setProgress(toggleFavorite(active))} data-testid="card-fav">{fav ? '★' : '☆'}</button>
       <button type="button" className="tool" onClick={() => setTocOpen(true)} data-testid="open-card-toc"><span className="tool-label">目录</span></button>
     </header>
     <div className="progress" aria-hidden="true"><span style={{ width: `${((index + 1) / cardOrder.length) * 100}%` }} /></div>
-    <div className="card-page" data-testid="card-page" data-card-id={id}>
-      <p className="eyebrow">{card.stageLabel} · {card.topic}</p>
-      <h1>{card.title}</h1>
+    <div className="feed" ref={scroller} data-testid="feed">
+      {cardOrder.map((id) => { const card = cardById.get(id)!; return <Card key={id} card={card} active={id === active} />; })}
+      <section className="sCard end" data-end>
+        <div className="card-inner">
+          <h2 className="card-title">最后一张</h2>
+          <p className="para">共 {studyCards.length} 张，已读 {readCount} 张。</p>
+          <div className="btn-row"><a className="btn" href={hrefs.cards(cardOrder[0])}>回到第一张</a><a className="btn primary" href="#/review">去闪卡复习</a></div>
+        </div>
+      </section>
+    </div>
+    <nav className="card-nav" aria-label="翻卡">
+      <button type="button" className="btn" disabled={index === 0} onClick={() => go(-1)}>‹ 上一张</button>
+      <button type="button" className="btn primary" disabled={index === cardOrder.length - 1} onClick={() => go(1)}>下一张 ›</button>
+    </nav>
+    <Sheet open={tocOpen} title="概念卡目录" onClose={() => setTocOpen(false)} testId="card-toc">
+      <ol className="toc">{byStage.flatMap((g) => [<li key={g.label} className="toc-group">{g.label} · {g.items.length}</li>,
+        ...g.items.map((it) => <li key={it.id}><button type="button" className={it.id === active ? 'on' : ''} onClick={() => { setTocOpen(false); requestAnimationFrame(() => jumpTo(it.id, false)); }}>
+          <span className="toc-title">{it.title}</span>{read.has(it.id) && <span className="muted"> · 已读</span>}
+        </button></li>)])}</ol>
+    </Sheet>
+  </main>;
+}
+
+function Card({ card, active }: { card: StudyCard; active: boolean }) {
+  return <section className={`sCard ${active ? 'on' : ''}`} data-card-id={card.id} data-testid="card-page">
+    <div className="card-inner">
+      <p className="eyebrow"><span className={`stage-dot s-${card.stage}`} aria-hidden="true" />{card.stageLabel} · {card.topic}</p>
+      <h2 className="card-title">{card.title}</h2>
       {card.body.split('\n').map((p, i) => <p key={i} className="para"><LinkedText text={p} /></p>)}
       <p className="takeaway"><LinkedText text={card.takeaway} /></p>
       <details className="card-more">
@@ -53,21 +128,5 @@ export function CardsPage({ cardId }: { cardId?: string }) {
         {card.sourceIds.length > 0 && <p className="sources">{card.sourceIds.map((s, i) => { const src = sourceById.get(s); return <span key={s}>{i > 0 && '；'}{src && <a href={src.url} target="_blank" rel="noopener noreferrer">{s} 出处</a>}{card.locators[s] ? `：${card.locators[s]}` : ''}</span>; })}</p>}
       </details>
     </div>
-    <nav className="card-nav" aria-label="翻卡">
-      <button type="button" className="btn" disabled={index === 0} onClick={() => go(-1)}>上一张</button>
-      <button type="button" className="btn primary" disabled={index === cardOrder.length - 1} onClick={() => go(1)}>下一张</button>
-    </nav>
-    <Sheet open={tocOpen} title="概念卡目录" onClose={() => setTocOpen(false)} testId="card-toc">
-      <ol className="toc">{(() => {
-        const read = new Set(progress.read);
-        return Object.values(studyCards.reduce<Record<string, { label: string; items: { id: string; title: string }[] }>>((acc, c) => {
-          (acc[c.stageLabel] ??= { label: c.stageLabel, items: [] }).items.push({ id: c.id, title: c.title });
-          return acc;
-        }, {})).flatMap((g) => [<li key={g.label} className="toc-group">{g.label} · {g.items.length}</li>,
-          ...g.items.map((it) => <li key={it.id}><button type="button" className={it.id === id ? 'on' : ''} onClick={() => { setTocOpen(false); navigate(hrefs.cards(it.id)); }}>
-            <span className="toc-title">{it.title}</span>{read.has(it.id) && <span className="muted"> · 已读</span>}
-          </button></li>)]);
-      })()}</ol>
-    </Sheet>
-  </main>;
+  </section>;
 }
