@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { cardById, cardOrder, sourceById, studyCards, studySources, termById, terms } from '../src/lib/study';
+import { cardById, cardOrder, pathById, paths, sourceById, studyCards, studySources, termById, terms } from '../src/lib/study';
 
 describe('公开学习内容完整性', () => {
   it('卡片顺序与卡片集一一对应，ID 唯一', () => {
@@ -37,6 +37,26 @@ describe('公开学习内容完整性', () => {
     const offline = new Set(JSON.parse(readFileSync(new URL('../content/card-order.json', import.meta.url), 'utf8')));
     const mentioned = new Set(studyCards.flatMap((c) => [c.body, c.takeaway, ...c.detail].join(' ').match(/K\d{3}/g) ?? []));
     for (const id of mentioned) expect(offline.has(id), `${id} 不在学习卡中却出现在正文`).toBe(true);
+  });
+
+  it('阅读路径：ID 唯一，全部学习卡恰好归入一条路径，卡片上的路径标注与路径一致', () => {
+    expect(paths.length).toBeGreaterThanOrEqual(6);
+    expect(new Set(paths.map((p) => p.id)).size).toBe(paths.length);
+    const seen = new Set<string>();
+    for (const p of paths) {
+      expect(p.title.length, p.id).toBeGreaterThan(2);
+      expect(p.outcome.length, p.id).toBeGreaterThan(4);
+      expect(p.cardIds.length, p.id).toBeGreaterThan(0);
+      for (const id of p.cardIds) {
+        expect(cardById.has(id), `${p.id}→${id}`).toBe(true);
+        expect(seen.has(id), `${id} 出现在多条路径`).toBe(false);
+        seen.add(id);
+        expect(cardById.get(id)!.pathId, id).toBe(p.id);
+        expect(cardById.get(id)!.pathTitle, id).toBe(p.title);
+      }
+    }
+    expect([...seen].sort()).toEqual(studyCards.map((c) => c.id).sort());
+    expect(pathById.size).toBe(paths.length);
   });
 
   it('来源字段齐全且 URL 可用', () => {

@@ -1,20 +1,17 @@
 import { useMemo, useState } from 'react';
-import { exportNotes, readNotes } from '../lib/notes';
+import { readNotes } from '../lib/notes';
 import { readPositions } from '../lib/reading';
 import { hrefs } from '../lib/router';
 import { buildItems, dueCount, readSched } from '../lib/review';
-import { cardById, readProgress, studyCards, terms } from '../lib/study';
+import { cardById, paths, readProgress, studyCards, terms } from '../lib/study';
 import type { Archive } from '../types';
 import { SearchAllButton } from './GlobalSearch';
 import { SettingsButton } from './Settings';
 
 export function Home({ archive, onLock }: { archive: Archive | null; onLock: () => void }) {
   const [about, setAbout] = useState(false);
-  const [exported, setExported] = useState(false);
   const positions = readPositions();
-  const notes = readNotes();
-  const noteItems = archive ? archive.cases.flatMap((c) =>
-    c.sections.filter((s) => notes[s.id]).map((s) => ({ c, s, text: notes[s.id] }))) : [];
+  const noteCount = Object.keys(readNotes()).filter((k) => /^c[12]s\d+$/.test(k)).length;
   const progress = readProgress();
   const items = useMemo(buildItems, []);
   const readCount = progress.read.filter((id) => cardById.has(id)).length;
@@ -41,6 +38,11 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
           <strong>概念卡</strong><span>{studyCards.length} 张 · 已读 {readCount}</span>
           <span className="module-go">{resume ? `继续《${resume.title.slice(0, 12)}》` : '开始'}</span>
         </a>
+        <a className="module" href={hrefs.paths()} data-testid="module-paths">
+          <span className="m-ico ico-paths" aria-hidden="true">路</span>
+          <strong>阅读路径</strong><span>{paths.length} 条路线 · 覆盖全部 {studyCards.length} 张卡</span>
+          <span className="module-go">按路径读</span>
+        </a>
         <a className="module" href={hrefs.review()} data-testid="module-review">
           <span className="m-ico ico-review" aria-hidden="true">复</span>
           <strong>闪卡复习</strong><span>{due} 张到期 · 按记忆曲线安排</span>
@@ -49,6 +51,11 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
         <a className="module" href={hrefs.terms()} data-testid="module-terms">
           <span className="m-ico ico-terms" aria-hidden="true">词</span>
           <strong>术语词典</strong><span>{terms.length} 条 · 含案例回链</span><span className="module-go">查阅</span>
+        </a>
+        <a className="module" href={hrefs.me()} data-testid="module-me">
+          <span className="m-ico ico-me" aria-hidden="true">我</span>
+          <strong>我的学习</strong><span>已读 {readCount} · 收藏 {progress.favorites.length} · 笔记 {noteCount}</span>
+          <span className="module-go">查看</span>
         </a>
       </div>
     </section>
@@ -76,19 +83,8 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
           <span className="module-go">解锁</span>
         </a>}
     </section>
-    {noteItems.length > 0 && <section className="my-notes" data-testid="my-notes">
-      <h2>我的笔记（{noteItems.length}）</h2>
-      <ul>{noteItems.map(({ c, s, text }) => <li key={s.id}>
-        <a href={hrefs.talk(c.id, s.id)}>{c.label} · {s.title}</a>
-        <p>{text.length > 80 ? text.slice(0, 80) + '…' : text}</p>
-      </li>)}</ul>
-      <div className="btn-row">
-        <button type="button" className="btn" onClick={() => setExported(exportNotes() > 0)}>导出笔记</button>
-      </div>
-      {exported && <p className="hint" role="status">已导出为 JSON 文件，请自行保管。</p>}
-      <p className="hint">笔记只保存在这台设备的浏览器里，不上传；请勿记录可识别的真实个案信息。</p>
-    </section>}
     {archive && <button type="button" className="about-toggle" aria-expanded={about} onClick={() => setAbout(!about)}>关于这份记录 {about ? '▴' : '▾'}</button>}
     {about && archive && <div className="about" data-testid="about">{archive.notice.map((n, i) => <p key={i}>{n.replace(/^⚠️\s*/, '')}</p>)}</div>}
+    <footer className="site-foot"><a href={hrefs.about()} data-testid="about-link">关于本站 · 方法与隐私</a></footer>
   </main>;
 }

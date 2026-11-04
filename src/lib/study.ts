@@ -2,16 +2,19 @@ import cardsJson from '../../content/cards.json' with { type: 'json' };
 import orderJson from '../../content/card-order.json' with { type: 'json' };
 import termsJson from '../../content/terms.json' with { type: 'json' };
 import sourcesJson from '../../content/sources.json' with { type: 'json' };
+import pathsJson from '../../content/paths.json' with { type: 'json' };
 // JSON infers per-object literal types; the content pipeline (unit-tested) guarantees the shape.
-import type { StudyCard, StudySource, Term } from '../types';
+import type { StudyCard, StudyPath, StudySource, Term } from '../types';
 
 export const studyCards = cardsJson as unknown as StudyCard[];
 export const cardOrder = orderJson as string[];
 export const terms = termsJson as unknown as Term[];
 export const studySources = sourcesJson as unknown as StudySource[];
+export const paths = pathsJson as unknown as StudyPath[];
 export const cardById = new Map(studyCards.map((c) => [c.id, c]));
 export const termById = new Map(terms.map((t) => [t.id, t]));
 export const sourceById = new Map(studySources.map((s) => [s.id, s]));
+export const pathById = new Map(paths.map((p) => [p.id, p]));
 export const cardsByTerm = (termId: string) => studyCards.filter((c) => c.termIds.includes(termId));
 
 /** Only progress data is stored locally (ids, never content). */

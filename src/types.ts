@@ -20,6 +20,8 @@ export interface StudyCard {
   id: string; stage: string; stageLabel: string; topic: string; title: string; body: string; takeaway: string;
   detail: string[]; question: string | null; action: string | null; termIds: string[];
   sourceIds: string[]; locators: Record<string, string>; relatedCardIds: string[];
+  pathId?: string; pathTitle?: string;
 }
+export interface StudyPath { id: string; title: string; intro: string; outcome: string; cardIds: string[] }
 export interface CaseLink { case: string; section: string; note: string }
 export interface Term { id: string; zh: string; original: string; brief: string; detail?: string; sourceIds: string[]; related?: string[]; caseLinks?: CaseLink[] }

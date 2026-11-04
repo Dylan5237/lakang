@@ -7,6 +7,9 @@ import { Flashcards } from './components/Flashcards';
 import { CaseView } from './components/CaseView';
 import { Home } from './components/Home';
 import { LockScreen } from './components/LockScreen';
+import { PathsPage } from './components/PathsPage';
+import { AboutPage } from './components/AboutPage';
+import { MePage } from './components/MePage';
 import { TermsPage } from './components/TermsPage';
 
 export function App() {
@@ -21,6 +24,9 @@ export function App() {
   if (route.name === 'terms') return <TermsPage termId={route.termId} />;
   if (route.name === 'cards') return <CardsPage cardId={route.cardId} />;
   if (route.name === 'review') return <Flashcards />;
+  if (route.name === 'paths') return <PathsPage pathId={route.pathId} />;
+  if (route.name === 'about') return <AboutPage />;
+  if (route.name === 'me') return <MePage />;
   const lock = () => { clearKey(); setArchive(null); navigate(hrefs.home(), true); };
   return <Home archive={archive} onLock={lock} />;
 }

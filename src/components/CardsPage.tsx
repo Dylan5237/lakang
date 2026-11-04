@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { hrefs } from '../lib/router';
-import { cardById, cardOrder, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
+import { cardById, cardOrder, pathById, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
 import type { StudyCard } from '../types';
 import { LinkedText } from './LinkedText';
 import { Sheet } from './Sheet';
@@ -120,8 +120,11 @@ export function CardsPage({ cardId }: { cardId?: string }) {
 }
 
 function Card({ card, active }: { card: StudyCard; active: boolean }) {
+  const path = card.pathId ? pathById.get(card.pathId) : undefined;
+  const pos = path ? path.cardIds.indexOf(card.id) + 1 : 0;
   return <section className={`sCard ${active ? 'on' : ''}`} data-card-id={card.id} data-testid="card-page">
     <div className="card-inner">
+      {path && <p className="path-tag"><a href={hrefs.paths(path.id)}>{path.title}</a> · {pos}/{path.cardIds.length}</p>}
       <p className="eyebrow"><span className={`stage-dot s-${card.stage}`} aria-hidden="true" />{card.stageLabel} · {card.topic}</p>
       <h2 className="card-title">{card.title}</h2>
       {card.body.split('\n').map((p, i) => <p key={i} className="para"><LinkedText text={p} /></p>)}

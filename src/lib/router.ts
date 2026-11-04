@@ -5,7 +5,10 @@ export type Route =
   | { name: 'case'; caseId: string; tab: 'talk' | 'notes'; sectionId?: string }
   | { name: 'terms'; termId?: string }
   | { name: 'cards'; cardId?: string }
-  | { name: 'review' };
+  | { name: 'review' }
+  | { name: 'paths'; pathId?: string }
+  | { name: 'about' }
+  | { name: 'me' };
 
 export function parseHash(hash: string): Route {
   let parts: string[];
@@ -14,6 +17,9 @@ export function parseHash(hash: string): Route {
   if (parts[0] === 'terms') return { name: 'terms', termId: parts[1] };
   if (parts[0] === 'cards') return { name: 'cards', cardId: parts[1] };
   if (parts[0] === 'review') return { name: 'review' };
+  if (parts[0] === 'paths') return { name: 'paths', pathId: parts[1] };
+  if (parts[0] === 'about') return { name: 'about' };
+  if (parts[0] === 'me') return { name: 'me' };
   if (parts[0] !== 'case' || !parts[1]) return { name: 'home' };
   if (parts[2] === 'notes') return { name: 'case', caseId: parts[1], tab: 'notes' };
   return { name: 'case', caseId: parts[1], tab: 'talk', sectionId: parts[2] === 's' ? parts[3] : undefined };
@@ -26,6 +32,9 @@ export const hrefs = {
   terms: (id?: string) => `#/terms${id ? `/${id}` : ''}`,
   cards: (id?: string) => `#/cards${id ? `/${id}` : ''}`,
   review: () => '#/review',
+  paths: (id?: string) => `#/paths${id ? `/${id}` : ''}`,
+  about: () => '#/about',
+  me: () => '#/me',
 };
 
 export function navigate(href: string, replace = false): void {

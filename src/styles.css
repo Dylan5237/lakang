@@ -426,3 +426,45 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 @media (prefers-reduced-motion: reduce) {
   .flip .face, .card-inner, .module, .review-progress span { transition: none; }
 }
+
+/* 阅读路径 */
+.ico-paths { background: linear-gradient(135deg, var(--doctor), color-mix(in srgb, var(--doctor) 55%, #000)); }
+.paths .path-list, .paths .path-cards { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .7rem; }
+.path-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; box-shadow: 0 1px 2px rgb(0 0 0 / .04); }
+.path-card h2 { margin: .15rem 0 .3rem; font-size: 1.15rem; }
+.path-card h2 a { display: flex; align-items: center; min-height: 44px; color: inherit; text-decoration: none; font-family: var(--display); }
+.path-card p { margin: .2rem 0; }
+.path-card .case-progress { margin-top: .6rem; }
+.path-cards { counter-reset: path; }
+.path-item { display: flex; gap: .8rem; align-items: center; padding: .55rem .9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.path-item.done { opacity: .7; }
+.path-no { flex: none; font-family: var(--display); font-size: 1.1rem; color: var(--accent); width: 2.2rem; }
+.path-item > div { min-width: 0; }
+.path-item a { display: flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: none; line-height: 1.45; }
+.path-item p { margin: 0 0 .2rem; font-size: .78rem; }
+.path-tag { margin: 0 0 .35rem; font-size: .72rem; color: var(--accent); letter-spacing: .04em; }
+.path-tag a { color: inherit; display: inline-flex; align-items: center; min-height: 40px; }
+.site-foot { margin: 2rem 0 1rem; text-align: center; font-size: .8rem; }
+.site-foot a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
+/* 关于页 */
+.about-page .panel p, .about-page .panel li { line-height: 1.85; }
+.about-page .panel ul { margin: .3rem 0; padding-left: 1.2rem; }
+
+/* 我的学习 */
+.ico-me { background: linear-gradient(135deg, var(--note), color-mix(in srgb, var(--note) 55%, #000)); }
+.me-page { padding-bottom: 2.5rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: .75rem 1rem; }
+.stat {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem; min-height: 76px; padding: .4rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; text-decoration: none; color: var(--ink); text-align: center;
+}
+.stat strong { font-family: var(--display); font-size: 1.35rem; line-height: 1.2; }
+.stat strong small { font-size: .7rem; color: var(--muted); font-weight: 400; }
+.stat span { font-size: .7rem; color: var(--muted); }
+.me-paths { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+.me-paths a { display: grid; grid-template-columns: 1fr 4.5rem auto; align-items: center; gap: .6rem; min-height: 44px; text-decoration: none; color: var(--ink); }
+.me-path-title { font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.me-bar { height: 5px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.me-bar span { display: block; height: 100%; background: var(--accent); }
+.me-paths .muted { font-size: .72rem; }
+.me-note { margin: .1rem 0 .5rem; font-size: .82rem; color: var(--muted); overflow-wrap: anywhere; }

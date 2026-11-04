@@ -27,7 +27,9 @@
    "K003",
    "K004",
    "K019"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K003",
@@ -63,7 +65,9 @@
    "K013",
    "K014",
    "K019"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K004",
@@ -93,7 +97,9 @@
    "K001",
    "K005",
    "K041"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K008",
@@ -128,7 +134,9 @@
    "K007",
    "K009",
    "K019"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K009",
@@ -162,7 +170,9 @@
    "K007",
    "K013",
    "K048"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K012",
@@ -198,7 +208,9 @@
    "K013",
    "K014",
    "K052"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K013",
@@ -233,7 +245,9 @@
    "K009",
    "K012",
    "K014"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K014",
@@ -263,7 +277,9 @@
   "relatedCardIds": [
    "K012",
    "K013"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K015",
@@ -298,7 +314,9 @@
    "K012",
    "K017",
    "K048"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K017",
@@ -333,7 +351,9 @@
    "K015",
    "K016",
    "K069"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K016",
@@ -364,7 +384,9 @@
   "relatedCardIds": [
    "K017",
    "K069"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K018",
@@ -392,7 +414,9 @@
   "relatedCardIds": [
    "K016",
    "K069"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K069",
@@ -426,7 +450,9 @@
    "K018",
    "K011",
    "K044"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K019",
@@ -461,7 +487,9 @@
    "K003",
    "K008",
    "K048"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K007",
@@ -498,7 +526,9 @@
    "K009",
    "K010",
    "K011"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K010",
@@ -529,7 +559,9 @@
    "K007",
    "K011",
    "K017"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K011",
@@ -570,7 +602,9 @@
    "K010",
    "K069",
    "K051"
-  ]
+  ],
+  "pathId": "start-language",
+  "pathTitle": "入门二：语言、主体与三界"
  },
  {
   "id": "K038",
@@ -597,7 +631,9 @@
    "S14": "PubMed Abstract：研究设计及HAMD-24、BDI-II、PSQI、Kessler、SCARED结果",
    "S01": "开幕演讲，第4页"
   },
-  "relatedCardIds": []
+  "relatedCardIds": [],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K041",
@@ -632,7 +668,9 @@
   "relatedCardIds": [
    "K005",
    "K004"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K005",
@@ -662,7 +700,9 @@
   "relatedCardIds": [
    "K004",
    "K041"
-  ]
+  ],
+  "pathId": "start-body",
+  "pathTitle": "入门一：身体的三个入口"
  },
  {
   "id": "K042",
@@ -692,7 +732,9 @@
   "relatedCardIds": [
    "K043",
    "K004"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K043",
@@ -727,7 +769,9 @@
    "K042",
    "K008",
    "K009"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K044",
@@ -761,7 +805,9 @@
   "relatedCardIds": [
    "K045",
    "K069"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K045",
@@ -792,7 +838,9 @@
   "relatedCardIds": [
    "K044",
    "K069"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K046",
@@ -822,7 +870,9 @@
   },
   "relatedCardIds": [
    "K047"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K047",
@@ -853,7 +903,9 @@
   },
   "relatedCardIds": [
    "K046"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K048",
@@ -887,7 +939,9 @@
    "K049",
    "K019",
    "K009"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K049",
@@ -918,7 +972,9 @@
   "relatedCardIds": [
    "K048",
    "K019"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K051",
@@ -956,7 +1012,9 @@
   },
   "relatedCardIds": [
    "K011"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K052",
@@ -986,7 +1044,9 @@
   },
   "relatedCardIds": [
    "K053"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K053",
@@ -1018,7 +1078,9 @@
   "relatedCardIds": [
    "K052",
    "K055"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K055",
@@ -1048,7 +1110,9 @@
   },
   "relatedCardIds": [
    "K053"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K056",
@@ -1080,7 +1144,9 @@
   },
   "relatedCardIds": [
    "K072"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K070",
@@ -1111,7 +1177,9 @@
   "relatedCardIds": [
    "K071",
    "K009"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K071",
@@ -1140,7 +1208,9 @@
   },
   "relatedCardIds": [
    "K070"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K072",
@@ -1173,7 +1243,9 @@
   "relatedCardIds": [
    "K048",
    "K056"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K074",
@@ -1212,7 +1284,9 @@
    "K075",
    "K015",
    "K042"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K075",
@@ -1255,7 +1329,9 @@
    "K076",
    "K003",
    "K009"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K076",
@@ -1295,7 +1371,9 @@
    "K077",
    "K011",
    "K051"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K077",
@@ -1335,7 +1413,9 @@
    "K076",
    "K078",
    "K086"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K078",
@@ -1378,7 +1458,9 @@
    "K015",
    "K017",
    "K086"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K079",
@@ -1418,7 +1500,9 @@
    "K080",
    "K008",
    "K003"
-  ]
+  ],
+  "pathId": "body",
+  "pathTitle": "身体：从镜像到纽结"
  },
  {
   "id": "K080",
@@ -1459,7 +1543,9 @@
    "K079",
    "K081",
    "K075"
-  ]
+  ],
+  "pathId": "body",
+  "pathTitle": "身体：从镜像到纽结"
  },
  {
   "id": "K081",
@@ -1500,7 +1586,9 @@
    "K049",
    "K082",
    "K019"
-  ]
+  ],
+  "pathId": "body",
+  "pathTitle": "身体：从镜像到纽结"
  },
  {
   "id": "K082",
@@ -1542,7 +1630,9 @@
    "K052",
    "K014",
    "K078"
-  ]
+  ],
+  "pathId": "body",
+  "pathTitle": "身体：从镜像到纽结"
  },
  {
   "id": "K083",
@@ -1585,7 +1675,9 @@
    "K079",
    "K011",
    "K099"
-  ]
+  ],
+  "pathId": "body",
+  "pathTitle": "身体：从镜像到纽结"
  },
  {
   "id": "K084",
@@ -1630,7 +1722,9 @@
    "K016",
    "K069",
    "K017"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K085",
@@ -1670,7 +1764,9 @@
    "K013",
    "K074",
    "K053"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K086",
@@ -1710,7 +1806,9 @@
    "K087",
    "K077",
    "K056"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K087",
@@ -1756,7 +1854,9 @@
    "K044",
    "K069",
    "K052"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K088",
@@ -1798,7 +1898,9 @@
    "K084",
    "K011",
    "K083"
-  ]
+  ],
+  "pathId": "clinic",
+  "pathTitle": "症状与临床结构"
  },
  {
   "id": "K089",
@@ -1838,7 +1940,9 @@
    "K090",
    "K014",
    "K003"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K090",
@@ -1879,7 +1983,9 @@
    "K091",
    "K056",
    "K086"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K091",
@@ -1920,7 +2026,9 @@
    "K090",
    "K072",
    "K098"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K092",
@@ -1963,7 +2071,9 @@
    "K052",
    "K053",
    "K055"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K093",
@@ -1999,7 +2109,9 @@
   "relatedCardIds": [
    "K089",
    "K047"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K094",
@@ -2038,7 +2150,9 @@
   "relatedCardIds": [
    "K095",
    "K091"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K095",
@@ -2080,7 +2194,9 @@
    "K096",
    "K043",
    "K089"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K096",
@@ -2123,7 +2239,9 @@
    "K051",
    "K044",
    "K047"
-  ]
+  ],
+  "pathId": "writing-arts",
+  "pathTitle": "书写、艺术与社会"
  },
  {
   "id": "K097",
@@ -2163,7 +2281,9 @@
    "K098",
    "K074",
    "K017"
-  ]
+  ],
+  "pathId": "desire",
+  "pathTitle": "欲望与享乐"
  },
  {
   "id": "K098",
@@ -2206,7 +2326,9 @@
    "K094",
    "K072",
    "K091"
-  ]
+  ],
+  "pathId": "cure",
+  "pathTitle": "分析的过程"
  },
  {
   "id": "K099",
@@ -2250,7 +2372,9 @@
    "K083",
    "K073",
    "K081"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K100",
@@ -2295,7 +2419,9 @@
    "K013",
    "K085",
    "K086"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K101",
@@ -2337,7 +2463,9 @@
   "relatedCardIds": [
    "K102",
    "K071"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K102",
@@ -2373,7 +2501,9 @@
   "relatedCardIds": [
    "K103",
    "K073"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K103",
@@ -2409,7 +2539,9 @@
   "relatedCardIds": [
    "K099",
    "K102"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  },
  {
   "id": "K073",
@@ -2442,6 +2574,8 @@
   "relatedCardIds": [
    "K048",
    "K052"
-  ]
+  ],
+  "pathId": "reading",
+  "pathTitle": "读拉康的方法"
  }
 ]
