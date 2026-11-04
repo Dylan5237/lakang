@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { buildItems, dueCount, masteredCount, rate, readSched, sessionQueue, type ReviewItem } from '../lib/review';
+import { markReview } from '../lib/habit';
 import { hrefs } from '../lib/router';
 import { SettingsButton } from './Settings';
 
@@ -23,6 +24,7 @@ export function Flashcards() {
   const answer = (q: 0 | 1 | 2) => {
     if (!current) return;
     setSched(rate(current.id, q));
+    markReview();
     setTally((t) => ({ ...t, [q === 0 ? 'again' : q === 1 ? 'good' : 'easy']: t[q === 0 ? 'again' : q === 1 ? 'good' : 'easy'] + 1 }));
     setIdx((i) => i + 1);
   };

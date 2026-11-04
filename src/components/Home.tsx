@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { DAILY_GOAL, readHabit } from '../lib/habit';
 import { readNotes } from '../lib/notes';
 import { readPositions } from '../lib/reading';
 import { hrefs } from '../lib/router';
@@ -16,6 +17,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
   const items = useMemo(buildItems, []);
   const readCount = progress.read.filter((id) => cardById.has(id)).length;
   const due = dueCount(items, readSched());
+  const habit = readHabit();
   const resume = progress.position && cardById.has(progress.position) ? cardById.get(progress.position)! : undefined;
   return <main className="home" data-testid="home">
     <div className="hero-glow" aria-hidden="true" />
@@ -31,6 +33,23 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
       <h1>拉康随身读</h1>
       <p className="hero-sub">概念 · 术语 · 临床演示记录</p>
     </header>
+    <section className="today" aria-label="今日学习" data-testid="today">
+      {resume
+        ? <a className="resume" href={hrefs.cards(resume.id)} data-testid="resume">
+          <small>继续阅读 · 已读 {readCount}/{studyCards.length}</small><strong>{resume.title}</strong>
+        </a>
+        : <a className="resume" href={hrefs.paths('start-body')} data-testid="start-here">
+          <small>第一次来？约 10 分钟</small><strong>从「入门一：身体的三个入口」开始</strong>
+        </a>}
+      <div className="today-row">
+        <div className="today-goal" data-testid="goal">
+          <span>今日 <strong>{Math.min(habit.cardsToday, DAILY_GOAL)}/{DAILY_GOAL}</strong> 张{habit.cardsToday >= DAILY_GOAL ? ' · 达成' : ''}</span>
+          <span className="me-bar" aria-hidden="true"><span style={{ width: `${Math.min(1, habit.cardsToday / DAILY_GOAL) * 100}%` }} /></span>
+          <span className="hint">{habit.streak > 0 ? `连续学习 ${habit.streak} 天` : '读满 3 张，开始你的连续天数'}</span>
+        </div>
+        <a className={`today-review ${due ? 'due' : ''}`} href={hrefs.review()}><strong>{due}</strong><span>{due ? '张待复习' : '暂无复习'}</span></a>
+      </div>
+    </section>
     <section aria-labelledby="learn-h"><h2 id="learn-h" className="section-h">学习</h2>
       <div className="modules" data-testid="modules">
         <a className="module" href={hrefs.cards(resume?.id)} data-testid="module-cards">

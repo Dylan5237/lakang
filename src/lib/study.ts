@@ -4,6 +4,7 @@ import termsJson from '../../content/terms.json' with { type: 'json' };
 import sourcesJson from '../../content/sources.json' with { type: 'json' };
 import pathsJson from '../../content/paths.json' with { type: 'json' };
 // JSON infers per-object literal types; the content pipeline (unit-tested) guarantees the shape.
+import { markCard } from './habit';
 import type { StudyCard, StudyPath, StudySource, Term } from '../types';
 
 export const studyCards = cardsJson as unknown as StudyCard[];
@@ -40,6 +41,7 @@ export function toggleFavorite(id: string): CardProgress {
   writeProgress(next); return next;
 }
 export function visitCard(id: string): CardProgress {
+  markCard(id);
   const p = readProgress();
   const next = { favorites: p.favorites, read: p.read.includes(id) ? p.read : [...p.read, id], position: id };
   if (next.read === p.read && next.position === p.position) return p;
