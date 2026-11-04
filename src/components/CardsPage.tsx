@@ -138,6 +138,11 @@ function Card({ card, active }: { card: StudyCard; active: boolean }) {
         {card.relatedCardIds.length > 0 && <p className="chips-row">{card.relatedCardIds.map((r) => <a key={r} className="btn" href={hrefs.cards(r)}>{cardById.get(r)!.title}</a>)}</p>}
         {card.sourceIds.length > 0 && <p className="sources">{card.sourceIds.map((s, i) => { const src = sourceById.get(s); return <span key={s}>{i > 0 && '；'}{src && <a href={src.url} target="_blank" rel="noopener noreferrer">{s} 出处</a>}{card.locators[s] ? `：${card.locators[s]}` : ''}</span>; })}</p>}
       </details>
+      {path && <nav className="path-nav" aria-label="路径导航">
+        {pos > 1 && <a href={hrefs.cards(path.cardIds[pos - 2])}>‹ 路径上一张</a>}
+        <a href={hrefs.paths(path.id)}>路径目录</a>
+        {pos < path.cardIds.length && <a href={hrefs.cards(path.cardIds[pos])}>路径下一张 ›</a>}
+      </nav>}
     </div>
   </section>;
 }

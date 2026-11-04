@@ -59,6 +59,18 @@ describe('公开学习内容完整性', () => {
     expect(pathById.size).toBe(paths.length);
   });
 
+  it('前台不出现编辑说明与会议现场口吻', () => {
+    const banned = ['来源真实性', '核验边界', '未核读', '核读记录', '编辑说明', '本届', '会前', '会场', '参会'];
+    for (const c of studyCards) {
+      const text = [c.title, c.body, c.takeaway, ...c.detail, c.question ?? '', c.action ?? ''].join('\n');
+      for (const w of banned) expect(text.includes(w), `${c.id} 含「${w}」`).toBe(false);
+    }
+    for (const t of terms) {
+      const text = [t.zh, t.original, t.brief, t.detail ?? ''].join('\n');
+      for (const w of banned) expect(text.includes(w), `${t.id} 含「${w}」`).toBe(false);
+    }
+  });
+
   it('来源字段齐全且 URL 可用', () => {
     for (const s of studySources) {
       expect(s.title.length).toBeGreaterThan(3);

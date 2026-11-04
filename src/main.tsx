@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { applySettings, readSettings } from './lib/settings';
 import './styles.css';
 
@@ -13,4 +14,4 @@ if ('serviceWorker' in navigator) {
   if ('caches' in window) void caches.keys().then((keys) => keys.forEach((k) => void caches.delete(k)));
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><ErrorBoundary><App /></ErrorBoundary></StrictMode>);

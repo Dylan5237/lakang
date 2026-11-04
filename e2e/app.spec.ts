@@ -48,6 +48,11 @@ test('阅读路径：列表、开始阅读落在第一张、卡片页显示所�
   await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/cards/K001');
   await expect(page.locator('.sCard.on .path-tag')).toContainText('入门一：身体的三个入口');
   await expect(page.locator('.sCard.on .path-tag')).toContainText('1/6');
+  const nextInPath = page.locator('.sCard.on .path-nav').getByRole('link', { name: '路径下一张 ›' });
+  await nextInPath.scrollIntoViewIfNeeded();
+  await nextInPath.click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/cards/K004');
+  await expect(page.locator('.sCard.on .path-tag')).toContainText('2/6');
 });
 
 test('我的学习：统计、收藏列表、路径进度', async ({ page }) => {

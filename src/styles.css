@@ -468,3 +468,15 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .me-bar span { display: block; height: 100%; background: var(--accent); }
 .me-paths .muted { font-size: .72rem; }
 .me-note { margin: .1rem 0 .5rem; font-size: .82rem; color: var(--muted); overflow-wrap: anywhere; }
+
+/* 全局焦点可见；路径导航；错误兜底 */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.page-head .page-tools { display: flex; justify-content: flex-end; gap: .25rem; margin: -.25rem -.25rem .25rem; }
+.path-nav { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; padding-top: .6rem; border-top: 1px dashed var(--line); }
+.path-nav a {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 .8rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--bg); font-size: .8rem; text-decoration: none;
+}
+.crash { max-width: 30rem; margin: 15vh auto; padding: 1.5rem; text-align: center; }
+.crash h1 { font-family: var(--display); }
+.crash .btn { margin-top: 1rem; }

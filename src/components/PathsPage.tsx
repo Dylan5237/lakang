@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { hrefs } from '../lib/router';
 import { cardById, paths, pathById, readProgress } from '../lib/study';
 import type { StudyPath } from '../types';
+import { SearchAllButton } from './GlobalSearch';
+import { SettingsButton } from './Settings';
 
 const nextOf = (p: StudyPath, read: Set<string>) => p.cardIds.find((id) => !read.has(id)) ?? p.cardIds[0];
 
@@ -13,6 +15,7 @@ export function PathsPage({ pathId }: { pathId?: string }) {
   if (path) return <PathDetail path={path} read={read} />;
   return <main className="page paths" data-testid="paths">
     <header className="page-head">
+      <div className="page-tools"><SearchAllButton archive={null} /><SettingsButton /></div>
       <a className="btn-link" href={hrefs.home()}>返回学习首页</a>
       <h1>阅读路径</h1>
       <p className="muted">{paths.length} 条路线，覆盖全部学习卡。按顺序读，也可以只挑需要的。</p>
@@ -39,6 +42,7 @@ function PathDetail({ path, read }: { path: StudyPath; read: Set<string> }) {
   const next = nextOf(path, read);
   return <main className="page paths" data-testid="path-detail" data-path-id={path.id}>
     <header className="page-head">
+      <div className="page-tools"><SearchAllButton archive={null} /><SettingsButton /></div>
       <a className="btn-link" href={hrefs.paths()}>返回路径</a>
       <h1>{path.title}</h1>
       <p>{path.intro}</p>
