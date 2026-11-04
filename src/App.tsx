@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { clearKey } from './lib/api';
-import { hrefs, navigate, parseHash, useHash } from './lib/router';
+import { hrefs, navigate, parseHash, useHash, type Route } from './lib/router';
 import type { Archive } from './types';
 import { CardsPage } from './components/CardsPage';
 import { Flashcards } from './components/Flashcards';
@@ -11,11 +11,18 @@ import { PathsPage } from './components/PathsPage';
 import { AboutPage } from './components/AboutPage';
 import { MePage } from './components/MePage';
 import { TermsPage } from './components/TermsPage';
+import { TAB_ROUTES, TabBar } from './components/TabBar';
 
 export function App() {
+  const route = parseHash(useHash());
+  const tabbed = TAB_ROUTES.has(route.name);
+  // Same element position for every route so the unlocked archive state in Routes survives tab switches.
+  return <><div className={tabbed ? 'with-tabs' : undefined}><Routes route={route} /></div>{tabbed && <TabBar current={route.name} />}</>;
+}
+
+function Routes({ route }: { route: Route }) {
   // The clinical archive is private: only case routes need it, everything else is public study content.
   const [archive, setArchive] = useState<Archive | null>(null);
-  const route = parseHash(useHash());
   if (route.name === 'case') {
     const c = archive?.cases.find((x) => x.id === route.caseId);
     if (archive && c) return <CaseView c={c} tab={route.tab} sectionId={route.sectionId} />;
