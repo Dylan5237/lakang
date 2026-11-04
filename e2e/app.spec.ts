@@ -193,15 +193,19 @@ test('对话：目录跳转、阅读位置记忆与继续阅读', async ({ page 
   await expect.poll(() => page.locator(`[data-section-id="${target.id}"] .sec-head`).evaluate((h) => h.getBoundingClientRect().top)).toBeLessThan(260);
 });
 
-test('搜索：高亮命中、计数并跳到命中处', async ({ page }) => {
-  test.skip(Boolean(process.env.LAKANG_REAL_JSON), '虚构数据专用');
-  await openCase(page);
-  await page.getByRole('button', { name: '搜索' }).click();
-  await page.getByTestId('search').fill('父亲');
-  await expect(page.getByTestId('search-count')).toHaveText('1/1');
-  await expect(page.locator('mark', { hasText: '父亲' })).toBeVisible();
-  await expect(page.locator('.turn.current')).toBeInViewport();
-  await page.getByTestId('search').fill('不存在的词'); await expect(page.getByTestId('search-count')).toHaveText('无结果');
+test('案例页顶部收敛：标题栏+视图切换之外没有多余工具行，对话区占主要高度', async ({ page }) => {
+  await openCase(page, '#/case/case2');
+  await expect(page.getByTestId('talk')).toBeVisible();
+  await expect(page.locator('.toolbar, .searchbar')).toHaveCount(0);
+  await expect(page.locator('.appbar')).toContainText(archive().cases[1].label);
+  const m = await page.evaluate(() => {
+    const talk = document.querySelector<HTMLElement>('[data-testid="talk"]')!;
+    const appbar = document.querySelector<HTMLElement>('.appbar')!;
+    const tabs = document.querySelector<HTMLElement>('.case-tabs')!;
+    return { talk: talk.clientHeight, chrome: appbar.offsetHeight + tabs.offsetHeight, vh: innerHeight };
+  });
+  expect(m.talk / m.vh).toBeGreaterThan(0.72);
+  expect(m.chrome).toBeLessThan(120);
 });
 
 test('要点：人物图例、长卡展开、引语，切回对话', async ({ page }) => {
