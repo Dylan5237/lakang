@@ -20,11 +20,10 @@ test('案例锁屏：错误密码被拒；正确后进入；锁定后需重新�
 test('学习模块无需密码：首页入口、词典与概念卡直接可用', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('home').getByRole('heading', { level: 1 })).toHaveText('拉康随身读'); // agreed site name
-  await expect(page.getByTestId('modules')).toBeVisible();
+  await expect(page.getByTestId('today')).toBeVisible();
+  await expect(page.getByTestId('tabbar')).toBeVisible();
   await expect(page.getByTestId('locked-cases')).toBeVisible(); // clinical stays locked
-  const glow = await page.locator('.hero-glow').evaluate((e) => { const r = e.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth }; });
-  expect(glow).toEqual({ left: 0, right: glow.vw, vw: glow.vw }); // full-bleed background, no padded-container edge
-  await page.getByTestId('module-terms').click();
+  await page.getByTestId('tab-terms').click();
   await expect(page.getByTestId('terms')).toBeVisible();
   await expect(page.getByTestId('terms').locator('.term-list li')).toHaveCount(32);
   await page.getByTestId('terms-filter').fill('除权');
@@ -33,13 +32,13 @@ test('学习模块无需密码：首页入口、词典与概念卡直接可用',
   await expect(page.getByTestId('term-detail')).toContainText('forclusion');
   await expect(page.getByTestId('term-detail').locator('.case-links a').first()).toBeVisible();
   await page.goto('/#/');
-  await page.getByTestId('module-cards').click();
+  await page.getByTestId('tab-cards').click();
   await expect(page.getByTestId('cards')).toBeVisible();
 });
 
 test('阅读路径：列表、开始阅读落在第一张、卡片页显示所属路径', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('module-paths').click();
+  await page.getByTestId('tab-paths').click();
   await expect(page.getByTestId('paths').locator('.path-card')).toHaveCount(8);
   await page.locator('[data-path-id="start-body"]').getByRole('link', { name: '查看目录' }).click();
   await expect(page.getByTestId('path-detail')).toContainText('读完能够');
@@ -59,7 +58,7 @@ test('我的学习：统计、收藏列表、路径进度', async ({ page }) => 
   await page.goto('/#/cards/K008');
   await page.getByTestId('card-fav').click();
   await page.goto('/');
-  await page.getByTestId('module-me').click();
+  await page.getByTestId('tab-me').click();
   const me = page.getByTestId('me-page');
   await expect(me.locator('.stat').first()).toContainText('已读概念卡');
   await expect(page.getByTestId('fav-list')).toContainText('镜像认同');
@@ -262,7 +261,7 @@ test('节笔记：写入有标记，首页列出并可跳回，删除后消失',
   await page.getByTestId('note-save').click();
   await expect(page.locator(`[data-section-id="${first.id}"] .note-btn.has`)).toBeVisible();
   await page.getByRole('link', { name: '返回学习首页' }).click();
-  await page.getByTestId('module-me').click();
+  await page.getByTestId('tab-me').click();
   const myNotes = page.getByTestId('case-notes');
   await expect(myNotes).toContainText('我的学习笔记');
   await myNotes.locator('a').first().click();
@@ -272,7 +271,7 @@ test('节笔记：写入有标记，首页列出并可跳回，删除后消失',
   await page.getByRole('button', { name: '删除' }).click();
   await expect(page.locator(`[data-section-id="${first.id}"] .note-btn.has`)).toHaveCount(0);
   await page.getByRole('link', { name: '返回学习首页' }).click();
-  await page.getByTestId('module-me').click();
+  await page.getByTestId('tab-me').click();
   await expect(page.getByTestId('case-notes')).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('lakang:notes'))).toBe('{}');
 });

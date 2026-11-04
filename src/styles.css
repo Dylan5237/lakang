@@ -62,11 +62,8 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .lock-error { min-height: 1.5em; margin: 0; color: #c0392b; }
 
 /* 首页 */
-.home { max-width: 40rem; margin: 0 auto; padding: max(1rem, env(safe-area-inset-top)) 1rem 2.5rem; }
-.hero { padding: .5rem .25rem 1rem; }
-.hero-top { display: flex; align-items: center; justify-content: space-between; }
+.home { max-width: 40rem; margin: 0 auto; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.5rem; }
 .eyebrow { color: var(--accent); font-size: .8rem; font-weight: 700; letter-spacing: .12em; }
-.hero h1 { margin: .25rem 0 .5rem; font-size: 1.6rem; line-height: 1.35; }
 .about-toggle { border: 0; background: none; padding: .25rem 0; min-height: 40px; color: var(--muted); cursor: pointer; }
 .about { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .5rem 1rem; font-size: .9rem; color: var(--muted); }
 .about p { margin: .5rem 0; }
@@ -256,13 +253,12 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 
 /* 学习层：模块入口 / 词典 / 概念卡 */
 .section-h { font-size: .8rem; letter-spacing: .12em; color: var(--muted); margin: 1.25rem 0 .5rem; }
-.modules { display: grid; gap: .6rem; }
-.module, .case-card.locked {
+.case-card.locked {
   display: flex; flex-direction: column; gap: .2rem; padding: .8rem 1rem .7rem; text-decoration: none; color: var(--ink);
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 1px 2px rgb(0 0 0 / .04);
 }
-.module strong, .case-card.locked strong { font-size: 1.05rem; }
-.module > span, .case-card.locked > span { color: var(--muted); font-size: .82rem; }
+.case-card.locked strong { font-size: 1.05rem; }
+.case-card.locked > span { color: var(--muted); font-size: .82rem; }
 .module-go { color: var(--accent) !important; font-weight: 600; }
 .page { max-width: 42rem; margin: 0 auto; padding: max(.75rem, env(safe-area-inset-top)) 1rem 3rem; }
 .page-head h1 { margin: .2rem 0 .3rem; font-size: 1.5rem; }
@@ -310,39 +306,15 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 /* ===== 精修：字体、首页、滑动卡组、闪卡 ===== */
 :root { --display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif; }
 
-/* 首页 hero */
-.hero { padding: .9rem .25rem 1.1rem; }
-/* Full-viewport ambient light: the gradient fades to transparent inside its own box, so no clipped edge shows. */
-.hero-glow {
-  position: fixed; inset: 0 0 auto 0; height: min(46vh, 380px); z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(60% 85% at 92% -12%, color-mix(in srgb, var(--accent) 32%, transparent) 0%, transparent 60%),
-    radial-gradient(45% 70% at 104% 6%, color-mix(in srgb, var(--supervisor) 26%, transparent) 0%, transparent 58%);
-}
-.home { position: relative; }
-.home > :not(.hero-glow) { position: relative; z-index: 1; }
-.hero h1 {
-  margin: .3rem 0 .35rem; font-family: var(--display); font-size: 2.1rem; font-weight: 700; letter-spacing: .04em;
-  background: linear-gradient(120deg, var(--ink), var(--accent) 65%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.hero-sub { margin: 0; color: var(--muted); letter-spacing: .28em; font-size: .78rem; }
-
-/* 模块入口 */
-.modules { display: grid; gap: .7rem; }
-.module { position: relative; display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: .8rem; align-items: center; padding: .85rem 1rem; }
-.module .m-ico {
-  grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
-  font-family: var(--display); font-size: 1.15rem; color: #fff;
-}
-.ico-cards { background: linear-gradient(135deg, var(--analyst), color-mix(in srgb, var(--analyst) 55%, #000)); }
-.ico-review { background: linear-gradient(135deg, var(--supervisor), color-mix(in srgb, var(--supervisor) 55%, #000)); }
-.ico-terms { background: linear-gradient(135deg, var(--patient), color-mix(in srgb, var(--patient) 55%, #000)); }
-@media (prefers-color-scheme: dark) { .module .m-ico { color: #15120f; } }
-.module strong { font-size: 1.02rem; }
-.module > span:nth-of-type(2) { grid-column: 2; color: var(--muted); font-size: .78rem; }
-.module-go { grid-column: 3; grid-row: 1 / span 2; color: var(--accent); font-weight: 700; font-size: .85rem; }
-.module:active { transform: scale(.985); }
+/* 首页顶栏 */
+.topbar { padding: .6rem .1rem 1rem; }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.topbar .eyebrow { display: block; color: var(--muted); font-weight: 600; letter-spacing: .06em; }
+.topbar h1 { margin: .1rem 0 0; font-family: var(--display); font-size: 1.7rem; line-height: 1.3; letter-spacing: .04em; }
+.path-mini { display: grid; gap: .1rem; padding: .6rem .9rem; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.path-mini strong { font-family: var(--display); font-size: 1rem; }
+.path-mini .me-bar { margin: .3rem 0 .15rem; }
+.path-mini-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
 
 /* 滑动卡组（概念卡） */
 .deck { display: flex; flex-direction: column; height: 100dvh; max-width: 42rem; margin: 0 auto; }
@@ -424,11 +396,10 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .tally { display: flex; gap: 1rem; font-size: .95rem; }
 .tally .again { color: #b0563f; } .tally .good { color: var(--doctor); } .tally .easy { color: var(--supervisor); }
 @media (prefers-reduced-motion: reduce) {
-  .flip .face, .card-inner, .module, .review-progress span { transition: none; }
+  .flip .face, .card-inner, .review-progress span { transition: none; }
 }
 
 /* 阅读路径 */
-.ico-paths { background: linear-gradient(135deg, var(--doctor), color-mix(in srgb, var(--doctor) 55%, #000)); }
 .paths .path-list, .paths .path-cards { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .7rem; }
 .path-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; box-shadow: 0 1px 2px rgb(0 0 0 / .04); }
 .path-card h2 { margin: .15rem 0 .3rem; font-size: 1.15rem; }
@@ -451,7 +422,6 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .about-page .panel ul { margin: .3rem 0; padding-left: 1.2rem; }
 
 /* 我的学习 */
-.ico-me { background: linear-gradient(135deg, var(--note), color-mix(in srgb, var(--note) 55%, #000)); }
 .me-page { padding-bottom: 2.5rem; }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: .75rem 1rem; }
 .stat {
@@ -504,12 +474,10 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
   color: var(--muted); text-decoration: none; font-size: .72rem; font-weight: 600;
 }
 .tabbar a:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 10px; }
-.tab-ico {
-  display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 999px; font-size: .95rem;
-  transition: background .15s, color .15s;
-}
-.tabbar a.on { color: var(--accent); }
-.tabbar a.on .tab-ico { background: var(--accent); color: var(--accent-fg); }
+.tab-ico { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tabbar a.on .tab-ico { fill: color-mix(in srgb, var(--accent) 16%, transparent); }
+.tabbar a.on::before { content: ""; position: absolute; top: 0; width: 1.6rem; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
+.tabbar a { position: relative; }
 .resume {
   display: block; margin: 0 0 1rem; padding: 1rem 1.1rem; border-radius: var(--radius); text-decoration: none;
   background: var(--accent); color: var(--accent-fg);
@@ -517,7 +485,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .resume small { display: block; opacity: .8; font-size: .75rem; letter-spacing: .08em; }
 .resume strong { display: block; margin-top: .15rem; font-size: 1.1rem; line-height: 1.4; }
 .resume:active { transform: scale(.985); }
-@media (prefers-reduced-motion: reduce) { .tab-ico { transition: none; } .resume:active { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .resume:active { transform: none; } }
 .today { margin: 0 0 1.1rem; }
 .today .resume { margin-bottom: .6rem; }
 .today-row { display: flex; gap: .6rem; align-items: stretch; }
@@ -531,3 +499,12 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .today-review strong { font-size: 1.4rem; line-height: 1.2; color: var(--ink); }
 .today-review.due { border-color: var(--accent); }
 .today-review.due strong { color: var(--accent); }
+.appbar-title:first-child { padding-left: .5rem; }
+.appbar-title h1 { font-family: var(--display); }
+.page-head h1 { font-family: var(--display); }
+
+.page-head { position: relative; }
+.page-head .page-tools { position: absolute; top: 0; right: 0; margin: 0; }
+.page-head > h1:first-of-type, .page-head > .btn-link + h1 { padding-right: 6.5rem; }
+.page-head > h1:first-of-type { padding-top: .35rem; }
+.tabbar a.on { color: var(--accent); }

@@ -16,7 +16,6 @@ export function PathsPage({ pathId }: { pathId?: string }) {
   return <main className="page paths" data-testid="paths">
     <header className="page-head">
       <div className="page-tools"><SearchAllButton archive={null} /><SettingsButton /></div>
-      <a className="btn-link" href={hrefs.home()}>返回学习首页</a>
       <h1>阅读路径</h1>
       <p className="muted">{paths.length} 条路线，覆盖全部学习卡。按顺序读，也可以只挑需要的。</p>
     </header>

@@ -18,7 +18,6 @@ export function MePage() {
   const mastered = masteredCount(sched);
   return <main className="page me-page" data-testid="me-page">
     <header className="appbar">
-      <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>我的学习</h1><p>进度、收藏与笔记只保存在这台设备</p></div>
       <SettingsButton />
     </header>

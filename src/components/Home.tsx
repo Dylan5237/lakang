@@ -1,37 +1,36 @@
 import { useMemo, useState } from 'react';
 import { DAILY_GOAL, readHabit } from '../lib/habit';
-import { readNotes } from '../lib/notes';
 import { readPositions } from '../lib/reading';
 import { hrefs } from '../lib/router';
 import { buildItems, dueCount, readSched } from '../lib/review';
-import { cardById, paths, readProgress, studyCards, terms } from '../lib/study';
+import { cardById, paths, readProgress, studyCards } from '../lib/study';
 import type { Archive } from '../types';
 import { SearchAllButton } from './GlobalSearch';
 import { SettingsButton } from './Settings';
 
+const dateLabel = () => new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', month: 'long', day: 'numeric', weekday: 'short' }).format(new Date());
+
 export function Home({ archive, onLock }: { archive: Archive | null; onLock: () => void }) {
   const [about, setAbout] = useState(false);
   const positions = readPositions();
-  const noteCount = Object.keys(readNotes()).filter((k) => /^c[12]s\d+$/.test(k)).length;
   const progress = readProgress();
   const items = useMemo(buildItems, []);
   const readCount = progress.read.filter((id) => cardById.has(id)).length;
   const due = dueCount(items, readSched());
   const habit = readHabit();
+  const read = new Set(progress.read);
+  const active = paths.map((p) => ({ p, done: p.cardIds.filter((id) => read.has(id)).length })).filter((x) => x.done > 0 && x.done < x.p.cardIds.length).slice(0, 2);
   const resume = progress.position && cardById.has(progress.position) ? cardById.get(progress.position)! : undefined;
   return <main className="home" data-testid="home">
-    <div className="hero-glow" aria-hidden="true" />
-    <header className="hero">
-      <div className="hero-top">
-        <span className="eyebrow">拉康精神分析学习卡</span>
+    <header className="topbar">
+      <div className="topbar-row">
+        <div><span className="eyebrow">{dateLabel()}</span><h1>拉康随身读</h1></div>
         <div className="hero-tools">
           <SearchAllButton archive={archive} />
           <SettingsButton />
           {archive && <button type="button" className="ghost" onClick={onLock}>锁定</button>}
         </div>
       </div>
-      <h1>拉康随身读</h1>
-      <p className="hero-sub">概念 · 术语 · 临床演示记录</p>
     </header>
     <section className="today" aria-label="今日学习" data-testid="today">
       {resume
@@ -50,34 +49,14 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
         <a className={`today-review ${due ? 'due' : ''}`} href={hrefs.review()}><strong>{due}</strong><span>{due ? '张待复习' : '暂无复习'}</span></a>
       </div>
     </section>
-    <section aria-labelledby="learn-h"><h2 id="learn-h" className="section-h">学习</h2>
-      <div className="modules" data-testid="modules">
-        <a className="module" href={hrefs.cards(resume?.id)} data-testid="module-cards">
-          <span className="m-ico ico-cards" aria-hidden="true">卡</span>
-          <strong>概念卡</strong><span>{studyCards.length} 张 · 已读 {readCount}</span>
-          <span className="module-go">{resume ? `继续《${resume.title.slice(0, 12)}》` : '开始'}</span>
-        </a>
-        <a className="module" href={hrefs.paths()} data-testid="module-paths">
-          <span className="m-ico ico-paths" aria-hidden="true">路</span>
-          <strong>阅读路径</strong><span>{paths.length} 条路线 · 覆盖全部 {studyCards.length} 张卡</span>
-          <span className="module-go">按路径读</span>
-        </a>
-        <a className="module" href={hrefs.review()} data-testid="module-review">
-          <span className="m-ico ico-review" aria-hidden="true">复</span>
-          <strong>闪卡复习</strong><span>{due} 张到期 · 按记忆曲线安排</span>
-          <span className="module-go">{due ? '开始复习' : '暂无到期'}</span>
-        </a>
-        <a className="module" href={hrefs.terms()} data-testid="module-terms">
-          <span className="m-ico ico-terms" aria-hidden="true">词</span>
-          <strong>术语词典</strong><span>{terms.length} 条 · 含案例回链</span><span className="module-go">查阅</span>
-        </a>
-        <a className="module" href={hrefs.me()} data-testid="module-me">
-          <span className="m-ico ico-me" aria-hidden="true">我</span>
-          <strong>我的学习</strong><span>已读 {readCount} · 收藏 {progress.favorites.length} · 笔记 {noteCount}</span>
-          <span className="module-go">查看</span>
-        </a>
-      </div>
-    </section>
+    {active.length > 0 && <section aria-labelledby="learn-h"><h2 id="learn-h" className="section-h">进行中的路径</h2>
+      <ul className="path-mini-list" data-testid="paths-active">{active.map(({ p, done }) => <li key={p.id}>
+        <a className="path-mini" href={hrefs.cards(p.cardIds.find((id) => !read.has(id)))}>
+          <strong>{p.title}</strong>
+          <span className="me-bar" aria-hidden="true"><span style={{ width: `${(done / p.cardIds.length) * 100}%` }} /></span>
+          <span className="hint">已读 {done}/{p.cardIds.length} · 读下一张</span>
+        </a></li>)}</ul>
+    </section>}
     <section aria-labelledby="case-h"><h2 id="case-h" className="section-h">临床演示</h2>
       {archive ? <ol className="cases">{archive.cases.map((c, i) => {
         const turns = c.sections.reduce((n, s) => n + s.turns.length, 0);
