@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { cardById, cardOrder, pathById, paths, sourceById, studyCards, studySources, termById, terms } from '../src/lib/study';
+import { figureIds } from '../src/components/Figure';
 
 describe('公开学习内容完整性', () => {
   it('卡片顺序与卡片集一一对应，ID 唯一', () => {
@@ -69,6 +70,19 @@ describe('公开学习内容完整性', () => {
       const text = [t.zh, t.original, t.brief, t.detail ?? ''].join('\n');
       for (const w of banned) expect(text.includes(w), `${t.id} 含「${w}」`).toBe(false);
     }
+  });
+
+  it('图式：ID 存在，替代文字与图注齐全，许可文件随站发布', () => {
+    const withFig = studyCards.filter((c) => c.figure);
+    expect(withFig.map((c) => c.id)).toEqual(expect.arrayContaining(['K011', 'K088']));
+    for (const c of withFig) {
+      expect(figureIds.has(c.figure!.id), `${c.id}→${c.figure!.id}`).toBe(true);
+      expect(c.figure!.alt.length, `${c.id} alt`).toBeGreaterThan(20);
+      expect(c.figure!.caption.length, `${c.id} caption`).toBeGreaterThan(10);
+    }
+    const license = readFileSync(new URL('../public/licenses/lacan-mathemes-MIT.txt', import.meta.url), 'utf8');
+    expect(license).toContain('MIT License');
+    expect(license).toContain('Graham Joncas');
   });
 
   it('来源字段齐全且 URL 可用', () => {

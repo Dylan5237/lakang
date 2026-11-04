@@ -27,6 +27,7 @@ export function AboutPage() {
       <p>卡片先说明概念是什么、为什么要区分、原文或例子怎样支持；理论归属尽量写清，转述与他人的研究分别署名。</p>
       <p>涉及译本与口译材料时会注明：口译是现场转述，措辞与术语不等于法语原话；英译稿也不是正式校订版。</p>
       <p>本站共登记 {studySources.length} 条来源，可在卡片与术语的“出处”里查到。</p>
+      <p>三环图式据 Graham Joncas《Lacan-Mathemes》的 lacan RSI.tex 重绘（MIT 许可，许可全文随站发布）；交叉画法依《R.S.I.》1974-12-10 课。</p>
     </section>
 
     <section className="panel"><h2>隐私与本地数据</h2>

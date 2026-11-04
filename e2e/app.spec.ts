@@ -68,6 +68,24 @@ test('我的学习：统计、收藏列表、路径进度', async ({ page }) => 
   await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/cards/K008');
 });
 
+test('三环图：卡片内可见、标注在画布内、许可可查', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/#/cards/K011');
+  const fig = page.locator('.sCard.on .fig-svg');
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig).toBeVisible();
+  await expect(fig).toHaveAttribute('aria-label', /博罗米三环/);
+  const outside = await fig.evaluate((svg: SVGSVGElement) => {
+    const vb = svg.viewBox.baseVal;
+    return [...svg.querySelectorAll('text')].map((t) => t.getBBox())
+      .filter((b) => b.x < vb.x || b.y < vb.y || b.x + b.width > vb.x + vb.width || b.y + b.height > vb.y + vb.height).length;
+  });
+  expect(outside).toBe(0);
+  await expect(page.locator('.sCard.on .fig-credit')).toContainText('Lacan-Mathemes');
+  const more = page.locator('.sCard.on .fig-credit a', { hasText: 'MIT' });
+  await expect(more).toHaveAttribute('href', 'licenses/lacan-mathemes-MIT.txt');
+});
+
 test('关于本站：方法、隐私与边界入口可达', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('about-link').click();

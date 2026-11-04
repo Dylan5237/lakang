@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { hrefs } from '../lib/router';
 import { cardById, cardOrder, pathById, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
 import type { StudyCard } from '../types';
+import { Figure } from './Figure';
 import { LinkedText } from './LinkedText';
 import { Sheet } from './Sheet';
 
@@ -129,6 +130,7 @@ function Card({ card, active }: { card: StudyCard; active: boolean }) {
       <h2 className="card-title">{card.title}</h2>
       {card.body.split('\n').map((p, i) => <p key={i} className="para"><LinkedText text={p} /></p>)}
       <p className="takeaway"><LinkedText text={card.takeaway} /></p>
+      {card.figure && <Figure figure={card.figure} credit />}
       <details className="card-more">
         <summary>展开读</summary>
         {card.detail.map((d, i) => <p key={i} className="para"><LinkedText text={d} /></p>)}

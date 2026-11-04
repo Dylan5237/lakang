@@ -15,12 +15,13 @@ export interface Case {
 export interface Archive { title: string; notice: string[]; cases: Case[] }
 
 /* 公开学习层（随站点发布，来自 content/） */
+export interface CardFigure { id: string; alt: string; caption: string }
 export interface StudySource { id: string; title: string; url: string; date: string; publisher: string }
 export interface StudyCard {
   id: string; stage: string; stageLabel: string; topic: string; title: string; body: string; takeaway: string;
   detail: string[]; question: string | null; action: string | null; termIds: string[];
   sourceIds: string[]; locators: Record<string, string>; relatedCardIds: string[];
-  pathId?: string; pathTitle?: string;
+  pathId?: string; pathTitle?: string; figure?: CardFigure;
 }
 export interface StudyPath { id: string; title: string; intro: string; outcome: string; cardIds: string[] }
 export interface CaseLink { case: string; section: string; note: string }
