@@ -8,7 +8,7 @@ vi.stubGlobal('localStorage', {
   removeItem: (k: string) => void store.delete(k),
 });
 
-const { buildItems, dueCount, rate, readSched, sessionQueue } = await import('../src/lib/review');
+const { NEW_PER_DAY, buildItems, dueCount, rate, readSched, sessionQueue } = await import('../src/lib/review');
 const DAY = 86_400_000;
 
 describe('闪卡排期', () => {
@@ -33,14 +33,22 @@ describe('闪卡排期', () => {
     expect(readSched()['t:T02'].due).toBe(t0 + 1 * DAY);
   });
 
+  it('当天新卡配额用完后不再出新卡，次日恢复；已见到期的卡不受限', () => {
+    const items = buildItems();
+    const t0 = 5 * DAY;
+    items.slice(0, NEW_PER_DAY).forEach((i) => rate(i.id, 0, t0)); // forgotten: due again right away
+    expect(dueCount(items, readSched(), t0)).toBe(NEW_PER_DAY); // only the seen ones, no extra new
+    expect(dueCount(items, readSched(), t0 + DAY)).toBe(NEW_PER_DAY * 2); // next day: new quota refills
+  });
+
   it('到期与未见的卡进入队列，按最早到期排序，封顶数量', () => {
     const items = buildItems();
-    expect(dueCount(items, {}, 0)).toBe(items.length); // unseen counts as due
+    expect(dueCount(items, {}, 0)).toBe(NEW_PER_DAY); // unseen cards are rationed per day
     rate('t:T01', 1, 0); // due at 1day
     rate('t:T02', 0, 0); // due now
-    const q = sessionQueue(items, readSched(), 2 * DAY, 10);
+    const q = sessionQueue(items, readSched(), DAY / 2, 10);
     expect(q.map((i) => i.id)).toContain('t:T02');
     expect(q.map((i) => i.id)).not.toContain('t:T01'); // not yet due
-    expect(sessionQueue(items, readSched(), 2 * DAY, 1)).toHaveLength(1);
+    expect(sessionQueue(items, readSched(), DAY / 2, 1)).toHaveLength(1);
   });
 });

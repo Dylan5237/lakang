@@ -161,16 +161,15 @@ test('闪卡复习：翻面评分、完成汇总、进度仅存本机', async ({
   await expect(page.getByTestId('flip').locator('.answer')).toBeVisible();
   await expect(page.getByRole('button', { name: '记得' })).toBeEnabled();
   await page.getByRole('button', { name: '忘了' }).click();
-  await expect(page.getByTestId('review')).toContainText('2/12');
-  for (let i = 1; i < 12; i++) { await page.getByTestId('flip').click(); await page.getByRole('button', { name: '很熟' }).click(); }
+  await expect(page.getByTestId('review')).toContainText('2/8');
+  for (let i = 1; i < 8; i++) { await page.getByTestId('flip').click(); await page.getByRole('button', { name: '很熟' }).click(); }
   await expect(page.getByTestId('review-done')).toBeVisible();
   await expect(page.getByTestId('review-done')).toContainText('记得 0');
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('lakang:review') ?? '{}'));
-  expect(Object.keys(stored).length).toBe(12);
+  expect(Object.keys(stored).length).toBe(8);
   expect(JSON.stringify(stored)).not.toContain('能指'); // ids and schedule only, no card text
   await page.reload();
-  await expect(page.getByTestId('flip')).toBeVisible();
-  await expect(page.getByTestId('review')).toContainText('1/12');
+  await expect(page.getByTestId('review')).toContainText('1/1'); // only the forgotten card is due again; today's new-card quota is used up
 });
 
 test('服务器无记录时提示不可用', async ({ page }) => {

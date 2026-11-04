@@ -13,7 +13,8 @@ const RATINGS = [
 export function Flashcards() {
   const items = useMemo(buildItems, []);
   const [sched, setSched] = useState(readSched);
-  const queue = useMemo(() => sessionQueue(items, sched), [items, sched]);
+  // Frozen at session start: re-deriving it after each rating would shift the queue under the index.
+  const [queue] = useState(() => sessionQueue(items, sched));
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [tally, setTally] = useState({ again: 0, good: 0, easy: 0 });

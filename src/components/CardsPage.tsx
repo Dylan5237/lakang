@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { DAILY_GOAL, readHabit } from '../lib/habit';
 import { hrefs } from '../lib/router';
 import { cardById, cardOrder, pathById, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
 import type { StudyCard } from '../types';
@@ -87,6 +88,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
     return acc;
   }, {})), [studyCards]);
   const read = new Set(progress.read);
+  const habit = readHabit();
 
   return <main className="page deck" data-testid="cards">
     <header className="appbar deck-bar">
@@ -102,7 +104,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
       <section className="sCard end" data-end>
         <div className="card-inner">
           <h2 className="card-title">最后一张</h2>
-          <p className="para">共 {studyCards.length} 张，已读 {readCount} 张。</p>
+          <p className="para">共 {studyCards.length} 张，已读 {readCount} 张。{habit.cardsToday >= DAILY_GOAL ? `今天读了 ${habit.cardsToday} 张，目标达成。` : `今天 ${habit.cardsToday}/${DAILY_GOAL} 张。`}</p>
           <div className="btn-row"><a className="btn" href={hrefs.cards(cardOrder[0])}>回到第一张</a><a className="btn primary" href="#/review">去闪卡复习</a></div>
         </div>
       </section>
@@ -130,12 +132,15 @@ function Card({ card, active }: { card: StudyCard; active: boolean }) {
       <h2 className="card-title">{card.title}</h2>
       {card.body.split('\n').map((p, i) => <p key={i} className="para"><LinkedText text={p} /></p>)}
       <p className="takeaway"><LinkedText text={card.takeaway} /></p>
+      {(card.question || card.action) && <aside className="think" aria-label="读完想一想">
+        <h3>读完想一想</h3>
+        {card.question && <p className="qa"><strong>问</strong> <LinkedText text={card.question} /></p>}
+        {card.action && <p className="qa"><strong>练</strong> <LinkedText text={card.action} /></p>}
+      </aside>}
       {card.figure && <Figure figure={card.figure} credit />}
       <details className="card-more">
         <summary>展开读</summary>
         {card.detail.map((d, i) => <p key={i} className="para"><LinkedText text={d} /></p>)}
-        {card.question && <p className="qa"><strong>问</strong> <LinkedText text={card.question} /></p>}
-        {card.action && <p className="qa"><strong>练</strong> <LinkedText text={card.action} /></p>}
         {card.termIds.length > 0 && <p className="chips-row">{card.termIds.map((t) => termById.get(t) && <a key={t} className="btn" href={hrefs.terms(t)}>{termById.get(t)!.zh}</a>)}</p>}
         {card.relatedCardIds.length > 0 && <p className="chips-row">{card.relatedCardIds.map((r) => <a key={r} className="btn" href={hrefs.cards(r)}>{cardById.get(r)!.title}</a>)}</p>}
         {card.sourceIds.length > 0 && <p className="sources">{card.sourceIds.map((s, i) => { const src = sourceById.get(s); return <span key={s}>{i > 0 && '；'}{src && <a href={src.url} target="_blank" rel="noopener noreferrer">{s} 出处</a>}{card.locators[s] ? `：${card.locators[s]}` : ''}</span>; })}</p>}

@@ -339,9 +339,9 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .sCard .card-title { font-family: var(--display); font-size: 1.42rem; line-height: 1.5; margin: .35rem 0 .7rem; }
 .sCard .eyebrow { display: flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .75rem; font-weight: 700; letter-spacing: .12em; }
 .stage-dot { width: 8px; height: 8px; border-radius: 50%; }
-.s-concept .stage-dot { background: var(--analyst); } .s-themes .stage-dot { background: var(--doctor); }
-.s-history .stage-dot { background: var(--supervisor); } .s-clinic .stage-dot { background: var(--patient); }
-.s-question .stage-dot { background: var(--note); }
+.stage-dot.s-concept { background: var(--analyst); } .stage-dot.s-themes { background: var(--doctor); }
+.stage-dot.s-history { background: var(--supervisor); } .stage-dot.s-clinic { background: var(--patient); }
+.stage-dot.s-question { background: var(--note); }
 .sCard .takeaway {
   position: relative; margin: 1rem 0 0; padding: .8rem 1rem .8rem 1.6rem;
   border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; background: var(--analyst-bg);
@@ -354,7 +354,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 /* 闪卡复习 */
 .review { display: flex; flex-direction: column; height: 100dvh; }
 .review-progress { position: relative; height: 4px; background: var(--line); margin: 0 1rem; border-radius: 4px; overflow: hidden; }
-.review-progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--supervisor), var(--accent)); transition: width .3s; }
+.review-progress span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
 .review-progress em { position: absolute; right: 0; top: -1.65rem; font-style: normal; font-size: .78rem; color: var(--muted); }
 .flip {
   flex: 1; margin: 1.6rem 1rem 1rem; position: relative; border: 0; padding: 0; cursor: pointer;
@@ -367,8 +367,8 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
   box-shadow: 0 14px 34px -20px rgb(0 0 0 / .45);
 }
 .flip .front {
-  background: linear-gradient(150deg, color-mix(in srgb, var(--supervisor) 82%, #000), color-mix(in srgb, var(--patient) 70%, #000) 130%);
-  color: #f7f4ff;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--accent) 88%, #000), color-mix(in srgb, var(--accent) 55%, #000));
+  color: var(--accent-fg);
 }
 .flip .front strong { font-family: var(--display); font-size: 1.7rem; line-height: 1.4; }
 .flip .front small { opacity: .8; font-style: italic; }
@@ -390,8 +390,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .review-done { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; padding: 2rem; text-align: center; }
 .done-mark {
   display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%;
-  background: linear-gradient(140deg, var(--doctor), color-mix(in srgb, var(--doctor) 55%, #000));
-  color: #fff; font-size: 2.4rem;
+  background: var(--doctor-bg); color: var(--doctor); border: 2px solid var(--doctor); font-size: 2.4rem;
 }
 .tally { display: flex; gap: 1rem; font-size: .95rem; }
 .tally .again { color: #b0563f; } .tally .good { color: var(--doctor); } .tally .easy { color: var(--supervisor); }
@@ -423,7 +422,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 
 /* 我的学习 */
 .me-page { padding-bottom: 2.5rem; }
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: .75rem 1rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: .75rem 0; }
 .stat {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem; min-height: 76px; padding: .4rem;
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px; text-decoration: none; color: var(--ink); text-align: center;
@@ -432,7 +431,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .stat strong small { font-size: .7rem; color: var(--muted); font-weight: 400; }
 .stat span { font-size: .7rem; color: var(--muted); }
 .me-paths { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
-.me-paths a { display: grid; grid-template-columns: 1fr 4.5rem auto; align-items: center; gap: .6rem; min-height: 44px; text-decoration: none; color: var(--ink); }
+.me-paths a { display: grid; grid-template-columns: 1fr 4.5rem 2.8rem; align-items: center; gap: .6rem; min-height: 44px; text-decoration: none; color: var(--ink); }
 .me-path-title { font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .me-bar { height: 5px; border-radius: 5px; background: var(--line); overflow: hidden; }
 .me-bar span { display: block; height: 100%; background: var(--accent); }
@@ -508,3 +507,18 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .page-head > h1:first-of-type, .page-head > .btn-link + h1 { padding-right: 6.5rem; }
 .page-head > h1:first-of-type { padding-top: .35rem; }
 .tabbar a.on { color: var(--accent); }
+
+/* 全局手感 */
+html { -webkit-tap-highlight-color: transparent; }
+body { overscroll-behavior-y: none; }
+a, button { touch-action: manipulation; }
+
+/* 概念卡：读完想一想 */
+.think { margin: 1rem 0 0; padding: .7rem 1rem .5rem; border: 1px dashed var(--accent); border-radius: 12px; background: var(--surface); }
+.think h3 { margin: 0 0 .3rem; font-size: .75rem; letter-spacing: .14em; color: var(--accent); }
+.think .qa { margin: .35rem 0; }
+
+/* 锁屏 */
+.lock-card { padding: 2rem 1.5rem 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 18px 40px -28px rgb(0 0 0 / .5); }
+.lock h1 { font-family: var(--display); }
+.me-paths .muted { text-align: right; }
