@@ -216,6 +216,7 @@ test('要点：人物图例、长卡展开、引语，切回对话', async ({ pa
 });
 
 test('要点分层：显示层级与发言人，点节号跳到对应对话', async ({ page }) => {
+  test.skip(Boolean(process.env.LAKANG_REAL_JSON), '虚构数据专用：真实录稿的要点未采用分层标注');
   const c = archive().cases[0];
   const g = c.groups.find((x) => x.cards.some((k) => k.refs?.length))!;
   const card = g.cards.find((k) => k.refs?.length)!;

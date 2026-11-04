@@ -13,7 +13,7 @@ export function MePage() {
   const [exported, setExported] = useState(false);
   const read = new Set(progress.read.filter((id) => cardById.has(id)));
   const favs = progress.favorites.map((id) => cardById.get(id)).filter((c) => c !== undefined);
-  const caseNotes = useMemo(() => Object.entries(notes).filter(([k]) => /^c[12]s\d+$/.test(k)), [notes]);
+  const caseNotes = useMemo(() => Object.entries(notes).filter(([k]) => /^c\d+s\d+$/.test(k)), [notes]);
   const due = dueCount(items, sched);
   const mastered = masteredCount(sched);
   return <main className="page me-page" data-testid="me-page">

@@ -77,7 +77,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
       })}</ol>
         : <a className="case-card locked" href={hrefs.talk('case1')} data-testid="locked-cases">
           <strong>临床演示记录</strong>
-          <span>两场案例 · 私人资料，输入访问密码阅读</span>
+          <span>四场案例（10/28—10/31） · 私人资料，输入访问密码阅读</span>
           <span className="module-go">解锁</span>
         </a>}
     </section>

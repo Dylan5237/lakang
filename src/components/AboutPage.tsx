@@ -10,7 +10,7 @@ export function AboutPage() {
     </header>
 
     <section className="panel"><h2>这里有什么</h2>
-      <p>{studyCards.length} 张概念卡、{terms.length} 条术语、8 条阅读路径与一套按记忆曲线排期的闪卡；另有一个需要密码的私人栏目，收录两场临床演示记录的整理稿。</p>
+      <p>{studyCards.length} 张概念卡、{terms.length} 条术语、8 条阅读路径与一套按记忆曲线排期的闪卡；另有一个需要密码的私人栏目，收录四场临床演示记录（10 月 28—31 日）的整理稿。</p>
       <p>概念卡与术语随站点公开发布，打开即可阅读；临床演示记录只存放在服务器上，经密码校验后读取。</p>
     </section>
 
