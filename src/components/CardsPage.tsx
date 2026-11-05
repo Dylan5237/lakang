@@ -73,8 +73,8 @@ export function CardsPage({ cardId }: { cardId?: string }) {
     return () => { root.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
   }, []);
 
+  useEffect(() => { setProgress(visitCard(active)); }, [active]);
   useEffect(() => {
-    setProgress(visitCard(active));
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'j' || e.key === 'ArrowRight') go(1);
