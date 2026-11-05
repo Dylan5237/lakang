@@ -662,3 +662,6 @@ a, button { touch-action: manipulation; }
 
 /* 解锁后的锁定入口与图标工具同高 */
 .lock-toggle { min-width: 44px; min-height: 40px; padding: 0 .65rem; border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-1); color: var(--muted); }
+
+/* 长标题与助手回答同样避免孤字 */
+.resume strong, .case-card.locked > span, .ask-bubble { text-wrap: pretty; }
