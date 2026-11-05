@@ -28,7 +28,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
         <div className="hero-tools">
           <SearchAllButton archive={archive} />
           <SettingsButton />
-          {archive && <button type="button" className="ghost" onClick={onLock}>锁定</button>}
+          {archive && <button type="button" className="ghost lock-toggle" onClick={onLock}>锁定</button>}
         </div>
       </div>
     </header>
@@ -62,7 +62,10 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
         const turns = c.sections.reduce((n, s) => n + s.turns.length, 0);
         const pos = positions[c.id];
         const idx = c.sections.findIndex((s) => s.id === pos);
-        const analyst = c.legend.find((l) => l.role === 'analyst')?.text.replace(/^分析师\s*=\s*/, '').replace(/（.*$/, '');
+        const analyst = c.legend.find((l) => l.role === 'analyst')?.text
+          .replace(/^分析师\s*[=：:]\s*/, '')
+          .split(/\s*[=，,]\s*/)[0]
+          .replace(/（.*$/, '');
         return <li key={c.id} className="case-card" data-case-id={c.id}>
           <span className="case-no">案例 {i + 1}</span>
           <h3><a href={hrefs.talk(c.id)}>{c.label}</a></h3>

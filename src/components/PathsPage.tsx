@@ -53,11 +53,13 @@ function PathDetail({ path, read }: { path: StudyPath; read: Set<string> }) {
     <ol className="path-cards">{path.cardIds.map((id, i) => {
       const card = cardById.get(id)!;
       return <li key={id} className={`path-item ${read.has(id) ? 'done' : ''}`}>
-        <span className="path-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-        <div>
-          <a href={hrefs.cards(id)}>{card.title}</a>
-          <p className="muted">{card.stageLabel} · {card.topic}{read.has(id) ? ' · 已读' : ''}</p>
-        </div>
+        <a href={hrefs.cards(id)}>
+          <span className="path-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span className="path-item-body">
+            <strong>{card.title}</strong>
+            <span className="muted">{card.stageLabel} · {card.topic}{read.has(id) ? ' · 已读' : ''}</span>
+          </span>
+        </a>
       </li>;
     })}</ol>
   </main>;
