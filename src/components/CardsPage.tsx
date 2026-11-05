@@ -3,6 +3,7 @@ import { DAILY_GOAL, readHabit } from '../lib/habit';
 import { hrefs } from '../lib/router';
 import { cardById, cardOrder, pathById, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
 import type { StudyCard } from '../types';
+import { AskAIButton } from './AskAI';
 import { Figure } from './Figure';
 import { Fold } from './Fold';
 import { LinkedText } from './LinkedText';
@@ -98,6 +99,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
       <button type="button" className={`tool icon card-fav ${fav ? 'on' : ''}`} aria-label={fav ? '取消收藏' : '收藏'} aria-pressed={fav}
         onClick={() => setProgress(toggleFavorite(active))} data-testid="card-fav">{fav ? '★' : '☆'}</button>
       <button type="button" className="tool" onClick={() => setTocOpen(true)} data-testid="open-card-toc"><span className="tool-label">目录</span></button>
+      <AskAIButton />
     </header>
     <div className="progress" aria-hidden="true"><span style={{ width: `${((index + 1) / cardOrder.length) * 100}%` }} /></div>
     <div className="feed" ref={scroller} data-testid="feed">

@@ -3,6 +3,7 @@ import { exportNotes, readNotes } from '../lib/notes';
 import { buildItems, dueCount, masteredCount, readSched } from '../lib/review';
 import { hrefs } from '../lib/router';
 import { cardById, paths, readProgress, studyCards } from '../lib/study';
+import { AskAIButton } from './AskAI';
 import { SettingsButton } from './Settings';
 
 export function MePage() {
@@ -24,6 +25,7 @@ export function MePage() {
   return <main className="page me-page" data-testid="me-page">
     <header className="appbar">
       <div className="appbar-title"><h1>我的学习</h1><p>进度、收藏与笔记只保存在这台设备</p></div>
+      <AskAIButton />
       <SettingsButton />
     </header>
 

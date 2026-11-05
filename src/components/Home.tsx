@@ -5,6 +5,7 @@ import { hrefs } from '../lib/router';
 import { buildItems, dueCount, readSched } from '../lib/review';
 import { cardById, paths, readProgress, studyCards } from '../lib/study';
 import type { Archive } from '../types';
+import { AskAIButton } from './AskAI';
 import { SearchAllButton } from './GlobalSearch';
 import { SettingsButton } from './Settings';
 
@@ -26,9 +27,9 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
       <div className="topbar-row">
         <div><span className="eyebrow">{dateLabel()}</span><h1>拉康随身读</h1></div>
         <div className="hero-tools">
+          <AskAIButton />
           <SearchAllButton archive={archive} />
           <SettingsButton />
-          {archive && <button type="button" className="ghost lock-toggle" onClick={onLock}>锁定</button>}
         </div>
       </div>
     </header>
@@ -57,7 +58,17 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
           <span className="hint">已读 {done}/{p.cardIds.length} · 读下一张</span>
         </a></li>)}</ul>
     </section>}
-    <section aria-labelledby="case-h"><h2 id="case-h" className="section-h">临床演示</h2>
+    {active.length === 0 && <section aria-labelledby="rec-h" data-testid="recommended-paths">
+      <h2 id="rec-h" className="section-h">推荐路线</h2>
+      <ul className="path-mini-list">{paths.slice(0, 2).map((p) => <li key={p.id}>
+        <a className="path-mini" href={hrefs.cards(p.cardIds[0])}>
+          <strong>{p.title}</strong>
+          <span className="hint">{p.intro}</span>
+          <span className="hint">开始 · {p.cardIds.length} 张</span>
+        </a>
+      </li>)}</ul>
+    </section>}
+    <section aria-labelledby="case-h"><div className="section-head"><h2 id="case-h" className="section-h">临床演示</h2>{archive && <button type="button" className="section-lock" onClick={onLock}>锁定</button>}</div>
       {archive ? <ol className="cases">{archive.cases.map((c, i) => {
         const turns = c.sections.reduce((n, s) => n + s.turns.length, 0);
         const pos = positions[c.id];

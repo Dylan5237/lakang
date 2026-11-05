@@ -1,10 +1,10 @@
 export interface AiSource { id: string; type: 'card' | 'term' | 'path' | 'expert'; title: string }
-export interface AiMessage { role: 'user' | 'assistant'; content: string; sources?: AiSource[]; animFrom?: number; animBatch?: number }
+export interface AiMessage { role: 'user' | 'assistant'; content: string; sources?: AiSource[]; animFrom?: number; animBatch?: number; thinking?: string; answerAt?: number }
 
 /** POST /api/chat and consume the SSE stream. Meta arrives before the first token. */
 export async function askAI(
   messages: { role: 'user' | 'assistant'; content: string }[],
-  { signal, onMeta, onDelta }: { signal?: AbortSignal; onMeta?: (sources: AiSource[]) => void; onDelta: (text: string) => void },
+  { signal, onMeta, onThinking, onDelta }: { signal?: AbortSignal; onMeta?: (sources: AiSource[]) => void; onThinking?: (text: string) => void; onDelta: (text: string) => void },
 ): Promise<void> {
   const res = await fetch('api/chat', {
     method: 'POST',
@@ -42,9 +42,11 @@ export async function askAI(
       }
       if (payload === '[DONE]') return;
       try {
-        const chunk = JSON.parse(payload) as { choices?: { delta?: { content?: string } }[] };
-        const text = chunk.choices?.[0]?.delta?.content;
-        if (text) onDelta(text);
+        const chunk = JSON.parse(payload) as { choices?: { delta?: { content?: string; reasoning_content?: string; reasoning?: string } }[] };
+        const delta = chunk.choices?.[0]?.delta;
+        const think = delta?.reasoning_content ?? delta?.reasoning;
+        if (think) onThinking?.(think);
+        if (delta?.content) onDelta(delta.content);
       } catch { /* providers may send keep-alives */ }
     }
   }

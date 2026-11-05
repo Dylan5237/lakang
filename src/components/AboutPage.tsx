@@ -1,9 +1,11 @@
 import { hrefs } from '../lib/router';
+import { AskAIButton } from './AskAI';
 import { studyCards, terms, studySources } from '../lib/study';
 
 export function AboutPage() {
   return <main className="page about-page" data-testid="about-page">
     <header className="page-head">
+      <div className="page-tools"><AskAIButton /></div>
       <a className="btn-link" href={hrefs.home()}>返回学习首页</a>
       <h1>关于本站</h1>
       <p className="muted">拉康随身读 · 拉康精神分析学习卡</p>

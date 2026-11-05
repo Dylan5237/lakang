@@ -12,6 +12,35 @@ const SUGGESTIONS = [
 const sourceHref = (id: string, type: string) =>
   type === 'card' ? hrefs.cards(id) : type === 'term' ? hrefs.terms(id) : type === 'path' ? hrefs.paths(id) : null;
 
+export const openAskAI = () => { window.dispatchEvent(new Event('lakang:ask')); };
+
+/** Toolbar entry; the dialog itself lives once at the app root. */
+export function AskAIButton() {
+  return <button type="button" className="tool icon ask-tool" aria-label="问 AI" data-testid="ask-open" onClick={openAskAI}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5z" /><path d="M8 9h8M8 12h5" /></svg>
+  </button>;
+}
+
+/** Reasoning stream: open while thinking, fold to a one-line summary when the answer starts. */
+function Thinking({ text, answerAt, live }: { text: string; answerAt?: number; live: boolean }) {
+  const [open, setOpen] = useState(true);
+  const body = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!live) setOpen(false); }, [live]);
+  useEffect(() => { const el = body.current; if (open && live && el) el.scrollTop = el.scrollHeight; }, [text, open, live]);
+  const secs = answerAt ? Math.max(1, Math.round(answerAt / 1000)) : null;
+  return <div className={`ask-think ${open ? 'open' : ''}`} data-testid="ask-thinking">
+    <button type="button" className="ask-think-head" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+      {live && <span className="ask-think-dot" aria-hidden="true" />}
+      <span>{live ? '思考中' : '思考过程'}</span>
+      {secs !== null && <small>{secs}s</small>}
+      <span className="ask-think-ico" aria-hidden="true">⌄</span>
+    </button>
+    <div className={`ask-think-grid ${open ? 'open' : ''}`} inert={!open}>
+      <div className="ask-think-inner"><div className="ask-think-text" ref={body}>{text}</div></div>
+    </div>
+  </div>;
+}
+
 /** Newest delta renders as per-character spans; older text stays a single string. */
 function StreamText({ content, from, batch }: { content: string; from?: number; batch?: number }) {
   if (from === undefined || from >= content.length) return <>{content}</>;
@@ -32,12 +61,19 @@ export function AskAI({ enabled }: { enabled: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const abort = useRef<AbortController | null>(null);
+  const started = useRef(0);
+  const answerAt = useRef(0);
 
   useEffect(() => {
     const d = dialog.current; if (!d) return;
     if (open && !d.open) d.showModal(); else if (!open && d.open) d.close();
   }, [open]);
   useEffect(() => { if (!enabled && open) setOpen(false); }, [enabled, open]);
+  useEffect(() => {
+    const h = () => { if (enabled) setOpen(true); };
+    window.addEventListener('lakang:ask', h);
+    return () => window.removeEventListener('lakang:ask', h);
+  }, [enabled]);
   useEffect(() => {
     const el = scroller.current; if (el) el.scrollTop = el.scrollHeight;
   }, [messages, streaming]);
@@ -47,7 +83,8 @@ export function AskAI({ enabled }: { enabled: boolean }) {
     if (!q || streaming) return;
     setError(null); setInput('');
     const history = [...messages, { role: 'user' as const, content: q }];
-    setMessages([...history, { role: 'assistant', content: '' }]);
+    setMessages([...history, { role: 'assistant', content: '', thinking: '' }]);
+    started.current = Date.now(); answerAt.current = 0;
     setStreaming(true);
     const controller = new AbortController(); abort.current = controller;
     try {
@@ -58,6 +95,11 @@ export function AskAI({ enabled }: { enabled: boolean }) {
           if (last?.role === 'assistant') next[next.length - 1] = { ...last, sources };
           return next;
         }),
+        onThinking: (chunk) => setMessages((m) => {
+          const next = [...m]; const last = next[next.length - 1];
+          if (last?.role === 'assistant') next[next.length - 1] = { ...last, thinking: (last.thinking ?? '') + chunk };
+          return next;
+        }),
         onDelta: (chunk) => setMessages((m) => {
           const next = [...m]; const last = next[next.length - 1];
           if (last?.role === 'assistant') {
@@ -65,7 +107,8 @@ export function AskAI({ enabled }: { enabled: boolean }) {
             const tail = last.animFrom === undefined ? 0 : at - last.animFrom;
             // Keep a short tail alive so the 90ms blur-in is not cut short by fast deltas.
             const from = last.animFrom !== undefined && tail < 24 ? last.animFrom : at;
-            next[next.length - 1] = { ...last, content: last.content + chunk, animFrom: from, animBatch: at };
+            if (!at && !answerAt.current) answerAt.current = Date.now() - started.current;
+            next[next.length - 1] = { ...last, content: last.content + chunk, animFrom: from, animBatch: at, answerAt: answerAt.current };
           }
           return next;
         }),
@@ -73,7 +116,7 @@ export function AskAI({ enabled }: { enabled: boolean }) {
     } catch (e) {
       if ((e as Error).name !== 'AbortError') {
         setError((e as Error).message || '请求失败');
-        setMessages((m) => m[m.length - 1]?.role === 'assistant' && !m[m.length - 1].content ? m.slice(0, -1) : m);
+        setMessages((m) => m[m.length - 1]?.role === 'assistant' && !m[m.length - 1].content && !m[m.length - 1].thinking ? m.slice(0, -1) : m);
       }
     } finally {
       setStreaming(false); abort.current = null;
@@ -90,9 +133,6 @@ export function AskAI({ enabled }: { enabled: boolean }) {
   if (!enabled) return null;
 
   return <>
-    <button type="button" className="ask-fab" aria-label="问一问" aria-haspopup="dialog" onClick={() => setOpen(true)} data-testid="ask-fab">
-      <span aria-hidden="true">问</span><small>AI</small>
-    </button>
     <dialog ref={dialog} className="ask-dialog" aria-label="拉康学习助手" data-testid="ask-dialog" onClose={() => setOpen(false)}>
       {open && <>
         <header className="ask-head">
@@ -104,18 +144,17 @@ export function AskAI({ enabled }: { enabled: boolean }) {
         </header>
         <div className="ask-thread" ref={scroller} aria-live="polite">
           {messages.length === 0 && <div className="ask-empty">
-            <p className="muted">可以问概念、文本、学派差异或阅读顺序。回答优先使用站内材料；不足时会标明并延伸到拉康派的一般知识。</p>
+            <p className="muted">可以问概念、文本、学派差异或阅读顺序。回答前会先展示思考过程；回答优先使用站内材料，不足时会标明并延伸到拉康派的一般知识。</p>
             <div className="ask-suggestions">{SUGGESTIONS.map((s) => <button key={s} type="button" className="ask-chip" onClick={() => void send(s)}>{s}</button>)}</div>
           </div>}
           {messages.map((m, i) => <div key={i} className={`ask-msg ${m.role}`}>
             {m.role === 'assistant' && <span className="ask-who">助手</span>}
-            <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>
+            {m.role === 'assistant' && m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && i === messages.length - 1} />}
+            {(m.content || (m.role === 'assistant' && !m.thinking && streaming && i === messages.length - 1)) && <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>
               {m.content
                 ? <StreamText content={m.content} from={m.animFrom} batch={m.animBatch} />
-                : streaming && i === messages.length - 1
-                  ? <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>
-                  : null}
-            </div>
+                : <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>}
+            </div>}
             {m.role === 'assistant' && m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
               <span className="muted">站内相关</span>
               {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href

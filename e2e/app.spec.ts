@@ -23,6 +23,7 @@ test('学习模块无需密码：首页入口、词典与概念卡直接可用',
   await expect(page.getByTestId('today')).toBeVisible();
   await expect(page.getByTestId('tabbar')).toBeVisible();
   await expect(page.getByTestId('locked-cases')).toBeVisible(); // clinical stays locked
+  await expect(page.getByTestId('recommended-paths').locator('.path-mini')).toHaveCount(2);
   await page.getByTestId('tab-terms').click();
   await expect(page.getByTestId('terms')).toBeVisible();
   await expect(page.getByTestId('terms').locator('.term-list li')).toHaveCount(32);
@@ -251,10 +252,12 @@ test('全局搜索（公开层）：术语与概念卡命中并可跳转', async
   await expect(page.getByTestId('term-detail')).toBeVisible();
 });
 
-test('AI 助手：浮标、流式回答、站内来源与免责声明', async ({ page }) => {
+test('AI 助手：工具栏入口、思考过程、流式回答、站内来源与免责声明', async ({ page }) => {
   const sse = [
     'event: meta',
     'data: {"sources":[{"id":"K011","type":"card","title":"三环纽结"}]}',
+    '',
+    'data: {"choices":[{"delta":{"reasoning_content":"先分清两种机制。"}}]}',
     '',
     'data: {"choices":[{"delta":{"content":"博罗米"}}]}',
     '',
@@ -270,13 +273,16 @@ test('AI 助手：浮标、流式回答、站内来源与免责声明', async ({
     await route.fulfill({ status: 200, contentType: 'text/event-stream; charset=utf-8', body: sse });
   });
   await page.goto('/');
-  await page.getByTestId('ask-fab').click();
+  await page.getByTestId('ask-open').click();
   await expect(page.getByTestId('ask-dialog')).toBeVisible();
   await expect(page.getByRole('heading', { name: '问一问' })).toBeVisible();
   await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
   await page.getByTestId('ask-send').click();
   await expect(page.getByTestId('ask-answer')).toHaveText('博罗米环没有哪一环是基础。');
   await expect(page.getByTestId('ask-sources')).toContainText('三环纽结');
+  await expect(page.getByTestId('ask-thinking')).toContainText('思考过程');
+  await page.getByTestId('ask-thinking').getByRole('button').click();
+  await expect(page.getByTestId('ask-thinking')).toContainText('先分清两种机制');
   expect(posted.messages?.at(-1)?.content).toBe('三环纽结为什么没有基础？');
   expect(JSON.stringify(posted)).not.toContain('虚构发言'); // clinical records never leave the browser
   await expect(page.getByTestId('ask-dialog')).toContainText('AI 生成，可能出错');
@@ -288,7 +294,7 @@ test('AI 助手：浮标、流式回答、站内来源与免责声明', async ({
 test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await page.route('**/api/chat', (route) => route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"模型服务暂时不可用"}' }));
   await page.goto('/#/terms');
-  await page.getByTestId('ask-fab').click();
+  await page.getByTestId('ask-open').click();
   await page.getByTestId('ask-input').fill('什么是除权？');
   await page.getByTestId('ask-send').click();
   await expect(page.getByRole('alert')).toHaveText('模型服务暂时不可用');
@@ -296,7 +302,7 @@ test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await page.getByLabel('关闭').click();
   await openCase(page);
   await expect(page.getByTestId('talk')).toBeVisible();
-  await expect(page.getByTestId('ask-fab')).toHaveCount(0);
+  await expect(page.getByTestId('ask-open')).toHaveCount(0);
 });
 
 test('全局搜索（案例层）：解锁后可搜到对话与要点', async ({ page }) => {

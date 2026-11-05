@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { buildItems, dueCount, masteredCount, rate, readSched, sessionQueue, type ReviewItem } from '../lib/review';
 import { markReview } from '../lib/habit';
 import { hrefs } from '../lib/router';
+import { AskAIButton } from './AskAI';
 import { SettingsButton } from './Settings';
 
 const RATINGS = [
@@ -47,6 +48,7 @@ export function Flashcards() {
     <header className="appbar">
       <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>闪卡复习</h1><p>{due} 张待复习 · {mastered} 张已熟练</p></div>
+      <AskAIButton />
       <SettingsButton />
     </header>
     {done ? <section className="review-done" data-testid="review-done">
