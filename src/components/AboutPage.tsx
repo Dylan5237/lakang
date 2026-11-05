@@ -1,11 +1,9 @@
 import { hrefs } from '../lib/router';
-import { AskAIButton } from './AskAI';
 import { studyCards, terms, studySources } from '../lib/study';
 
 export function AboutPage() {
   return <main className="page about-page" data-testid="about-page">
     <header className="page-head">
-      <div className="page-tools"><AskAIButton /></div>
       <a className="btn-link" href={hrefs.home()}>返回学习首页</a>
       <h1>关于本站</h1>
       <p className="muted">拉康随身读 · 拉康精神分析学习卡</p>
@@ -41,7 +39,7 @@ export function AboutPage() {
     <section className="panel"><h2>AI 助手</h2>
       <p>“问一问”优先检索本站公开的概念卡、术语与阅读路径来回答；材料不足时，会标明“以下是超出本站材料的延伸”，再补充拉康派的一般理论。它的底稿里还有一组去标识的专家理论讨论要点（只保留理论表述，不含个案事实、姓名、日期或可识别细节）。</p>
       <p>临床演示记录不进入 AI：助手不读取、不检索、也不接收案例数据，案例页面上不显示入口。提问内容会发送给模型服务用于生成回答；本站不保存对话，也不记录提问内容。</p>
-      <p>回答由模型生成，可能出错或混淆文本出处；请把它当作阅读线索，重要判断仍以原文、译本与督导讨论为准。</p>
+      <p>回答由模型生成，可能出错或混淆文本出处；请把它当作阅读线索，重要判断仍以原文、译本与督导讨论为准。AI 入口头像使用 Agent Robot Avatar（MIT，<a href="licenses/agent-robot-avatar-MIT.txt">许可全文</a>）。</p>
     </section>
 
     <section className="panel"><h2>边界</h2>

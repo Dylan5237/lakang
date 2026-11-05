@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { exportNotes, readNotes } from '../lib/notes';
 import { buildItems, dueCount, masteredCount, readSched } from '../lib/review';
 import { hrefs } from '../lib/router';
-import { cardById, paths, readProgress, studyCards } from '../lib/study';
-import { AskAIButton } from './AskAI';
+import { cardById, paths, readProgress, studyCards, terms } from '../lib/study';
+import { Fold } from './Fold';
+import { TermsBrowser } from './TermsPage';
 import { SettingsButton } from './Settings';
 
 export function MePage() {
@@ -25,7 +26,6 @@ export function MePage() {
   return <main className="page me-page" data-testid="me-page">
     <header className="appbar">
       <div className="appbar-title"><h1>我的学习</h1><p>进度、收藏与笔记只保存在这台设备</p></div>
-      <AskAIButton />
       <SettingsButton />
     </header>
 
@@ -51,6 +51,11 @@ export function MePage() {
       {favs.length === 0 ? <p className="muted">还没有收藏。在概念卡右上角点 ☆ 即可。</p>
         : <ul className="case-links" data-testid="fav-list">{favs.map((c) => <li key={c.id}>
           <a href={hrefs.cards(c.id)}>{c.title}<span className="muted"> · {c.stageLabel}/{c.topic}</span></a></li>)}</ul>}
+    </section>
+
+    <section className="panel" data-testid="me-terms"><h2>词典（{terms.length}）</h2>
+      <p className="hint">按中文或原文检索，点词条查看定义、出处与案例回链。</p>
+      <Fold label={`浏览全部 ${terms.length} 条`} testId="me-terms-fold"><TermsBrowser compact testId="me" /></Fold>
     </section>
 
     <section className="panel"><h2>临床演示笔记（{caseNotes.length}）</h2>

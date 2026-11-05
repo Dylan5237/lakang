@@ -686,3 +686,37 @@ a, button { touch-action: manipulation; }
   .topbar-row { gap: .25rem; }
   .topbar h1 { font-size: 1.5rem; }
 }
+
+/* AI 页签：动态圆形头像 */
+.tabbar .ai-tab {
+  flex: 1; max-width: 8.5rem; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .08rem;
+  padding: 0; border: 0; background: none; color: var(--muted); font-size: .72rem; font-weight: var(--w-medium); cursor: pointer;
+}
+.ai-avatar {
+  position: relative; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: #1f1f1d; box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent);
+  transition: transform .24s var(--spring-over), box-shadow .3s var(--ease-out);
+}
+.ai-avatar agent-robot-avatar { display: block; width: 30px; height: 30px; }
+.ai-tab:active .ai-avatar { transform: scale(.94); }
+.ai-tab.thinking, .ai-tab.streaming, .ai-tab.done.unseen { color: var(--accent); }
+.ai-tab.error.unseen { color: var(--danger); }
+.ai-tab.thinking .ai-avatar, .ai-tab.streaming .ai-avatar { animation: ai-breathe 1.8s var(--ease-out) infinite; }
+.ai-tab.unseen .ai-avatar::after {
+  content: ""; position: absolute; top: -1px; right: -1px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 0 2px var(--surface);
+}
+.ai-tab.error.unseen .ai-avatar::after { background: var(--danger); }
+.ai-tab.done.unseen .ai-avatar {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 0 5px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+@keyframes ai-breathe {
+  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent), 0 0 0 2px color-mix(in srgb, var(--accent) 10%, transparent); }
+  50% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .ai-tab.thinking .ai-avatar, .ai-tab.streaming .ai-avatar { animation: none; } }
+
+/* 我的 → 词典：紧凑行 */
+.term-list.compact { gap: 0; margin-top: .5rem; }
+.term-list.compact a { background: none; box-shadow: none; border-radius: 0; border-bottom: 1px solid var(--line); padding: .55rem .1rem; }
+.term-list.compact li:last-child a { border-bottom: 0; }

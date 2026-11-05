@@ -5,7 +5,6 @@ import { hrefs } from '../lib/router';
 import { buildItems, dueCount, readSched } from '../lib/review';
 import { cardById, paths, readProgress, studyCards } from '../lib/study';
 import type { Archive } from '../types';
-import { AskAIButton } from './AskAI';
 import { SearchAllButton } from './GlobalSearch';
 import { SettingsButton } from './Settings';
 
@@ -27,7 +26,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
       <div className="topbar-row">
         <div><span className="eyebrow">{dateLabel()}</span><h1>拉康随身读</h1></div>
         <div className="hero-tools">
-          <AskAIButton />
+          
           <SearchAllButton archive={archive} />
           <SettingsButton />
         </div>

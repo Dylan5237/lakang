@@ -3,7 +3,6 @@ import { norm } from '../lib/reading';
 import { cardsByTerm, sourceById, termById, terms } from '../lib/study';
 import { hrefs } from '../lib/router';
 import { LinkedText } from './LinkedText';
-import { AskAIButton } from './AskAI';
 import { SearchAllButton } from './GlobalSearch';
 import { SettingsButton } from './Settings';
 
@@ -14,19 +13,26 @@ export function TermsPage({ termId }: { termId?: string }) {
   return <TermsList />;
 }
 
-function TermsList() {
+export function TermsBrowser({ compact = false, testId = 'terms' }: { compact?: boolean; testId?: 'terms' | 'me' }) {
   const [q, setQ] = useState('');
   const tokens = norm(q).split(/\s+/).filter(Boolean);
   const hit = (t: (typeof terms)[number]) => !tokens.length || tokens.every((k) => norm(`${t.zh} ${t.original} ${t.brief}`).includes(k));
   const list = terms.filter(hit);
-  return <main className="page terms" data-testid="terms">
-    <header className="page-head"><div className="page-tools"><AskAIButton /><SearchAllButton archive={null} /><SettingsButton /></div>
-      <h1>术语词典</h1><p className="muted">{terms.length} 条 · 拉康派通行用法，注明出处与案例回链</p></header>
-    <input className="gs-input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="筛选术语" aria-label="筛选术语" data-testid="terms-filter" />
-    <ul className="term-list">{list.map((t) => <li key={t.id}>
+  return <>
+    <input className="gs-input" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="筛选术语" aria-label="筛选术语"
+      data-testid={testId === 'me' ? 'me-terms-filter' : 'terms-filter'} />
+    <ul className={`term-list ${compact ? 'compact' : ''}`}>{list.map((t) => <li key={t.id}>
       <a href={hrefs.terms(t.id)}><strong>{t.zh}</strong> <span className="orig">{t.original}</span><span className="term-brief">{t.brief}</span></a>
     </li>)}</ul>
     {!list.length && <p className="muted">没有匹配的术语。</p>}
+  </>;
+}
+
+function TermsList() {
+  return <main className="page terms" data-testid="terms">
+    <header className="page-head"><div className="page-tools"><SearchAllButton archive={null} /><SettingsButton /></div>
+      <h1>术语词典</h1><p className="muted">{terms.length} 条 · 拉康派通行用法，注明出处与案例回链</p></header>
+    <TermsBrowser />
   </main>;
 }
 
@@ -34,7 +40,7 @@ function TermDetail({ id }: { id: string }) {
   const t = termById.get(id)!;
   const used = cardsByTerm(id);
   return <main className="page terms detail" data-testid="term-detail">
-    <header className="page-head"><div className="page-tools"><AskAIButton /><SearchAllButton archive={null} /><SettingsButton /></div>
+    <header className="page-head"><div className="page-tools"><SearchAllButton archive={null} /><SettingsButton /></div>
       <a className="btn-link" href={hrefs.terms()}>返回词典</a>
       <h1>{t.zh} <span className="orig">{t.original}</span></h1>
     </header>

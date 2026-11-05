@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import http from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { cardOrder, studyCards } from '../src/lib/study';
 import { KEY, archive, serveArchive, openCase } from './fixture';
 
@@ -24,12 +26,15 @@ test('学习模块无需密码：首页入口、词典与概念卡直接可用',
   await expect(page.getByTestId('tabbar')).toBeVisible();
   await expect(page.getByTestId('locked-cases')).toBeVisible(); // clinical stays locked
   await expect(page.getByTestId('recommended-paths').locator('.path-mini')).toHaveCount(2);
-  await page.getByTestId('tab-terms').click();
-  await expect(page.getByTestId('terms')).toBeVisible();
-  await expect(page.getByTestId('terms').locator('.term-list li')).toHaveCount(32);
-  await page.getByTestId('terms-filter').fill('除权');
-  await expect(page.getByTestId('terms').locator('.term-list li')).toHaveCount(1);
-  await page.getByTestId('terms').locator('.term-list a').click();
+  await expect(page.getByTestId('tab-ai')).toBeVisible();
+  await expect(page.getByTestId('tab-terms')).toHaveCount(0);
+  await page.getByTestId('tab-me').click();
+  await expect(page.getByTestId('me-terms')).toBeVisible();
+  await page.getByTestId('me-terms-fold').locator('.fold-btn').click();
+  await expect(page.getByTestId('me-terms').locator('.term-list li')).toHaveCount(32);
+  await page.getByTestId('me-terms-filter').fill('除权');
+  await expect(page.getByTestId('me-terms').locator('.term-list li')).toHaveCount(1);
+  await page.getByTestId('me-terms').locator('.term-list a').click();
   await expect(page.getByTestId('term-detail')).toContainText('forclusion');
   await expect(page.getByTestId('term-detail').locator('.case-links a').first()).toBeVisible();
   await page.goto('/#/');
@@ -252,7 +257,7 @@ test('全局搜索（公开层）：术语与概念卡命中并可跳转', async
   await expect(page.getByTestId('term-detail')).toBeVisible();
 });
 
-test('AI 助手：工具栏入口、思考过程、流式回答、站内来源与免责声明', async ({ page }) => {
+test('AI 助手：页签入口、思考过程、流式回答、站内来源与免责声明', async ({ page }) => {
   const sse = [
     'event: meta',
     'data: {"sources":[{"id":"K011","type":"card","title":"三环纽结"}]}',
@@ -273,7 +278,7 @@ test('AI 助手：工具栏入口、思考过程、流式回答、站内来源�
     await route.fulfill({ status: 200, contentType: 'text/event-stream; charset=utf-8', body: sse });
   });
   await page.goto('/');
-  await page.getByTestId('ask-open').click();
+  await page.getByTestId('tab-ai').click();
   await expect(page.getByTestId('ask-dialog')).toBeVisible();
   await expect(page.getByRole('heading', { name: '问一问' })).toBeVisible();
   await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
@@ -291,10 +296,44 @@ test('AI 助手：工具栏入口、思考过程、流式回答、站内来源�
   await expect(page.getByTestId('ask-dialog')).toBeHidden();
 });
 
+
+test('AI 页签：关闭对话后切页，页签依次显示思考中/回答中/已回答', async ({ page }) => {
+  const sse = http.createServer(async (req, res) => {
+    if (req.method !== 'POST') { res.writeHead(404); return res.end(); }
+    res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.write('event: meta\ndata: {"sources":[{"id":"K011","type":"card","title":"三环纽结"}]}\n\n');
+    res.write('data: {"choices":[{"delta":{"reasoning_content":"先分清两种机制。"}}]}\n\n');
+    await new Promise((r) => setTimeout(r, 700));
+    res.write('data: {"choices":[{"delta":{"content":"博罗米环没有基础。"}}]}\n\n');
+    await new Promise((r) => setTimeout(r, 700));
+    res.end('data: [DONE]\n\n');
+  });
+  await new Promise<void>((r) => sse.listen(0, '127.0.0.1', r));
+  const port = (sse.address() as AddressInfo).port;
+  try {
+    await page.route('**/api/chat', (r) => r.continue({ url: `http://127.0.0.1:${port}/api/chat` }));
+    await page.goto('/');
+    await page.getByTestId('tab-ai').click();
+    await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
+    await page.getByTestId('ask-send').click();
+    await expect(page.getByTestId('tab-ai')).toContainText('思考中');
+    await page.getByRole('button', { name: '关闭' }).click();
+    await page.getByTestId('tab-paths').click();
+    await expect(page.getByTestId('tab-ai')).toContainText('思考中');
+    await expect(page.getByTestId('tab-ai')).toContainText('回答中', { timeout: 5000 });
+    await expect(page.getByTestId('tab-ai')).toContainText('已回答', { timeout: 5000 });
+    await page.getByTestId('tab-ai').click();
+    await expect(page.getByTestId('tab-ai')).toHaveText('AI');
+    await expect(page.getByTestId('ask-answer')).toHaveText('博罗米环没有基础。');
+  } finally {
+    await new Promise<void>((r) => sse.close(() => r()));
+  }
+});
+
 test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await page.route('**/api/chat', (route) => route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"模型服务暂时不可用"}' }));
   await page.goto('/#/terms');
-  await page.getByTestId('ask-open').click();
+  await page.getByTestId('tab-ai').click();
   await page.getByTestId('ask-input').fill('什么是除权？');
   await page.getByTestId('ask-send').click();
   await expect(page.getByRole('alert')).toHaveText('模型服务暂时不可用');
@@ -303,6 +342,7 @@ test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await openCase(page);
   await expect(page.getByTestId('talk')).toBeVisible();
   await expect(page.getByTestId('ask-open')).toHaveCount(0);
+  await expect(page.getByTestId('tab-ai')).toHaveCount(0);
 });
 
 test('全局搜索（案例层）：解锁后可搜到对话与要点', async ({ page }) => {
@@ -371,7 +411,7 @@ for (const width of [320, 390]) for (const scale of [1, 1.45]) {
           const b = el.getBoundingClientRect(); if (b.width && b.right > vw + 1) bad.push(`${el.tagName}.${el.className}`);
         });
         const small = [...document.querySelectorAll<HTMLElement>('main button, main a, main input')]
-          .filter((e) => e.offsetParent && !e.closest('.note-body, .para, .sources') && !e.closest('.sCard:not(.on)')) // inline text links are content; off-screen deck cards are scaled
+          .filter((e) => e.offsetParent && !e.closest('.note-body, .para, .sources, .about-page .panel') && !e.closest('.sCard:not(.on)')) // inline text links are content; off-screen deck cards are scaled
           .map((e) => ({ t: (e.textContent || e.getAttribute('aria-label') || '').trim().slice(0, 6), b: e.getBoundingClientRect() }))
           .filter(({ b }) => b.height < 40 || b.width < 40).map(({ t, b }) => `${t} ${Math.round(b.width)}x${Math.round(b.height)}`);
         return { scroll: document.documentElement.scrollWidth - vw, bad: bad.slice(0, 3), small };
