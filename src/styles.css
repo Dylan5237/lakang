@@ -623,10 +623,10 @@ a, button { touch-action: manipulation; }
 }
 
 /* 欠阻尼微弹：收藏与完成对勾 */
-.card-fav.on { animation: fav-pop .42s var(--spring-under); }
+.card-fav.on { animation: fav-pop .38s var(--spring-under); }
 @keyframes fav-pop {
-  0% { transform: scale(1); } 35% { transform: scale(1.22); }
-  62% { transform: scale(.96); } 84% { transform: scale(1.03); } 100% { transform: scale(1); }
+  0% { transform: scale(1); } 35% { transform: scale(1.12); }
+  62% { transform: scale(.98); } 84% { transform: scale(1.015); } 100% { transform: scale(1); }
 }
 @keyframes check-pop {
   0% { transform: scale(.72); opacity: 0; } 55% { transform: scale(1.08); opacity: 1; }
