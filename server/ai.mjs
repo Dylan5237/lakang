@@ -88,7 +88,11 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/health') return json(res, 200, { ok: true, model: ARK_MODEL, publicChunks: publicChunks.length, expertChunks: expertChunks.length }, cors);
   if (req.method !== 'POST' || req.url !== '/api/chat') { res.writeHead(404, cors); return res.end('not found'); }
 
-  const ip = req.socket.remoteAddress || 'unknown';
+  // Behind nginx the socket peer is always loopback; trust X-Real-IP only from there.
+  const peer = req.socket.remoteAddress || 'unknown';
+  const ip = (peer === '127.0.0.1' || peer === '::1' || peer === '::ffff:127.0.0.1') && typeof req.headers['x-real-ip'] === 'string'
+    ? req.headers['x-real-ip']
+    : peer;
   const why = limited(ip);
   if (why) return json(res, 429, { error: why === 'global' ? '当前提问较多，请稍后再试' : '请求太频繁，请稍后再试' }, cors);
 
@@ -162,4 +166,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`[ready] http://127.0.0.1:${PORT} model=${ARK_MODEL} public=${publicChunks.length} experts=${expertChunks.length}`));
+server.listen(PORT, '127.0.0.1', () => console.log(`[ready] http://127.0.0.1:${PORT} model=${ARK_MODEL} public=${publicChunks.length} experts=${expertChunks.length}`));
