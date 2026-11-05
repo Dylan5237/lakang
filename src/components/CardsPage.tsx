@@ -97,7 +97,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
       <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>概念卡</h1><p>已读 {readCount}/{studyCards.length} · {index + 1}/{cardOrder.length} · 上下滑动换卡</p></div>
       <button type="button" className={`tool icon card-fav ${fav ? 'on' : ''}`} aria-label={fav ? '取消收藏' : '收藏'} aria-pressed={fav}
-        onClick={() => setProgress(toggleFavorite(active))} data-testid="card-fav">{fav ? '★' : '☆'}</button>
+        onClick={() => setProgress(toggleFavorite(active))} data-testid="card-fav"><svg viewBox="0 0 24 24" aria-hidden="true" style={fav ? { fill: "currentColor" } : undefined}><path d="m12 4.2 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z" /></svg></button>
       <button type="button" className="tool" onClick={() => setTocOpen(true)} data-testid="open-card-toc"><span className="tool-label">目录</span></button>
       <AskAIButton />
     </header>

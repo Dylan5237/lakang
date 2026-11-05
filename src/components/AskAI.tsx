@@ -13,18 +13,16 @@ const SUGGESTIONS = [
 const sourceHref = (id: string, type: string) =>
   type === 'card' ? hrefs.cards(id) : type === 'term' ? hrefs.terms(id) : type === 'path' ? hrefs.paths(id) : null;
 
-function RobotIcon({ className }: { className?: string }) {
+function SparkIcon({ className }: { className?: string }) {
   return <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="4.5" y="7.5" width="15" height="12" rx="3.5" />
-    <path d="M9.2 12.2v2.4M14.8 12.2v2.4M12 7.5V5" />
-    <circle cx="12" cy="3.8" r="1.1" />
+    <path d="M11 4.5c.7 4.4 2.6 6.3 7 7-4.4.7-6.3 2.6-7 7-.7-4.4-2.6-6.3-7-7 4.4-.7 6.3-2.6 7-7zM18.5 3.5v3M17 5h3" />
   </svg>;
 }
 
 /** Compact entry on immersive pages that do not render the tab bar. */
 export function AskAIButton() {
   return <a className="tool icon ask-tool" href={hrefs.ai()} aria-label="问 AI" data-testid="ask-open">
-    <RobotIcon />
+    <SparkIcon />
   </a>;
 }
 
@@ -123,7 +121,7 @@ export function AskAIPage() {
     <div className={`ask-thread ${messages.length === 0 ? 'at-rest' : ''}`} ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
         <div className="ask-hero">
-          <span className="ask-hero-mark" aria-hidden="true"><RobotIcon /></span>
+          <span className="ask-hero-mark" aria-hidden="true"><SparkIcon /></span>
           <h2>有什么想弄清的？</h2>
           <p>概念、文本、学派差异，或一条阅读顺序。</p>
           <small>默认快速回答；需要看推理时，可开启深度思考。</small>
@@ -137,7 +135,7 @@ export function AskAIPage() {
       {messages.map((m, i) => m.role === 'user'
         ? <div key={i} className="ask-msg user"><div className="ask-user">{m.content}</div></div>
         : <div key={i} className="ask-msg assistant">
-          <span className="ask-avatar" aria-hidden="true"><RobotIcon /></span>
+          <span className="ask-avatar" aria-hidden="true"><SparkIcon /></span>
           <div className="ask-body">
             {m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && i === messages.length - 1} />}
             {(m.content || (!m.thinking && streaming && i === messages.length - 1)) && <div className="ask-prose" data-testid="ask-answer">

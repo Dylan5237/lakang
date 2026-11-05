@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { applySettings, readSettings } from './lib/settings';
+import '@fontsource/noto-serif-sc/500.css';
+import '@fontsource/noto-serif-sc/600.css';
 import './styles.css';
 
 // Reading preferences persist across visits; apply before first paint.
