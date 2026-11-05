@@ -16,7 +16,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "agent-robot-avatar": "^0.7.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

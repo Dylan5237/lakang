@@ -1,9 +1,6 @@
-import { createElement, useEffect, useRef, useSyncExternalStore } from 'react';
-import 'agent-robot-avatar/lite';
-import type { AgentRobotAvatar } from 'agent-robot-avatar';
+import { useSyncExternalStore } from 'react';
 import { hrefs, type Route } from '../lib/router';
-import { getAiStatus, subscribeAiStatus, type AiPhase } from '../lib/aiStatus';
-import { openAskAI } from './AskAI';
+import { getAiStatus, subscribeAiStatus } from '../lib/aiStatus';
 
 const TABS = [
   { name: 'home', label: '学习', href: hrefs.home(), icon: 'M4 11.5 12 4l8 7.5V20h-5.5v-5h-5v5H4z' },
@@ -12,32 +9,8 @@ const TABS = [
   { name: 'me', label: '我的', href: hrefs.me(), icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 20a7.5 7.5 0 0 1 15 0' },
 ] as const;
 
-/** Top-level destinations; the immersive pages (card deck, review, case reader) render without it. */
-export const TAB_ROUTES: ReadonlySet<Route['name']> = new Set(['home', 'paths', 'terms', 'me', 'about']);
-
-function AiAvatar({ phase }: { phase: AiPhase }) {
-  const ref = useRef<AgentRobotAvatar>(null);
-  useEffect(() => {
-    const a = ref.current; if (!a) return;
-    a.setPointerFollow(false);
-    if (phase === 'thinking') void a.startWaiting({ variant: 'spin' });
-    else if (phase === 'streaming') void a.startWaiting({ variant: 'wave' });
-    else if (phase === 'done') void a.play('success');
-    else if (phase === 'error') void a.play('failure');
-    else { a.stopWaiting(); a.reset(); }
-  }, [phase]);
-  useEffect(() => () => { ref.current?.stopWaiting(); }, []);
-  return createElement('agent-robot-avatar', {
-    ref,
-    size: '30',
-    color: '#f5f5f3',
-    motion: 'auto',
-    'auto-sleep': '0',
-    'press-squeeze': 'false',
-    'antenna-drag': 'false',
-    'aria-hidden': 'true',
-  });
-}
+/** Top-level destinations; immersive pages (card deck, review, case reader) render without it. */
+export const TAB_ROUTES: ReadonlySet<Route['name']> = new Set(['home', 'paths', 'terms', 'me', 'about', 'ai']);
 
 export function TabBar({ current }: { current: Route['name'] }) {
   const active = current === 'about' ? 'home' : current === 'terms' ? 'me' : current;
@@ -51,11 +24,11 @@ export function TabBar({ current }: { current: Route['name'] }) {
   </a>;
   return <nav className="tabbar" aria-label="主导航" data-testid="tabbar">
     {TABS.slice(0, 3).map(tab)}
-    <button type="button" className={`ai-tab ${st.phase} ${st.unseen ? 'unseen' : ''}`} data-testid="tab-ai"
-      aria-label={label === 'AI' ? '问 AI' : `问 AI，${label}`} aria-haspopup="dialog" onClick={openAskAI}>
-      <span className="ai-avatar"><AiAvatar phase={st.phase} /></span>
+    <a href={hrefs.ai()} className={`ai-tab ${st.phase} ${st.unseen ? 'unseen' : ''} ${active === 'ai' ? 'on' : ''}`}
+      data-testid="tab-ai" aria-label={label === 'AI' ? '问 AI' : `问 AI，${label}`} aria-current={active === 'ai' ? 'page' : undefined}>
+      <span className="ai-ico-wrap"><svg className="tab-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5zM8 9h8M8 12h5" /></svg></span>
       <span className="tab-label">{label}</span>
-    </button>
+    </a>
     {TABS.slice(3).map(tab)}
   </nav>;
 }

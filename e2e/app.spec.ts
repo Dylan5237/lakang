@@ -279,7 +279,7 @@ test('AI 助手：页签入口、思考过程、流式回答、站内来源与�
   });
   await page.goto('/');
   await page.getByTestId('tab-ai').click();
-  await expect(page.getByTestId('ask-dialog')).toBeVisible();
+  await expect(page.getByTestId('ai-page')).toBeVisible();
   await expect(page.getByRole('heading', { name: '问一问' })).toBeVisible();
   await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
   await page.getByTestId('ask-send').click();
@@ -290,14 +290,14 @@ test('AI 助手：页签入口、思考过程、流式回答、站内来源与�
   await expect(page.getByTestId('ask-thinking')).toContainText('先分清两种机制');
   expect(posted.messages?.at(-1)?.content).toBe('三环纽结为什么没有基础？');
   expect(JSON.stringify(posted)).not.toContain('虚构发言'); // clinical records never leave the browser
-  await expect(page.getByTestId('ask-dialog')).toContainText('AI 生成，可能出错');
+  await expect(page.getByTestId('ai-page')).toContainText('AI 生成，可能出错');
   await page.getByTestId('ask-sources').getByRole('link', { name: '三环纽结' }).click();
   await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/cards/K011');
-  await expect(page.getByTestId('ask-dialog')).toBeHidden();
+  await expect(page.getByTestId('ai-page')).toHaveCount(0);
 });
 
 
-test('AI 页签：关闭对话后切页，页签依次显示思考中/回答中/已回答', async ({ page }) => {
+test('AI 页签：离开页面后切页，页签依次显示思考中/回答中/已回答', async ({ page }) => {
   const sse = http.createServer(async (req, res) => {
     if (req.method !== 'POST') { res.writeHead(404); return res.end(); }
     res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -317,7 +317,7 @@ test('AI 页签：关闭对话后切页，页签依次显示思考中/回答中/
     await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
     await page.getByTestId('ask-send').click();
     await expect(page.getByTestId('tab-ai')).toContainText('思考中');
-    await page.getByRole('button', { name: '关闭' }).click();
+    await page.getByRole('button', { name: '返回' }).click();
     await page.getByTestId('tab-paths').click();
     await expect(page.getByTestId('tab-ai')).toContainText('思考中');
     await expect(page.getByTestId('tab-ai')).toContainText('回答中', { timeout: 5000 });
@@ -338,7 +338,7 @@ test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await page.getByTestId('ask-send').click();
   await expect(page.getByRole('alert')).toHaveText('模型服务暂时不可用');
   await expect(page.getByTestId('ask-answer')).toHaveCount(0);
-  await page.getByLabel('关闭').click();
+  await page.getByRole('button', { name: '返回' }).click();
   await openCase(page);
   await expect(page.getByTestId('talk')).toBeVisible();
   await expect(page.getByTestId('ask-open')).toHaveCount(0);
@@ -403,7 +403,7 @@ for (const width of [320, 390]) for (const scale of [1, 1.45]) {
     await page.setViewportSize({ width, height: 700 });
     await page.addInitScript((s) => { document.documentElement.style.fontSize = `${16 * s}px`; }, scale);
     await openCase(page);
-    for (const hash of ['#/','#/paths','#/paths/start-body','#/terms','#/terms/T27','#/cards','#/me','#/about','#/case/case1','#/case/case1/notes','#/case/case2']) {
+    for (const hash of ['#/','#/paths','#/paths/start-body','#/terms','#/terms/T27','#/cards','#/me','#/about','#/ai','#/case/case1','#/case/case1/notes','#/case/case2']) {
       await page.goto('/' + hash); await expect(page.locator('main').first()).toBeVisible();
       const r = await page.evaluate(() => {
         const vw = document.documentElement.clientWidth; const bad: string[] = [];

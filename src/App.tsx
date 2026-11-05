@@ -11,14 +11,14 @@ import { PathsPage } from './components/PathsPage';
 import { AboutPage } from './components/AboutPage';
 import { MePage } from './components/MePage';
 import { TermsPage } from './components/TermsPage';
-import { AskAI } from './components/AskAI';
+import { AskAIPage } from './components/AskAI';
 import { TAB_ROUTES, TabBar } from './components/TabBar';
 
 export function App() {
   const route = parseHash(useHash());
   const tabbed = TAB_ROUTES.has(route.name);
   // Same element position for every route so the unlocked archive state in Routes survives tab switches.
-  return <><div className={tabbed ? 'with-tabs' : undefined}><Routes route={route} /></div>{tabbed && <TabBar current={route.name} />}<AskAI enabled={route.name !== 'case'} /></>;
+  return <><div className={tabbed ? 'with-tabs' : undefined} data-route={route.name}><Routes route={route} /></div>{tabbed && <TabBar current={route.name} />}</>;
 }
 
 function Routes({ route }: { route: Route }) {
@@ -30,6 +30,7 @@ function Routes({ route }: { route: Route }) {
     return <LockScreen onOpen={setArchive} />;
   }
   if (route.name === 'terms') return <TermsPage termId={route.termId} />;
+  if (route.name === 'ai') return <AskAIPage />;
   if (route.name === 'cards') return <CardsPage cardId={route.cardId} />;
   if (route.name === 'review') return <Flashcards />;
   if (route.name === 'paths') return <PathsPage pathId={route.pathId} />;
