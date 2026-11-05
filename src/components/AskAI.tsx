@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { askAI, type AiMessage } from '../lib/ai';
 import { hrefs } from '../lib/router';
 
@@ -11,6 +11,17 @@ const SUGGESTIONS = [
 
 const sourceHref = (id: string, type: string) =>
   type === 'card' ? hrefs.cards(id) : type === 'term' ? hrefs.terms(id) : type === 'path' ? hrefs.paths(id) : null;
+
+/** Newest delta renders as per-character spans; older text stays a single string. */
+function StreamText({ content, from, batch }: { content: string; from?: number; batch?: number }) {
+  if (from === undefined || from >= content.length) return <>{content}</>;
+  const head = content.slice(0, from);
+  const tail = [...content.slice(from)];
+  return <>{head}{tail.map((ch, i) => (
+    <span key={from + i} className="ask-tok"
+      style={{ '--d': Math.min(Math.max(0, from + i - (batch ?? from + i)), 12) } as CSSProperties}>{ch}</span>
+  ))}</>;
+}
 
 export function AskAI({ enabled }: { enabled: boolean }) {
   const [open, setOpen] = useState(false);
@@ -49,7 +60,13 @@ export function AskAI({ enabled }: { enabled: boolean }) {
         }),
         onDelta: (chunk) => setMessages((m) => {
           const next = [...m]; const last = next[next.length - 1];
-          if (last?.role === 'assistant') next[next.length - 1] = { ...last, content: last.content + chunk };
+          if (last?.role === 'assistant') {
+            const at = last.content.length;
+            const tail = last.animFrom === undefined ? 0 : at - last.animFrom;
+            // Keep a short tail alive so the 90ms blur-in is not cut short by fast deltas.
+            const from = last.animFrom !== undefined && tail < 24 ? last.animFrom : at;
+            next[next.length - 1] = { ...last, content: last.content + chunk, animFrom: from, animBatch: at };
+          }
           return next;
         }),
       });
@@ -60,6 +77,12 @@ export function AskAI({ enabled }: { enabled: boolean }) {
       }
     } finally {
       setStreaming(false); abort.current = null;
+      // Fold the animated tail back into plain text once the stream ends.
+      setMessages((m) => {
+        const next = [...m]; const last = next[next.length - 1];
+        if (last?.role === 'assistant' && last.animFrom !== undefined) next[next.length - 1] = { ...last, animFrom: undefined, animBatch: undefined };
+        return next;
+      });
     }
   };
 
@@ -86,7 +109,9 @@ export function AskAI({ enabled }: { enabled: boolean }) {
           </div>}
           {messages.map((m, i) => <div key={i} className={`ask-msg ${m.role}`}>
             {m.role === 'assistant' && <span className="ask-who">助手</span>}
-            <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>{m.content || (streaming && i === messages.length - 1 ? '…' : '')}</div>
+            <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>
+              <StreamText content={m.content || (streaming && i === messages.length - 1 ? '…' : '')} from={m.content ? m.animFrom : undefined} batch={m.animBatch} />
+            </div>
             {m.role === 'assistant' && m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
               <span className="muted">站内相关</span>
               {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href

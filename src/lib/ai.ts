@@ -1,5 +1,5 @@
 export interface AiSource { id: string; type: 'card' | 'term' | 'path' | 'expert'; title: string }
-export interface AiMessage { role: 'user' | 'assistant'; content: string; sources?: AiSource[] }
+export interface AiMessage { role: 'user' | 'assistant'; content: string; sources?: AiSource[]; animFrom?: number; animBatch?: number }
 
 /** POST /api/chat and consume the SSE stream. Meta arrives before the first token. */
 export async function askAI(

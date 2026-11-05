@@ -4,6 +4,7 @@ import { hrefs } from '../lib/router';
 import { cardById, cardOrder, pathById, readProgress, sourceById, studyCards, termById, toggleFavorite, visitCard } from '../lib/study';
 import type { StudyCard } from '../types';
 import { Figure } from './Figure';
+import { Fold } from './Fold';
 import { LinkedText } from './LinkedText';
 import { Sheet } from './Sheet';
 
@@ -94,7 +95,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
     <header className="appbar deck-bar">
       <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>概念卡</h1><p>已读 {readCount}/{studyCards.length} · {index + 1}/{cardOrder.length} · 上下滑动换卡</p></div>
-      <button type="button" className={`tool icon ${fav ? 'on' : ''}`} aria-label={fav ? '取消收藏' : '收藏'} aria-pressed={fav}
+      <button type="button" className={`tool icon card-fav ${fav ? 'on' : ''}`} aria-label={fav ? '取消收藏' : '收藏'} aria-pressed={fav}
         onClick={() => setProgress(toggleFavorite(active))} data-testid="card-fav">{fav ? '★' : '☆'}</button>
       <button type="button" className="tool" onClick={() => setTocOpen(true)} data-testid="open-card-toc"><span className="tool-label">目录</span></button>
     </header>
@@ -138,13 +139,12 @@ function Card({ card, active }: { card: StudyCard; active: boolean }) {
         {card.action && <p className="qa"><strong>练</strong> <LinkedText text={card.action} /></p>}
       </aside>}
       {card.figure && <Figure figure={card.figure} credit />}
-      <details className="card-more">
-        <summary>展开读</summary>
+      <Fold label="展开读" testId="card-more">
         {card.detail.map((d, i) => <p key={i} className="para"><LinkedText text={d} /></p>)}
         {card.termIds.length > 0 && <p className="chips-row">{card.termIds.map((t) => termById.get(t) && <a key={t} className="btn" href={hrefs.terms(t)}>{termById.get(t)!.zh}</a>)}</p>}
         {card.relatedCardIds.length > 0 && <p className="chips-row">{card.relatedCardIds.map((r) => <a key={r} className="btn" href={hrefs.cards(r)}>{cardById.get(r)!.title}</a>)}</p>}
         {card.sourceIds.length > 0 && <p className="sources">{card.sourceIds.map((s, i) => { const src = sourceById.get(s); return <span key={s}>{i > 0 && '；'}{src && <a href={src.url} target="_blank" rel="noopener noreferrer">{s} 出处</a>}{card.locators[s] ? `：${card.locators[s]}` : ''}</span>; })}</p>}
-      </details>
+      </Fold>
       {path && <nav className="path-nav" aria-label="路径导航">
         {pos > 1 && <a href={hrefs.cards(path.cardIds[pos - 2])}>‹ 路径上一张</a>}
         <a href={hrefs.paths(path.id)}>路径目录</a>

@@ -135,7 +135,9 @@ test('概念卡：滑动换卡、按钮翻卡、收藏持久、目录与K链接'
   if (withRef) {
     await page.goto('/#/cards/' + withRef.id);
     await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${withRef.id}`);
-    await active.locator('details').evaluate((d) => { (d as HTMLDetailsElement).open = true; });
+    await active.locator('.fold-btn').scrollIntoViewIfNeeded();
+    await active.locator('.fold-btn').click();
+    await expect(active.locator('.fold-btn')).toHaveAttribute('aria-expanded', 'true');
     const target = await active.locator('.kref').first().getAttribute('href');
     expect(target).toMatch(/^#\/cards\/K\d{3}$/);
     await page.goto(target!); // follow the K-link like a tap would
@@ -147,7 +149,8 @@ test('概念卡：术语与相关卡互链可达', async ({ page }) => {
   const withTerms = studyCards.find((c) => c.termIds.length > 0)!;
   await page.goto('/#/cards/' + withTerms.id);
   const active = page.locator('.sCard.on');
-  await active.locator('details > summary').click();
+  await active.locator('.fold-btn').scrollIntoViewIfNeeded();
+  await active.locator('.fold-btn').click();
   await active.locator('.chips-row .btn').first().click(); // a term chip
   await expect(page.getByTestId('term-detail')).toBeVisible();
 });

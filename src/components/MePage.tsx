@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { exportNotes, readNotes } from '../lib/notes';
 import { buildItems, dueCount, masteredCount, readSched } from '../lib/review';
 import { hrefs } from '../lib/router';
@@ -16,6 +16,11 @@ export function MePage() {
   const caseNotes = useMemo(() => Object.entries(notes).filter(([k]) => /^c\d+s\d+$/.test(k)), [notes]);
   const due = dueCount(items, sched);
   const mastered = masteredCount(sched);
+  useEffect(() => {
+    if (!exported) return;
+    const t = setTimeout(() => setExported(false), 2500);
+    return () => clearTimeout(t);
+  }, [exported]);
   return <main className="page me-page" data-testid="me-page">
     <header className="appbar">
       <div className="appbar-title"><h1>我的学习</h1><p>进度、收藏与笔记只保存在这台设备</p></div>
@@ -56,7 +61,7 @@ export function MePage() {
           </li>;
         })}</ul>}
       {caseNotes.length > 0 && <div className="btn-row"><button type="button" className="btn" onClick={() => setExported(exportNotes() > 0)}>导出笔记</button></div>}
-      {exported && <p className="hint" role="status">已导出为 JSON 文件，请自行保管。</p>}
+      {exported && <p className="hint self-fade" role="status">已导出为 JSON 文件，请自行保管。</p>}
       <p className="hint">笔记与备份请勿公开分享，不要记录可识别的真实个案信息。</p>
     </section>
 
