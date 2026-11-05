@@ -53,7 +53,7 @@ python scripts/build_clinical.py <记录.html> <输出.json>
 
 ## 部署
 
-前端：`npm ci && npm run build`，用 `dist/` 替换服务器上 `/home/ubuntu/www-share/lakang/` 对应目录。`public/sw.js` 用于注销会议版遗留的 Service Worker，需保持 `Cache-Control: no-cache`。服务器端 nginx 配置不在仓库内。
+前端：`npm run deploy`（`scripts/deploy.mjs`：构建、打包上传、原子替换 `/home/ubuntu/www-share/lakang/`、检查返回 200；旧版留在 `lakang.bak`，`npm run deploy -- --rollback` 换回）。`public/sw.js` 用于注销会议版遗留的 Service Worker，需保持 `Cache-Control: no-cache`。服务器端 nginx 配置不在仓库内。
 
 AI 服务（服务器已装 Node 22）：
 
