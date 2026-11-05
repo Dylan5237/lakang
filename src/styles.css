@@ -703,3 +703,31 @@ a, button { touch-action: manipulation; }
 .ai-page .ask-thread { min-height: 0; padding-top: .6rem; }
 .ai-page .ask-composer { flex: none; }
 .ai-page .ask-note { flex: none; }
+
+/* 细滚动条：案例对话/要点与 AI 对话 */
+@supports (-moz-appearance: none) {
+  .talk, .notes, .ask-thread, .ask-think-text {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--ink) 26%, transparent) transparent;
+  }
+}
+.talk::-webkit-scrollbar, .notes::-webkit-scrollbar, .ask-thread::-webkit-scrollbar, .ask-think-text::-webkit-scrollbar {
+  width: 6px; height: 6px;
+}
+.talk::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track, .ask-thread::-webkit-scrollbar-track, .ask-think-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+.talk::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .ask-thread::-webkit-scrollbar-thumb, .ask-think-text::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 26%, transparent);
+  background-clip: padding-box;
+}
+.talk:hover::-webkit-scrollbar-thumb, .notes:hover::-webkit-scrollbar-thumb, .ask-thread:hover::-webkit-scrollbar-thumb, .ask-think-text:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.talk::-webkit-scrollbar-button, .notes::-webkit-scrollbar-button, .ask-thread::-webkit-scrollbar-button, .ask-think-text::-webkit-scrollbar-button,
+.talk::-webkit-scrollbar-corner, .notes::-webkit-scrollbar-corner, .ask-thread::-webkit-scrollbar-corner, .ask-think-text::-webkit-scrollbar-corner {
+  display: none; width: 0; height: 0; background: transparent;
+}
+
+.talk, .notes, .ask-thread, .ask-think-text { scrollbar-gutter: stable; }
