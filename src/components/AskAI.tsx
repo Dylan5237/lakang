@@ -110,7 +110,11 @@ export function AskAI({ enabled }: { enabled: boolean }) {
           {messages.map((m, i) => <div key={i} className={`ask-msg ${m.role}`}>
             {m.role === 'assistant' && <span className="ask-who">助手</span>}
             <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>
-              <StreamText content={m.content || (streaming && i === messages.length - 1 ? '…' : '')} from={m.content ? m.animFrom : undefined} batch={m.animBatch} />
+              {m.content
+                ? <StreamText content={m.content} from={m.animFrom} batch={m.animBatch} />
+                : streaming && i === messages.length - 1
+                  ? <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>
+                  : null}
             </div>
             {m.role === 'assistant' && m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
               <span className="muted">站内相关</span>
