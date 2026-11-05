@@ -4,20 +4,49 @@ import { markAiSeen } from '../lib/aiStatus';
 import { hrefs, navigate } from '../lib/router';
 
 const SUGGESTIONS = [
-  '除权和压抑有什么区别？',
-  '三环纽结为什么说没有哪一环是基础？',
-  '享乐和快乐有什么不同？',
-  '我想入门，应该按什么顺序读？',
+  { k: '辨', q: '除权和压抑有什么区别？' },
+  { k: '结', q: '三环纽结为何没有基础？' },
+  { k: '乐', q: '享乐和快乐有什么不同？' },
+  { k: '径', q: '入门应该按什么顺序读？' },
 ];
 
 const sourceHref = (id: string, type: string) =>
   type === 'card' ? hrefs.cards(id) : type === 'term' ? hrefs.terms(id) : type === 'path' ? hrefs.paths(id) : null;
 
+function RobotIcon({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="4.5" y="7.5" width="15" height="12" rx="3.5" />
+    <path d="M9.2 12.2v2.4M14.8 12.2v2.4M12 7.5V5" />
+    <circle cx="12" cy="3.8" r="1.1" />
+  </svg>;
+}
+
 /** Compact entry on immersive pages that do not render the tab bar. */
 export function AskAIButton() {
   return <a className="tool icon ask-tool" href={hrefs.ai()} aria-label="问 AI" data-testid="ask-open">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="7.5" width="15" height="12" rx="3.5" /><path d="M9.2 12.2v2.4M14.8 12.2v2.4M12 7.5V5" /><circle cx="12" cy="3.8" r="1.1" /></svg>
+    <RobotIcon />
   </a>;
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => setCopied(false), 2500);
+    } catch { /* clipboard unavailable */ }
+  };
+  return <button type="button" className={`ask-act ${copied ? 'copied' : ''}`} onClick={() => void copy()} data-testid="ask-copy">
+    <svg viewBox="0 0 24 24" aria-hidden="true">{copied
+      ? <path d="M5 12.5l4.2 4.2L19 6.5" />
+      : <><rect x="9" y="9" width="11" height="11" rx="2.5" /><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4H6.5A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9" /></>}
+    </svg>
+    {copied ? '已复制' : '复制'}
+  </button>;
 }
 
 /** Reasoning stream: open while thinking, fold to a one-line summary when the answer starts. */
@@ -57,13 +86,20 @@ export function AskAIPage() {
   const [input, setInput] = useState('');
   const [deep, setDeep] = useState(() => { try { return localStorage.getItem('lakang:ai-deep') === '1'; } catch { return false; } });
   const scroller = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setChatVisible(true);
     markAiSeen();
     return () => setChatVisible(false);
   }, []);
-  useEffect(() => { const el = scroller.current; if (el) el.scrollTop = el.scrollHeight; }, [messages, streaming]);
+  useEffect(() => { const el = scroller.current; if (el) el.scrollTop = messages.length ? el.scrollHeight : 0; }, [messages, streaming]);
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 144)}px`;
+  }, [input]);
 
   const send = (text: string) => {
     const q = text.trim();
@@ -79,47 +115,64 @@ export function AskAIPage() {
   const back = () => { if (history.length > 1) history.back(); else navigate(hrefs.home(), true); };
 
   return <main className="page ai-page" data-testid="ai-page">
-    <header className="appbar">
+    <header className="appbar ai-head">
       <button type="button" className="back" aria-label="返回" onClick={back}>‹</button>
-      <div className="appbar-title"><h1>问一问</h1><p>基于本站公开学习资料与去标识的专家讨论要点</p></div>
-      {messages.length > 0 && <button type="button" className="ghost" onClick={resetChat}>新对话</button>}
+      <div className="appbar-title"><h1>问一问</h1><p>基于站内资料与专家要点</p></div>
+      {messages.length > 0 && <button type="button" className="ai-new" onClick={resetChat}>＋ 新对话</button>}
     </header>
-    <div className="ask-thread" ref={scroller} aria-live="polite">
+    <div className={`ask-thread ${messages.length === 0 ? 'at-rest' : ''}`} ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
-        <p className="muted">可以问概念、文本、学派差异或阅读顺序。默认快速回答；打开“深度思考”可先看思考过程。回答优先使用站内材料，不足时会标明并延伸到拉康派的一般知识。</p>
-        <div className="ask-suggestions">{SUGGESTIONS.map((s) => <button key={s} type="button" className="ask-chip" onClick={() => send(s)}>{s}</button>)}</div>
+        <div className="ask-hero">
+          <span className="ask-hero-mark" aria-hidden="true"><RobotIcon /></span>
+          <h2>有什么想弄清的？</h2>
+          <p>概念、文本、学派差异，或一条阅读顺序。</p>
+          <small>默认快速回答；需要看推理时，可开启深度思考。</small>
+        </div>
+        <div className="ask-suggestions">{SUGGESTIONS.map((s) => <button key={s.q} type="button" className="ask-chip" onClick={() => send(s.q)}>
+          <span className="ask-chip-k" aria-hidden="true">{s.k}</span>
+          <span className="ask-chip-text">{s.q}</span>
+          <span className="ask-chip-go" aria-hidden="true">↗</span>
+        </button>)}</div>
       </div>}
-      {messages.map((m, i) => <div key={i} className={`ask-msg ${m.role}`}>
-        {m.role === 'assistant' && <span className="ask-who">助手</span>}
-        {m.role === 'assistant' && m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && i === messages.length - 1} />}
-        {(m.content || (m.role === 'assistant' && !m.thinking && streaming && i === messages.length - 1)) && <div className="ask-bubble" data-testid={m.role === 'assistant' ? 'ask-answer' : undefined}>
-          {m.content
-            ? <StreamText content={m.content} from={m.animFrom} batch={m.animBatch} />
-            : <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>}
-        </div>}
-        {m.role === 'assistant' && m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
-          <span className="muted">站内相关</span>
-          {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href
-            ? <a key={s.id} href={href}>{s.title}</a>
-            : <span key={s.id}>{s.title}</span>; })}
-        </div>}
-      </div>)}
+      {messages.map((m, i) => m.role === 'user'
+        ? <div key={i} className="ask-msg user"><div className="ask-user">{m.content}</div></div>
+        : <div key={i} className="ask-msg assistant">
+          <span className="ask-avatar" aria-hidden="true"><RobotIcon /></span>
+          <div className="ask-body">
+            {m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && i === messages.length - 1} />}
+            {(m.content || (!m.thinking && streaming && i === messages.length - 1)) && <div className="ask-prose" data-testid="ask-answer">
+              {m.content
+                ? <StreamText content={m.content} from={m.animFrom} batch={m.animBatch} />
+                : <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>}
+            </div>}
+            {m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
+              <span className="ask-src-label">依据</span>
+              {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href
+                ? <a key={s.id} href={href}>{s.title}</a>
+                : <span key={s.id}>{s.title}</span>; })}
+            </div>}
+            {m.content && <div className="ask-actions"><CopyButton text={m.content} /></div>}
+          </div>
+        </div>)}
       {error && <p className="ask-error" role="alert">{error}</p>}
     </div>
-    <div className="ask-mode">
-      <button type="button" className={`ask-deep ${deep ? 'on' : ''}`} aria-pressed={deep} data-testid="ask-deep" onClick={toggleDeep}>
-        <span className="ask-deep-dot" aria-hidden="true" />深度思考
-      </button>
-      <span className="hint">{deep ? '先展示思考过程，较慢' : '快速回答，不展示思考'}</span>
+    <div className="ask-dock">
+      <form className="ask-composer" onSubmit={(e) => { e.preventDefault(); send(input); }}>
+        <textarea ref={inputRef} value={input} rows={1} maxLength={500} aria-label="提问内容" placeholder="问一个拉康精神分析的问题…"
+          data-testid="ask-input" onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(input); } }} />
+        <div className="ask-tools">
+          <button type="button" className={`ask-deep ${deep ? 'on' : ''}`} aria-pressed={deep} data-testid="ask-deep" onClick={toggleDeep}>
+            <span className="ask-deep-dot" aria-hidden="true" />深度思考
+          </button>
+          {streaming
+            ? <button type="button" className="ask-send stop" onClick={stopChat} aria-label="停止" data-testid="ask-stop"><span className="ask-stop-square" /></button>
+            : <button type="submit" className="ask-send" disabled={!input.trim()} aria-label="发送" data-testid="ask-send">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+            </button>}
+        </div>
+      </form>
+      <p className="ask-note">AI 生成，可能出错；仅作学习参考，不提供诊疗。提问会发送到模型服务，本站不保存对话。</p>
     </div>
-    <form className="ask-composer" onSubmit={(e) => { e.preventDefault(); send(input); }}>
-      <textarea value={input} rows={2} maxLength={500} aria-label="提问内容" placeholder="问一个拉康精神分析的问题…"
-        data-testid="ask-input" onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input); } }} />
-      {streaming
-        ? <button type="button" className="btn" onClick={stopChat} data-testid="ask-stop">停止</button>
-        : <button type="submit" className="btn primary" disabled={!input.trim()} data-testid="ask-send">发送</button>}
-    </form>
-    <p className="ask-note">AI 生成，可能出错；仅作学习参考，不提供诊疗。提问会发送到模型服务用于生成回答，本站不保存对话。</p>
   </main>;
 }
