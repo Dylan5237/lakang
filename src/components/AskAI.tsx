@@ -83,6 +83,8 @@ export function AskAIPage() {
   const { messages, streaming, error } = useSyncExternalStore(subscribeChat, getChat, getChat);
   const [input, setInput] = useState('');
   const [deep, setDeep] = useState(() => { try { return localStorage.getItem('lakang:ai-deep') === '1'; } catch { return false; } });
+  const [tip, setTip] = useState(false);
+  const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -110,6 +112,13 @@ export function AskAIPage() {
     try { localStorage.setItem('lakang:ai-deep', next ? '1' : '0'); } catch { /* private mode */ }
     return next;
   });
+  useEffect(() => () => { if (tipTimer.current) clearTimeout(tipTimer.current); }, []);
+  const toggleTip = () => {
+    if (tipTimer.current) clearTimeout(tipTimer.current);
+    if (tip) { setTip(false); return; }
+    setTip(true);
+    tipTimer.current = setTimeout(() => setTip(false), 6000);
+  };
   const back = () => { if (history.length > 1) history.back(); else navigate(hrefs.home(), true); };
 
   return <main className="page ai-page" data-testid="ai-page">
@@ -117,11 +126,17 @@ export function AskAIPage() {
       <button type="button" className="ai-icon-btn" aria-label="返回" onClick={back}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
       </button>
-      <h1>问一问</h1>
+      <div className="ai-title">
+        <h1>问一问</h1>
+        <button type="button" className="ai-info" aria-label="使用说明" aria-expanded={tip} aria-controls="ai-tip" onClick={toggleTip}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8v.01" /></svg>
+        </button>
+      </div>
       <button type="button" className="ai-icon-btn" aria-label="新对话" onClick={resetChat} disabled={messages.length === 0}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5H6.5A2.5 2.5 0 0 0 4 7.5v10A2.5 2.5 0 0 0 6.5 20h10a2.5 2.5 0 0 0 2.5-2.5V12M17.4 4.6a1.6 1.6 0 0 1 2.3 2.3L11.5 15l-3.2.9.9-3.2z" /></svg>
       </button>
     </header>
+    <p id="ai-tip" className={`ai-tip ${tip ? 'show' : ''}`} role="status">AI 生成，可能出错；仅作学习参考，不提供诊疗。提问会发送到模型服务，本站不保存对话。</p>
     <div className={`ask-thread ${messages.length === 0 ? 'at-rest' : ''}`} ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
         <div className="ask-hero">
@@ -143,7 +158,7 @@ export function AskAIPage() {
           : <div key={i} className="ask-msg assistant">
             {m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && last} />}
             {m.content && <div className="ask-prose" data-testid="ask-answer"><StreamText content={m.content} from={m.animFrom} batch={m.animBatch} /></div>}
-            {m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
+            {m.sources && m.sources.length > 0 && !(streaming && last) && <div className="ask-sources" data-testid="ask-sources">
               <span className="ask-src-label">依据</span>
               {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href
                 ? <a key={s.id} href={href}>{s.title}</a>
@@ -174,7 +189,6 @@ export function AskAIPage() {
             </button>}
         </div>
       </form>
-      <p className="ask-note">AI 生成，可能出错；仅作学习参考，不提供诊疗。提问会发送到模型服务，本站不保存对话。</p>
     </div>
   </main>;
 }
