@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties }
 import { getChat, resetChat, sendChat, setChatVisible, stopChat, subscribeChat } from '../lib/aiChat';
 import { markAiSeen } from '../lib/aiStatus';
 import { hrefs, navigate } from '../lib/router';
+import { LogoMark } from './Logo';
 
 const SUGGESTIONS = [
   { k: '辨', q: '除权和压抑有什么区别？' },
@@ -38,12 +39,11 @@ function CopyButton({ text }: { text: string }) {
       timer.current = setTimeout(() => setCopied(false), 2500);
     } catch { /* clipboard unavailable */ }
   };
-  return <button type="button" className={`ask-act ${copied ? 'copied' : ''}`} onClick={() => void copy()} data-testid="ask-copy">
+  return <button type="button" className={`ask-act ${copied ? 'copied' : ''}`} onClick={() => void copy()} data-testid="ask-copy" aria-label={copied ? '已复制' : '复制'} title={copied ? '已复制' : '复制'}>
     <svg viewBox="0 0 24 24" aria-hidden="true">{copied
       ? <path d="M5 12.5l4.2 4.2L19 6.5" />
       : <><rect x="9" y="9" width="11" height="11" rx="2.5" /><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4H6.5A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9" /></>}
     </svg>
-    {copied ? '已复制' : '复制'}
   </button>;
 }
 
@@ -59,7 +59,7 @@ function Thinking({ text, answerAt, live }: { text: string; answerAt?: number; l
       {live && <span className="ask-think-dot" aria-hidden="true" />}
       <span>{live ? '思考中' : '思考过程'}</span>
       {secs !== null && <small>{secs}s</small>}
-      <span className="ask-think-ico" aria-hidden="true">⌄</span>
+      <span className="ask-think-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></span>
     </button>
     <div className={`ask-think-grid ${open ? 'open' : ''}`} inert={!open}>
       <div className="ask-think-inner"><div className="ask-think-text" ref={body}>{text}</div></div>
@@ -113,45 +113,49 @@ export function AskAIPage() {
   const back = () => { if (history.length > 1) history.back(); else navigate(hrefs.home(), true); };
 
   return <main className="page ai-page" data-testid="ai-page">
-    <header className="appbar ai-head">
-      <button type="button" className="back" aria-label="返回" onClick={back}>‹</button>
-      <div className="appbar-title"><h1>问一问</h1><p>基于站内资料与专家要点</p></div>
-      {messages.length > 0 && <button type="button" className="ai-new" onClick={resetChat}>＋ 新对话</button>}
+    <header className="ai-top">
+      <button type="button" className="ai-icon-btn" aria-label="返回" onClick={back}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
+      </button>
+      <h1>问一问</h1>
+      <button type="button" className="ai-icon-btn" aria-label="新对话" onClick={resetChat} disabled={messages.length === 0}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5H6.5A2.5 2.5 0 0 0 4 7.5v10A2.5 2.5 0 0 0 6.5 20h10a2.5 2.5 0 0 0 2.5-2.5V12M17.4 4.6a1.6 1.6 0 0 1 2.3 2.3L11.5 15l-3.2.9.9-3.2z" /></svg>
+      </button>
     </header>
     <div className={`ask-thread ${messages.length === 0 ? 'at-rest' : ''}`} ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
         <div className="ask-hero">
-          <span className="ask-hero-mark" aria-hidden="true"><SparkIcon /></span>
+          <LogoMark className="ask-hero-mark" />
           <h2>有什么想弄清的？</h2>
-          <p>概念、文本、学派差异，或一条阅读顺序。</p>
-          <small>默认快速回答；需要看推理时，可开启深度思考。</small>
+          <p>基于站内资料与专家要点，回答概念、文本与阅读顺序。</p>
         </div>
-        <div className="ask-suggestions">{SUGGESTIONS.map((s) => <button key={s.q} type="button" className="ask-chip" onClick={() => send(s.q)}>
-          <span className="ask-chip-k" aria-hidden="true">{s.k}</span>
-          <span className="ask-chip-text">{s.q}</span>
-          <span className="ask-chip-go" aria-hidden="true">↗</span>
-        </button>)}</div>
+        <ul className="ask-suggestions">{SUGGESTIONS.map((s) => <li key={s.q}>
+          <button type="button" className="ask-chip" onClick={() => send(s.q)}>
+            <span className="ask-chip-text">{s.q}</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+          </button>
+        </li>)}</ul>
       </div>}
-      {messages.map((m, i) => m.role === 'user'
-        ? <div key={i} className="ask-msg user"><div className="ask-user">{m.content}</div></div>
-        : <div key={i} className="ask-msg assistant">
-          <span className="ask-avatar" aria-hidden="true"><SparkIcon /></span>
-          <div className="ask-body">
-            {m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && i === messages.length - 1} />}
-            {(m.content || (!m.thinking && streaming && i === messages.length - 1)) && <div className="ask-prose" data-testid="ask-answer">
-              {m.content
-                ? <StreamText content={m.content} from={m.animFrom} batch={m.animBatch} />
-                : <span className="ask-typing" role="status" aria-label="正在生成回答"><i /><i /><i /></span>}
-            </div>}
+      {messages.map((m, i) => {
+        const last = i === messages.length - 1;
+        return m.role === 'user'
+          ? <div key={i} className="ask-msg user"><div className="ask-user">{m.content}</div></div>
+          : <div key={i} className="ask-msg assistant">
+            {m.thinking && <Thinking text={m.thinking} answerAt={m.answerAt} live={streaming && !m.content && last} />}
+            {m.content && <div className="ask-prose" data-testid="ask-answer"><StreamText content={m.content} from={m.animFrom} batch={m.animBatch} /></div>}
             {m.sources && m.sources.length > 0 && <div className="ask-sources" data-testid="ask-sources">
               <span className="ask-src-label">依据</span>
               {m.sources.map((s) => { const href = sourceHref(s.id, s.type); return href
                 ? <a key={s.id} href={href}>{s.title}</a>
                 : <span key={s.id}>{s.title}</span>; })}
             </div>}
-            {m.content && <div className="ask-actions"><CopyButton text={m.content} /></div>}
-          </div>
-        </div>)}
+            <div className="ask-foot">
+              <LogoMark className={`ask-foot-mark ${streaming && last ? 'busy' : ''}`} />
+              {streaming && last && !m.content && !m.thinking && <span className="ask-working" role="status">正在生成回答…</span>}
+              {m.content && !(streaming && last) && <CopyButton text={m.content} />}
+            </div>
+          </div>;
+      })}
       {error && <p className="ask-error" role="alert">{error}</p>}
     </div>
     <div className="ask-dock">
@@ -161,7 +165,7 @@ export function AskAIPage() {
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(input); } }} />
         <div className="ask-tools">
           <button type="button" className={`ask-deep ${deep ? 'on' : ''}`} aria-pressed={deep} data-testid="ask-deep" onClick={toggleDeep}>
-            <span className="ask-deep-dot" aria-hidden="true" />深度思考
+            <SparkIcon />深度思考
           </button>
           {streaming
             ? <button type="button" className="ask-send stop" onClick={stopChat} aria-label="停止" data-testid="ask-stop"><span className="ask-stop-square" /></button>
