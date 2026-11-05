@@ -42,9 +42,10 @@ function Thinking({ text, answerAt, live }: { text: string; answerAt?: number; l
 
 /** Newest delta renders as per-character spans; older text stays a single string. */
 function StreamText({ content, from, batch }: { content: string; from?: number; batch?: number }) {
-  if (from === undefined || from >= content.length) return <>{content}</>;
-  const head = content.slice(0, from);
-  const tail = [...content.slice(from)];
+  const text = content.replace(/\*\*/g, '');
+  if (from === undefined || from >= text.length) return <>{text}</>;
+  const head = text.slice(0, from);
+  const tail = [...text.slice(from)];
   return <>{head}{tail.map((ch, i) => (
     <span key={from + i} className="ask-tok"
       style={{ '--d': Math.min(Math.max(0, from + i - (batch ?? from + i)), 12) } as CSSProperties}>{ch}</span>
@@ -54,6 +55,7 @@ function StreamText({ content, from, batch }: { content: string; from?: number; 
 export function AskAIPage() {
   const { messages, streaming, error } = useSyncExternalStore(subscribeChat, getChat, getChat);
   const [input, setInput] = useState('');
+  const [deep, setDeep] = useState(() => { try { return localStorage.getItem('lakang:ai-deep') === '1'; } catch { return false; } });
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,8 +69,13 @@ export function AskAIPage() {
     const q = text.trim();
     if (!q || streaming) return;
     setInput('');
-    void sendChat(q);
+    void sendChat(q, deep);
   };
+  const toggleDeep = () => setDeep((d) => {
+    const next = !d;
+    try { localStorage.setItem('lakang:ai-deep', next ? '1' : '0'); } catch { /* private mode */ }
+    return next;
+  });
   const back = () => { if (history.length > 1) history.back(); else navigate(hrefs.home(), true); };
 
   return <main className="page ai-page" data-testid="ai-page">
@@ -79,7 +86,7 @@ export function AskAIPage() {
     </header>
     <div className="ask-thread" ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
-        <p className="muted">可以问概念、文本、学派差异或阅读顺序。回答前会先展示思考过程；回答优先使用站内材料，不足时会标明并延伸到拉康派的一般知识。</p>
+        <p className="muted">可以问概念、文本、学派差异或阅读顺序。默认快速回答；打开“深度思考”可先看思考过程。回答优先使用站内材料，不足时会标明并延伸到拉康派的一般知识。</p>
         <div className="ask-suggestions">{SUGGESTIONS.map((s) => <button key={s} type="button" className="ask-chip" onClick={() => send(s)}>{s}</button>)}</div>
       </div>}
       {messages.map((m, i) => <div key={i} className={`ask-msg ${m.role}`}>
@@ -98,6 +105,12 @@ export function AskAIPage() {
         </div>}
       </div>)}
       {error && <p className="ask-error" role="alert">{error}</p>}
+    </div>
+    <div className="ask-mode">
+      <button type="button" className={`ask-deep ${deep ? 'on' : ''}`} aria-pressed={deep} data-testid="ask-deep" onClick={toggleDeep}>
+        <span className="ask-deep-dot" aria-hidden="true" />深度思考
+      </button>
+      <span className="hint">{deep ? '先展示思考过程，较慢' : '快速回答，不展示思考'}</span>
     </div>
     <form className="ask-composer" onSubmit={(e) => { e.preventDefault(); send(input); }}>
       <textarea value={input} rows={2} maxLength={500} aria-label="提问内容" placeholder="问一个拉康精神分析的问题…"

@@ -4,12 +4,12 @@ export interface AiMessage { role: 'user' | 'assistant'; content: string; source
 /** POST /api/chat and consume the SSE stream. Meta arrives before the first token. */
 export async function askAI(
   messages: { role: 'user' | 'assistant'; content: string }[],
-  { signal, onMeta, onThinking, onDelta }: { signal?: AbortSignal; onMeta?: (sources: AiSource[]) => void; onThinking?: (text: string) => void; onDelta: (text: string) => void },
+  { signal, onMeta, onThinking, onDelta, deep = false }: { signal?: AbortSignal; onMeta?: (sources: AiSource[]) => void; onThinking?: (text: string) => void; onDelta: (text: string) => void; deep?: boolean },
 ): Promise<void> {
   const res = await fetch('api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, deep }),
     signal,
   });
   if (!res.ok || !res.body) {

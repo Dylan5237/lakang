@@ -7,6 +7,8 @@ let state: ChatState = { messages: [], streaming: false, error: null };
 let visible = false;
 let controller: AbortController | null = null;
 const listeners = new Set<() => void>();
+let pendingThinking = '';
+let thinkingTimer: ReturnType<typeof setTimeout> | null = null;
 
 const update = (patch: Partial<ChatState>) => {
   state = { ...state, ...patch };
@@ -17,15 +19,30 @@ const patchLast = (messages: AiMessage[], fn: (m: AiMessage) => AiMessage) => {
   if (last?.role === 'assistant') next[next.length - 1] = fn(last);
   return next;
 };
+const flushThinking = () => {
+  thinkingTimer = null;
+  if (!pendingThinking) return;
+  const text = pendingThinking; pendingThinking = '';
+  update({ messages: patchLast(state.messages, (m) => ({ ...m, thinking: (m.thinking ?? '') + text })) });
+};
+const queueThinking = (chunk: string) => {
+  pendingThinking += chunk;
+  if (!thinkingTimer) thinkingTimer = setTimeout(flushThinking, 50);
+};
+const clearThinking = () => {
+  if (thinkingTimer) { clearTimeout(thinkingTimer); thinkingTimer = null; }
+  pendingThinking = '';
+};
 
 export const subscribeChat = (cb: () => void) => { listeners.add(cb); return () => { listeners.delete(cb); }; };
 export const getChat = () => state;
 export const setChatVisible = (v: boolean) => { visible = v; };
 
-export async function sendChat(text: string) {
+export async function sendChat(text: string, deep = false) {
   const q = text.trim().slice(0, 500);
   if (!q || state.streaming) return;
   const history = [...state.messages, { role: 'user' as const, content: q }];
+  clearThinking();
   update({ messages: [...history, { role: 'assistant', content: '', thinking: '' }], streaming: true, error: null });
   setAiStatus('thinking');
   const started = Date.now();
@@ -34,9 +51,11 @@ export async function sendChat(text: string) {
   try {
     await askAI(history.map(({ role, content }) => ({ role, content })), {
       signal: c.signal,
+      deep,
       onMeta: (sources) => update({ messages: patchLast(state.messages, (m) => ({ ...m, sources })) }),
-      onThinking: (chunk) => update({ messages: patchLast(state.messages, (m) => ({ ...m, thinking: (m.thinking ?? '') + chunk })) }),
+      onThinking: queueThinking,
       onDelta: (chunk) => {
+        flushThinking();
         update({
           messages: patchLast(state.messages, (m) => {
             const at = m.content.length;
@@ -50,6 +69,7 @@ export async function sendChat(text: string) {
       },
     });
   } catch (e) {
+    flushThinking();
     if ((e as Error).name !== 'AbortError') {
       failed = true;
       setAiStatus('error', !visible);
@@ -61,6 +81,7 @@ export async function sendChat(text: string) {
       });
     }
   } finally {
+    flushThinking();
     controller = null;
     update({
       streaming: false,
@@ -79,6 +100,7 @@ export function stopChat() {
 export function resetChat() {
   controller?.abort();
   controller = null;
+  clearThinking();
   setAiStatus('idle');
   update({ messages: [], streaming: false, error: null });
 }

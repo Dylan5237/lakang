@@ -272,7 +272,7 @@ test('AI 助手：页签入口、思考过程、流式回答、站内来源与�
     '',
     '',
   ].join('\n');
-  let posted: { messages?: { role: string; content: string }[] } = {};
+  let posted: { messages?: { role: string; content: string }[]; deep?: boolean } = {};
   await page.route('**/api/chat', async (route) => {
     posted = route.request().postDataJSON();
     await route.fulfill({ status: 200, contentType: 'text/event-stream; charset=utf-8', body: sse });
@@ -281,6 +281,9 @@ test('AI 助手：页签入口、思考过程、流式回答、站内来源与�
   await page.getByTestId('tab-ai').click();
   await expect(page.getByTestId('ai-page')).toBeVisible();
   await expect(page.getByRole('heading', { name: '问一问' })).toBeVisible();
+  await expect(page.getByTestId('ask-deep')).toHaveAttribute('aria-pressed', 'false');
+  await page.getByTestId('ask-deep').click();
+  await expect(page.getByTestId('ask-deep')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
   await page.getByTestId('ask-send').click();
   await expect(page.getByTestId('ask-answer')).toHaveText('博罗米环没有哪一环是基础。');
@@ -289,6 +292,7 @@ test('AI 助手：页签入口、思考过程、流式回答、站内来源与�
   await page.getByTestId('ask-thinking').getByRole('button').click();
   await expect(page.getByTestId('ask-thinking')).toContainText('先分清两种机制');
   expect(posted.messages?.at(-1)?.content).toBe('三环纽结为什么没有基础？');
+  expect(posted.deep).toBe(true);
   expect(JSON.stringify(posted)).not.toContain('虚构发言'); // clinical records never leave the browser
   await expect(page.getByTestId('ai-page')).toContainText('AI 生成，可能出错');
   await page.getByTestId('ask-sources').getByRole('link', { name: '三环纽结' }).click();
@@ -314,6 +318,7 @@ test('AI 页签：离开页面后切页，页签依次显示思考中/回答中/
     await page.route('**/api/chat', (r) => r.continue({ url: `http://127.0.0.1:${port}/api/chat` }));
     await page.goto('/');
     await page.getByTestId('tab-ai').click();
+    await page.getByTestId('ask-deep').click();
     await page.getByTestId('ask-input').fill('三环纽结为什么没有基础？');
     await page.getByTestId('ask-send').click();
     await expect(page.getByTestId('tab-ai')).toContainText('思考中');

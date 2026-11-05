@@ -731,3 +731,14 @@ a, button { touch-action: manipulation; }
 }
 
 .talk, .notes, .ask-thread, .ask-think-text { scrollbar-gutter: stable; }
+
+/* AI 快速/深度思考切换 */
+.ask-mode { flex: none; display: flex; align-items: center; gap: .5rem; padding: .15rem 1rem .35rem; background: var(--surface-2); }
+.ask-deep {
+  display: inline-flex; align-items: center; gap: .35rem; min-height: 40px; padding: 0 .7rem; border: 0; border-radius: 999px;
+  background: var(--surface); color: var(--muted); font-size: .78rem; box-shadow: var(--shadow-1); cursor: pointer;
+}
+.ask-deep.on { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
+.ask-deep-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .35; }
+.ask-deep.on .ask-deep-dot { opacity: 1; }
+.ask-mode .hint { font-size: .72rem; }

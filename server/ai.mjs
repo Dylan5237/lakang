@@ -15,6 +15,7 @@ const KNOWLEDGE_DIR = process.env.KNOWLEDGE_DIR || fileURLToPath(new URL('./know
 const MAX_MESSAGES = 12;
 const MAX_CHARS = 12_000;
 const MAX_OUTPUT = 1_500;
+const DEEP_EFFORT = process.env.ARK_REASONING_EFFORT || 'low';
 
 if (!ARK_KEY) { console.error('[fatal] 缺少环境变量 ARK_API_KEY'); process.exit(1); }
 
@@ -38,7 +39,8 @@ const SYSTEM = `你是「拉康随身读」的线上学习助手，具有拉康�
 5. 不复述、不索要任何个案信息。
 6. 中文回答；先直接回答问题，再给必要的区分、例子或阅读方向。篇幅以说清为准，避免空泛铺陈。
 7. 可自然提到站内卡片或术语的标题与编号，但编号只能使用材料中出现的；不要伪造 K###、T## 编号。
-8. 思考过程保持简短：只列关键判断与必要区分，不复述问题、不逐条自我检查、不展开无关联想；随后直接回答。`;
+8. 思考过程保持简短：只列关键判断与必要区分，不复述问题、不逐条自我检查、不展开无关联想；随后直接回答。
+9. 用纯文本回答：不要使用 Markdown 标记（**、###、反引号、表格等）；分点用「1.」「2.」或中文序号。`;
 
 function buildPrompt(question, hits) {
   const site = hits.public.length
@@ -125,6 +127,7 @@ const server = http.createServer(async (req, res) => {
         model: ARK_MODEL,
         messages: [{ role: 'system', content: system }, ...messages],
         stream: true,
+        reasoning_effort: payload.deep === true ? DEEP_EFFORT : 'minimal',
         max_tokens: Math.min(MAX_OUTPUT, Number(payload.max_tokens) || MAX_OUTPUT),
         temperature: Math.min(1, Math.max(0, Number(payload.temperature) || 0.6)),
       }),
