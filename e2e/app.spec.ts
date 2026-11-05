@@ -111,6 +111,9 @@ test('概念卡：滑动换卡、按钮翻卡、收藏持久、目录与K链接'
   await page.getByRole('button', { name: '下一张 ›' }).click();
   await expect.poll(() => page.evaluate(() => location.hash)).toBe(`#/cards/${cardOrder[1]}`);
   await expect(page.getByRole('button', { name: '‹ 上一张' })).toBeEnabled();
+  // the pager sits on the viewport edge; no generic .page padding or card padding may leave a dead strip below
+  const gap = await page.evaluate(() => Math.round(innerHeight - document.querySelector('.card-nav')!.getBoundingClientRect().bottom));
+  expect(gap).toBeLessThanOrEqual(1);
 
   // scroll the deck: snap lands on the next card and the tracker follows
   // (real touch swipes are covered by the local Edge run; CDP touch is unreliable in headless-shell)

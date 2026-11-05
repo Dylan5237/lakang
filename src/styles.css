@@ -300,7 +300,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .chips-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .7rem 0 0; }
 .chips-row .btn { font-size: .82rem; padding: 0 .7rem; min-height: 40px; }
 .sources { font-size: .78rem; color: var(--muted); line-height: 1.8; overflow-wrap: anywhere; }
-.card-nav { display: flex; gap: .6rem; padding: .5rem 1rem calc(.75rem + env(safe-area-inset-bottom)); }
+.card-nav { display: flex; gap: .6rem; padding: .35rem 1rem calc(.5rem + env(safe-area-inset-bottom)); }
 .card-nav .btn { flex: 1; }
 .toc-group { list-style: none; margin: .9rem 0 .25rem; font-size: .75rem; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
 .card-fav { font-size: 1.2rem; line-height: 1; }
@@ -329,7 +329,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .feed::-webkit-scrollbar { display: none; }
 .sCard {
   min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always;
-  display: flex; padding: .8rem 0 5.2rem;
+  display: flex; padding: .8rem 0 .5rem;
 }
 .card-inner {
   width: 100%; margin: auto 0; padding: 1.15rem 1.25rem 1.25rem; border-radius: 20px;

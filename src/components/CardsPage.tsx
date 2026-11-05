@@ -90,7 +90,7 @@ export function CardsPage({ cardId }: { cardId?: string }) {
   const read = new Set(progress.read);
   const habit = readHabit();
 
-  return <main className="page deck" data-testid="cards">
+  return <main className="deck" data-testid="cards">
     <header className="appbar deck-bar">
       <a className="back" href={hrefs.home()} aria-label="返回学习首页">‹</a>
       <div className="appbar-title"><h1>概念卡</h1><p>已读 {readCount}/{studyCards.length} · {index + 1}/{cardOrder.length} · 上下滑动换卡</p></div>
