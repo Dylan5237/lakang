@@ -11,13 +11,14 @@ import { PathsPage } from './components/PathsPage';
 import { AboutPage } from './components/AboutPage';
 import { MePage } from './components/MePage';
 import { TermsPage } from './components/TermsPage';
+import { AskAI } from './components/AskAI';
 import { TAB_ROUTES, TabBar } from './components/TabBar';
 
 export function App() {
   const route = parseHash(useHash());
   const tabbed = TAB_ROUTES.has(route.name);
   // Same element position for every route so the unlocked archive state in Routes survives tab switches.
-  return <><div className={tabbed ? 'with-tabs' : undefined}><Routes route={route} /></div>{tabbed && <TabBar current={route.name} />}</>;
+  return <><div className={tabbed ? 'with-tabs' : undefined}><Routes route={route} /></div>{tabbed && <TabBar current={route.name} />}<AskAI enabled={route.name !== 'case'} /></>;
 }
 
 function Routes({ route }: { route: Route }) {

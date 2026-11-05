@@ -24,3 +24,7 @@ public/private/
 clinical*.json
 !tests/fixtures/*.json
 clinical-demos*.html
+
+# Site AI: private expert-notes knowledge base and local env (public.json is generated, committable)
+server/knowledge/experts.json
+server/.env
