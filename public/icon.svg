@@ -1,9 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" fill="#34365c"/>
-<rect x="136" y="96" width="240" height="320" rx="36" fill="#ffffff"/>
-<rect x="176" y="156" width="160" height="22" rx="11" fill="#34365c"/>
-<rect x="176" y="204" width="160" height="14" rx="7" fill="#dcdce5"/>
-<rect x="176" y="236" width="160" height="14" rx="7" fill="#dcdce5"/>
-<rect x="176" y="268" width="104" height="14" rx="7" fill="#dcdce5"/>
-<rect x="176" y="332" width="64" height="40" rx="12" fill="#34365c"/>
+<rect width="512" height="512" fill="#8f2f25"/>
+<g transform="translate(256 256) scale(64 -64) translate(-1 -.75)" fill="none">
+<g stroke="#f6efe2" stroke-width=".24">
+<circle cx="1" cy="1.5" r="1.5"/><circle cx="2" cy="0" r="1.5"/><circle cx="0" cy="0" r="1.5"/>
+</g>
+<g stroke="#8f2f25" stroke-width=".48">
+<path d="M0.579 0.481A1.5 1.5 0 0 1 0.534 -0.318M2.857 1.231A1.5 1.5 0 0 1 2.102 1.497M1.102 0.003A1.5 1.5 0 0 1 1.857 0.269M-0.466 1.818A1.5 1.5 0 0 1 -0.421 1.019M1.262 0.811A1.5 1.5 0 0 1 0.666 1.344M0.666 -1.344A1.5 1.5 0 0 1 1.262 -0.811"/>
+</g>
+<g stroke="#f6efe2" stroke-width=".24">
+<path d="M0.579 0.481A1.5 1.5 0 0 1 0.534 -0.318M2.857 1.231A1.5 1.5 0 0 1 2.102 1.497M1.102 0.003A1.5 1.5 0 0 1 1.857 0.269M-0.466 1.818A1.5 1.5 0 0 1 -0.421 1.019M1.262 0.811A1.5 1.5 0 0 1 0.666 1.344M0.666 -1.344A1.5 1.5 0 0 1 1.262 -0.811"/>
+</g>
+</g>
 </svg>

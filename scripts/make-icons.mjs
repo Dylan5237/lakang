@@ -1,13 +1,21 @@
-// Render the existing book/card symbol in the indigo palette, without dependencies.
+// Render the Borromean-ring mark (same geometry as public/icon.svg) on oxblood, without dependencies.
 import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
-const BG = [0x34, 0x36, 0x5c];
-const WHITE = [0xff, 0xff, 0xff];
-const GREY = [0xdc, 0xdc, 0xe5];
-const SHAPES = [[136,96,240,320,36,WHITE],[176,156,160,22,11,BG],[176,204,160,14,7,GREY],[176,236,160,14,7,GREY],[176,268,104,14,7,GREY],[176,332,64,40,12,BG]];
-function inRound(px, py, [x,y,w,h,r]) {
-  const cx = Math.min(Math.max(px, x+r), x+w-r), cy = Math.min(Math.max(py, y+r), y+h-r);
-  return (px-cx)**2+(py-cy)**2 <= r*r && px>=x && px<=x+w && py>=y && py<=y+h;
+const BG = [0x8f, 0x2f, 0x25];
+const PAPER = [0xf6, 0xef, 0xe2];
+const R = 1.5, W = 0.12, GAP = 0.24;
+const RINGS = [[1, 1.5], [2, 0], [0, 0]];
+// over-arcs: [ring index, centre angle, half-span]; angles from the crossings of each pair, see src/components/Figure.tsx
+const ARCS = [[1, 3.0849], [1, 1.2327], [0, -1.2327], [0, -3.0849], [2, 0.8411], [2, -0.8411]].map(([i, t]) => [i, t, 0.27]);
+const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+function onRing(mx, my, i, w) { const [cx, cy] = RINGS[i]; return Math.abs(Math.hypot(mx - cx, my - cy) - R) <= w; }
+function onArc(mx, my, [i, t, h], w) { const [cx, cy] = RINGS[i]; return onRing(mx, my, i, w) && Math.abs(wrap(Math.atan2(my - cy, mx - cx) - t)) <= h; }
+function colorAt(mx, my) {
+  let col = BG;
+  if (RINGS.some((_, i) => onRing(mx, my, i, W))) col = PAPER;
+  if (ARCS.some((a) => onArc(mx, my, a, GAP))) col = BG;
+  if (ARCS.some((a) => onArc(mx, my, a, W))) col = PAPER;
+  return col;
 }
 const T = new Uint32Array(256);
 for (let n=0;n<256;n++) { let c=n; for(let k=0;k<8;k++) c=c&1 ? 0xedb88320^(c>>>1) : c>>>1; T[n]=c>>>0; }
@@ -22,7 +30,7 @@ function render(size,scale) {
       for(let sy=0;sy<SS;sy++) for(let sx=0;sx<SS;sx++) {
         const u=((x+(sx+.5)/SS)/size)*512, v=((y+(sy+.5)/SS)/size)*512;
         const du=(u-off)/scale,dv=(v-off)/scale;
-        let col=BG; for(const s of SHAPES) if(inRound(du,dv,s)) col=s[5];
+        const col=colorAt((du-256)/64+1, -(dv-256)/64+0.75);
         r+=col[0];g+=col[1];b+=col[2];
       }
       const n=SS*SS,i=y*(size*3+1)+1+x*3;
@@ -36,4 +44,4 @@ mkdirSync('public',{recursive:true});
 writeFileSync('public/icon-192.png',render(192,1));
 writeFileSync('public/icon-512.png',render(512,1));
 writeFileSync('public/icon-maskable-512.png',render(512,.8));
-console.log('indigo icons written');
+console.log('icons written');

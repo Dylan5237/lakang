@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ERRORS, loadArchive, saveKey, savedKey } from '../lib/api';
 import type { Archive } from '../types';
+import { LogoMark } from './Logo';
 
 export function LockScreen({ onOpen }: { onOpen: (a: Archive) => void }) {
   const [key, setKey] = useState(savedKey);
@@ -18,7 +19,7 @@ export function LockScreen({ onOpen }: { onOpen: (a: Archive) => void }) {
   useEffect(() => { const k = savedKey(); if (k) void open(k, localStorage.getItem('lakang:key') === k, true); }, []);
   return <main className="lock" data-testid="lock">
     <div className="lock-card">
-      <div className="lock-mark" aria-hidden="true">∴</div>
+      <LogoMark className="lock-mark" />
       <h1>拉康派临床演示</h1>
       <p className="muted">私人记录 · 需要访问密码</p>
       <form onSubmit={(e) => { e.preventDefault(); void open(key, remember); }}>

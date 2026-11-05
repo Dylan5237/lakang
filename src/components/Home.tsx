@@ -6,6 +6,7 @@ import { buildItems, dueCount, readSched } from '../lib/review';
 import { cardById, paths, readProgress, studyCards } from '../lib/study';
 import type { Archive } from '../types';
 import { SearchAllButton } from './GlobalSearch';
+import { LogoMark } from './Logo';
 import { SettingsButton } from './Settings';
 
 const dateLabel = () => new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', month: 'long', day: 'numeric', weekday: 'short' }).format(new Date());
@@ -24,7 +25,7 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
   return <main className="home" data-testid="home">
     <header className="topbar">
       <div className="topbar-row">
-        <div><span className="eyebrow">{dateLabel()}</span><h1>拉康随身读</h1></div>
+        <div className="brand"><LogoMark className="brand-mark" /><div><span className="eyebrow">{dateLabel()}</span><h1>拉康随身读</h1></div></div>
         <div className="hero-tools">
           
           <SearchAllButton archive={archive} />
@@ -35,10 +36,10 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
     <section className="today" aria-label="今日学习" data-testid="today">
       {resume
         ? <a className="resume" href={hrefs.cards(resume.id)} data-testid="resume">
-          <small>继续阅读 · 已读 {readCount}/{studyCards.length}</small><strong>{resume.title}</strong>
+          <LogoMark className="resume-mark" /><small>继续阅读 · 已读 {readCount}/{studyCards.length}</small><strong>{resume.title}</strong>
         </a>
         : <a className="resume" href={hrefs.paths('start-body')} data-testid="start-here">
-          <small>第一次来？约 10 分钟</small><strong>从「入门一：身体的三个入口」开始</strong>
+          <LogoMark className="resume-mark" /><small>第一次来？约 10 分钟</small><strong>从「入门一：身体的三个入口」开始</strong>
         </a>}
       <div className="today-row">
         <div className="today-goal" data-testid="goal">
@@ -96,6 +97,6 @@ export function Home({ archive, onLock }: { archive: Archive | null; onLock: () 
     </section>
     {archive && <button type="button" className="about-toggle" aria-expanded={about} onClick={() => setAbout(!about)}>关于这份记录 {about ? '▴' : '▾'}</button>}
     {about && archive && <div className="about" data-testid="about">{archive.notice.map((n, i) => <p key={i}>{n.replace(/^⚠️\s*/, '')}</p>)}</div>}
-    <footer className="site-foot"><a href={hrefs.about()} data-testid="about-link">关于本站 · 方法与隐私</a></footer>
+    <footer className="site-foot"><LogoMark className="foot-mark" /><a href={hrefs.about()} data-testid="about-link">关于本站 · 方法与隐私</a></footer>
   </main>;
 }
