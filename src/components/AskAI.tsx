@@ -16,7 +16,7 @@ const sourceHref = (id: string, type: string) =>
 /** Compact entry on immersive pages that do not render the tab bar. */
 export function AskAIButton() {
   return <a className="tool icon ask-tool" href={hrefs.ai()} aria-label="问 AI" data-testid="ask-open">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5z" /><path d="M8 9h8M8 12h5" /></svg>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="7.5" width="15" height="12" rx="3.5" /><path d="M9.2 12.2v2.4M14.8 12.2v2.4M12 7.5V5" /><circle cx="12" cy="3.8" r="1.1" /></svg>
   </a>;
 }
 

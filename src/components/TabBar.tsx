@@ -26,7 +26,7 @@ export function TabBar({ current }: { current: Route['name'] }) {
     {TABS.slice(0, 3).map(tab)}
     <a href={hrefs.ai()} className={`ai-tab ${st.phase} ${st.unseen ? 'unseen' : ''} ${active === 'ai' ? 'on' : ''}`}
       data-testid="tab-ai" aria-label={label === 'AI' ? '问 AI' : `问 AI，${label}`} aria-current={active === 'ai' ? 'page' : undefined}>
-      <span className="ai-ico-wrap"><svg className="tab-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5zM8 9h8M8 12h5" /></svg></span>
+      <span className="ai-ico-wrap"><svg className="tab-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="7.5" width="15" height="12" rx="3.5" /><path d="M9.2 12.2v2.4M14.8 12.2v2.4M12 7.5V5" /><circle cx="12" cy="3.8" r="1.1" /></svg></span>
       <span className="tab-label">{label}</span>
     </a>
     {TABS.slice(3).map(tab)}
