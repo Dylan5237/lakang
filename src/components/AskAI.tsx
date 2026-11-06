@@ -62,7 +62,7 @@ function Thinking({ text, answerAt, live }: { text: string; answerAt?: number; l
       <span className="ask-think-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></span>
     </button>
     <div className={`ask-think-grid ${open ? 'open' : ''}`} inert={!open}>
-      <div className="ask-think-inner"><div className="ask-think-text" ref={body}>{text}</div></div>
+      <div className="ask-think-inner"><div className="ask-think-text" ref={body}>{text.trimStart()}</div></div>
     </div>
   </div>;
 }
@@ -180,7 +180,7 @@ export function AskAIPage() {
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(input); } }} />
         <div className="ask-tools">
           <button type="button" className={`ask-deep ${deep ? 'on' : ''}`} aria-pressed={deep} data-testid="ask-deep" onClick={toggleDeep}>
-            <SparkIcon />深度思考
+            <span className="ask-deep-pill"><SparkIcon />深度思考</span>
           </button>
           {streaming
             ? <button type="button" className="ask-send stop" onClick={stopChat} aria-label="停止" data-testid="ask-stop"><span className="ask-stop-square" /></button>

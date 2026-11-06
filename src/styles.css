@@ -692,13 +692,13 @@ a, button { touch-action: manipulation; }
 .ask-composer textarea::placeholder { color: color-mix(in srgb, var(--muted) 75%, transparent); }
 .ask-composer textarea:focus, .ask-composer textarea:focus-visible { outline: none; }
 .ask-tools { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
-.ask-deep {
-  display: inline-flex; align-items: center; gap: .35rem; min-height: 40px; padding: 0 .8rem; border: 0; border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--muted); font-size: .8rem; cursor: pointer;
-}
-.ask-deep svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* 按钮本身保持 40px 高的触控区，可见胶囊为 28px */
+.ask-deep { display: inline-flex; align-items: center; min-height: 40px; padding: 0; border: 0; background: none; color: var(--muted); font-size: .74rem; cursor: pointer; }
+.ask-deep-pill { display: inline-flex; align-items: center; gap: .3rem; height: 28px; padding: 0 .65rem; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); }
+.ask-deep svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 @media (hover: hover) { .ask-deep:hover { color: var(--ink); } }
-.ask-deep.on { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--accent); }
+.ask-deep.on { color: var(--accent); }
+.ask-deep.on .ask-deep-pill { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
 .ask-send {
   flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
   background: var(--accent); color: var(--accent-fg); cursor: pointer;
