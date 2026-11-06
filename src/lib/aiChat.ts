@@ -1,9 +1,9 @@
 import { askAI, type AiMessage } from './ai';
 import { setAiStatus } from './aiStatus';
 
-export interface ChatState { messages: AiMessage[]; streaming: boolean; error: string | null }
+export interface ChatState { messages: AiMessage[]; streaming: boolean; error: string | null; cardId: string | null }
 
-let state: ChatState = { messages: [], streaming: false, error: null };
+let state: ChatState = { messages: [], streaming: false, error: null, cardId: null };
 let visible = false;
 let controller: AbortController | null = null;
 const listeners = new Set<() => void>();
@@ -42,6 +42,7 @@ export async function sendChat(text: string, deep = false) {
   const q = text.trim().slice(0, 500);
   if (!q || state.streaming) return;
   const history = [...state.messages, { role: 'user' as const, content: q }];
+  const card = state.cardId ?? undefined;
   clearThinking();
   update({ messages: [...history, { role: 'assistant', content: '', thinking: '' }], streaming: true, error: null });
   setAiStatus('thinking');
@@ -52,6 +53,7 @@ export async function sendChat(text: string, deep = false) {
     await askAI(history.map(({ role, content }) => ({ role, content })), {
       signal: c.signal,
       deep,
+      card,
       onMeta: (sources) => update({ messages: patchLast(state.messages, (m) => ({ ...m, sources })) }),
       onThinking: queueThinking,
       onDelta: (chunk) => {
@@ -102,5 +104,14 @@ export function resetChat() {
   controller = null;
   clearThinking();
   setAiStatus('idle');
-  update({ messages: [], streaming: false, error: null });
+  update({ messages: [], streaming: false, error: null, cardId: null });
 }
+
+/** Entering from a concept card starts a fresh session about that card; re-entering for the same card keeps it. */
+export function enterCardChat(cardId: string) {
+  if (state.cardId === cardId) return;
+  resetChat();
+  update({ cardId });
+}
+
+export const clearChatCard = () => update({ cardId: null });

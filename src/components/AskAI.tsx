@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
-import { getChat, resetChat, sendChat, setChatVisible, stopChat, subscribeChat } from '../lib/aiChat';
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
+import { clearChatCard, enterCardChat, getChat, resetChat, sendChat, setChatVisible, stopChat, subscribeChat } from '../lib/aiChat';
 import { markAiSeen } from '../lib/aiStatus';
+import { cardQuestions } from '../lib/aiContext';
 import { hrefs, navigate } from '../lib/router';
+import { cardById } from '../lib/study';
 import { LogoMark } from './Logo';
 
 const SUGGESTIONS = [
@@ -21,8 +23,8 @@ function SparkIcon({ className }: { className?: string }) {
 }
 
 /** Compact entry on immersive pages that do not render the tab bar. */
-export function AskAIButton() {
-  return <a className="tool icon ask-tool" href={hrefs.ai()} aria-label="问 AI" data-testid="ask-open">
+export function AskAIButton({ cardId }: { cardId?: string }) {
+  return <a className="tool icon ask-tool" href={hrefs.ai(cardId)} aria-label="问 AI" data-testid="ask-open">
     <SparkIcon />
   </a>;
 }
@@ -79,8 +81,10 @@ function StreamText({ content, from, batch }: { content: string; from?: number; 
   ))}</>;
 }
 
-export function AskAIPage() {
-  const { messages, streaming, error } = useSyncExternalStore(subscribeChat, getChat, getChat);
+export function AskAIPage({ cardId: entry }: { cardId?: string }) {
+  const { messages, streaming, error, cardId } = useSyncExternalStore(subscribeChat, getChat, getChat);
+  const card = cardId ? cardById.get(cardId) : undefined;
+  const suggestions = card ? cardQuestions(card.id) : SUGGESTIONS.map((s) => s.q);
   const [input, setInput] = useState('');
   const [deep, setDeep] = useState(() => { try { return localStorage.getItem('lakang:ai-deep') === '1'; } catch { return false; } });
   const [tip, setTip] = useState(false);
@@ -88,6 +92,8 @@ export function AskAIPage() {
   const scroller = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Before paint, so a card entry never flashes the generic empty state.
+  useLayoutEffect(() => { if (entry) enterCardChat(entry); }, [entry]);
   useEffect(() => {
     setChatVisible(true);
     markAiSeen();
@@ -119,6 +125,8 @@ export function AskAIPage() {
     setTip(true);
     tipTimer.current = setTimeout(() => setTip(false), 6000);
   };
+  const newChat = () => { resetChat(); if (entry) navigate(hrefs.ai(), true); };
+  const detach = () => { clearChatCard(); if (entry) navigate(hrefs.ai(), true); };
   const back = () => { if (history.length > 1) history.back(); else navigate(hrefs.home(), true); };
 
   return <main className="page ai-page" data-testid="ai-page">
@@ -132,11 +140,20 @@ export function AskAIPage() {
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8v.01" /></svg>
         </button>
       </div>
-      <button type="button" className="ai-icon-btn" aria-label="新对话" onClick={resetChat} disabled={messages.length === 0}>
+      <button type="button" className="ai-icon-btn" aria-label="新对话" onClick={newChat} disabled={messages.length === 0}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5H6.5A2.5 2.5 0 0 0 4 7.5v10A2.5 2.5 0 0 0 6.5 20h10a2.5 2.5 0 0 0 2.5-2.5V12M17.4 4.6a1.6 1.6 0 0 1 2.3 2.3L11.5 15l-3.2.9.9-3.2z" /></svg>
       </button>
     </header>
     <p id="ai-tip" className={`ai-tip ${tip ? 'show' : ''}`} role="status">AI 生成，可能出错；仅作学习参考，不提供诊疗。提问会发送到模型服务，本站不保存对话。</p>
+    {card && <div className="ask-ctx" data-testid="ask-context">
+      <a className="ask-ctx-link" href={hrefs.cards(card.id)}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7C10.4 5.6 8 5 4.5 5.2v12.3c3.5-.2 5.9.4 7.5 1.8 1.6-1.4 4-2 7.5-1.8V5.2C16 5 13.6 5.6 12 7zM12 7v12.3" /></svg>
+        <span>正在读 · {card.title}</span>
+      </a>
+      <button type="button" className="ask-ctx-x" aria-label="移除概念卡上下文" onClick={detach}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" /></svg>
+      </button>
+    </div>}
     <div className={`ask-thread ${messages.length === 0 ? 'at-rest' : ''}`} ref={scroller} aria-live="polite">
       {messages.length === 0 && <div className="ask-empty">
         <div className="ask-hero">
@@ -144,9 +161,10 @@ export function AskAIPage() {
           <h2>有什么想弄清的？</h2>
           <p>基于站内资料与专家要点，回答概念、文本与阅读顺序。</p>
         </div>
-        <ul className="ask-suggestions">{SUGGESTIONS.map((s) => <li key={s.q}>
-          <button type="button" className="ask-chip" onClick={() => send(s.q)}>
-            <span className="ask-chip-text">{s.q}</span>
+        {card && <p className="ask-sug-label">关于这张卡，可以问</p>}
+        <ul className="ask-suggestions">{suggestions.map((q) => <li key={q}>
+          <button type="button" className="ask-chip" onClick={() => send(q)}>
+            <span className="ask-chip-text">{q}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
           </button>
         </li>)}</ul>

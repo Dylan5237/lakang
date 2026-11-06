@@ -56,6 +56,12 @@ export function snippet(text, query, len = 96) {
   return (start > 0 ? '…' : '') + plain.slice(start, start + len) + (plain.length > start + len ? '…' : '');
 }
 
+/** 客户端只传概念卡编号：必须是 K+三位数字且存在于公开知识里，否则忽略，不信任客户端带来的任何其它内容。 */
+export function pickCard(publicChunks, id) {
+  if (typeof id !== 'string' || !/^K\d{3}$/.test(id)) return null;
+  return publicChunks.find((c) => c.type === 'card' && c.id === id) ?? null;
+}
+
 /** Top matches across public and expert chunks. Experts are kept few and clearly labelled. */
 export function retrieve(query, { publicChunks, expertChunks }, { publicLimit = 6, expertLimit = 4 } = {}) {
   const tokens = queryTokens(query);

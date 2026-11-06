@@ -335,6 +335,48 @@ test('AI 页签：离开页面后切页，页签依次显示思考中/回答中/
   }
 });
 
+test('概念卡 → AI：开新会话，静默携带卡片上下文并预备针对性提问', async ({ page }) => {
+  const sse = ['data: {"choices":[{"delta":{"content":"驱力不等于冲动。"}}]}', '', 'data: [DONE]', '', ''].join(String.fromCharCode(10));
+  const posted: { card?: string; messages?: { role: string; content: string }[] }[] = [];
+  await page.route('**/api/chat', async (route) => {
+    posted.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, contentType: 'text/event-stream; charset=utf-8', body: sse });
+  });
+  await page.goto('/#/cards/K015');
+  await page.getByTestId('ask-open').click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/ai/K015');
+  // 弱化的上下文小条 + 针对这张卡的预备提问
+  await expect(page.getByTestId('ask-context')).toContainText('驱力');
+  const chips = page.locator('.ask-chip-text');
+  await expect(chips).toHaveCount(4);
+  await expect(chips.first()).toHaveText('用一个日常的例子讲讲「驱力」');
+  await chips.first().click();
+  await expect(page.getByTestId('ask-answer')).toHaveText('驱力不等于冲动。');
+  // 上下文只随请求静默携带：气泡里只有用户自己的话
+  expect(posted[0].card).toBe('K015');
+  expect(posted[0].messages?.at(-1)?.content).toBe('用一个日常的例子讲讲「驱力」');
+  await expect(page.locator('.ask-user')).toHaveText('用一个日常的例子讲讲「驱力」');
+  // 同一张卡再进入：保留会话；换一张卡：开新会话
+  await page.goto('/#/cards/K015');
+  await page.getByTestId('ask-open').click();
+  await expect(page.getByTestId('ask-answer')).toHaveCount(1);
+  await page.goto('/#/cards/K017');
+  await page.getByTestId('ask-open').click();
+  await expect(page.getByTestId('ask-answer')).toHaveCount(0);
+  await expect(page.getByTestId('ask-context')).not.toContainText('驱力');
+  // 移除上下文后回到通用提问，且请求不再带 card
+  await page.getByRole('button', { name: '移除概念卡上下文' }).click();
+  await expect(page.getByTestId('ask-context')).toHaveCount(0);
+  await expect(page.locator('.ask-chip-text').first()).toHaveText('除权和压抑有什么区别？');
+  await page.getByTestId('ask-input').fill('什么是除权？');
+  await page.getByTestId('ask-send').click();
+  await expect(page.getByTestId('ask-answer')).toHaveText('驱力不等于冲动。');
+  expect(posted.at(-1)?.card).toBeUndefined();
+  // 从页签进入不带上下文
+  await page.getByRole('button', { name: '新对话' }).click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe('#/ai');
+});
+
 test('AI 助手：失败提示，案例页不出现', async ({ page }) => {
   await page.route('**/api/chat', (route) => route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"模型服务暂时不可用"}' }));
   await page.goto('/#/terms');

@@ -4,7 +4,7 @@
 import http from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { retrieve } from './retrieval.mjs';
+import { pickCard, retrieve } from './retrieval.mjs';
 
 const ARK_KEY = process.env.ARK_API_KEY;
 const ARK_MODEL = process.env.ARK_MODEL || 'doubao-seed-2.1-lite';
@@ -42,18 +42,21 @@ const SYSTEM = `你是「拉康随身读」的线上学习助手，具有拉康�
 8. 思考过程保持简短：只列关键判断与必要区分，不复述问题、不逐条自我检查、不展开无关联想；随后直接回答。
 9. 用纯文本回答：不要使用 Markdown 标记（**、###、反引号、表格等）；分点用「1.」「2.」或中文序号。`;
 
-function buildPrompt(question, hits) {
+function buildPrompt(question, hits, card) {
   const site = hits.public.length
     ? hits.public.map((c) => `- [${c.type === 'term' ? '术语' : c.type === 'path' ? '路径' : '卡片'}] ${c.id}《${c.title}》\n  ${c.text.replace(/\n/g, '\n  ')}`).join('\n')
     : '（本次没有检索到直接相关的站内材料。）';
   const experts = hits.experts.length
     ? hits.experts.map((c) => `- ${c.title}（${c.who}）\n  ${c.text.replace(/\n/g, '\n  ')}`).join('\n')
     : '（本次没有直接相关的专家讨论要点。）';
+  const reading = card
+    ? `\n【用户正在阅读的概念卡】（用户说“这张卡”“它”“这个概念”时，指这一张；仍以【用户问题】为主，不必复述卡片）\n${card.id}《${card.title}》\n${card.text.slice(0, 1800)}\n`
+    : '';
   return `${SYSTEM}
 
 【站内材料】
 ${site}
-
+${reading}
 【专家讨论要点（已去除全部个案信息，只保留理论表述；只作理论参考）】
 ${experts}
 
@@ -116,7 +119,7 @@ const server = http.createServer(async (req, res) => {
   if (messages.reduce((n, m) => n + m.content.length, 0) > MAX_CHARS) return json(res, 413, { error: '内容过长' }, cors);
 
   const hits = retrieve(question, { publicChunks, expertChunks });
-  const system = buildPrompt(question, hits);
+  const system = buildPrompt(question, hits, pickCard(publicChunks, payload.card));
 
   let upstream;
   try {

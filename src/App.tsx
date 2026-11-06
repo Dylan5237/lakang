@@ -30,7 +30,7 @@ function Routes({ route }: { route: Route }) {
     return <LockScreen onOpen={setArchive} />;
   }
   if (route.name === 'terms') return <TermsPage termId={route.termId} />;
-  if (route.name === 'ai') return <AskAIPage />;
+  if (route.name === 'ai') return <AskAIPage cardId={route.cardId} />;
   if (route.name === 'cards') return <CardsPage cardId={route.cardId} />;
   if (route.name === 'review') return <Flashcards />;
   if (route.name === 'paths') return <PathsPage pathId={route.pathId} />;

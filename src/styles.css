@@ -610,6 +610,19 @@ a, button { touch-action: manipulation; }
 .ask-thread { flex: 1; min-height: 0; overflow-y: auto; padding: .75rem 1.1rem 1rem; display: flex; flex-direction: column; gap: 1.6rem; }
 .ask-thread.at-rest { justify-content: center; justify-content: safe center; }
 
+/* 概念卡上下文：顶栏下一条弱化的“正在读”小条，可点回卡片或移除 */
+.ask-ctx { flex: none; display: flex; align-items: center; justify-content: center; gap: .35rem; padding: 0 1rem .35rem; min-height: 30px; }
+.ask-ctx-link {
+  position: relative; display: inline-flex; align-items: center; gap: .35rem; min-width: 0; height: 26px; padding: 0 .65rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--muted); font-size: .72rem; text-decoration: none;
+}
+.ask-ctx-link span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ask-ctx-link svg, .ask-ctx-x svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ask-ctx-link::after, .ask-ctx-x::after { content: ""; position: absolute; inset: -7px -3px; } /* 视觉小，点击热区 ≥40px */
+.ask-ctx-x { position: relative; flex: none; display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; }
+@media (hover: hover) { .ask-ctx-link:hover, .ask-ctx-x:hover { color: var(--ink); } }
+.ask-sug-label { margin: 0 0 -.9rem; color: var(--muted); font-size: .75rem; letter-spacing: .08em; }
+
 /* 空状态：品牌标记 + 问候 + 纵向建议列表 */
 .ask-empty { display: flex; flex-direction: column; gap: 1.75rem; }
 .ask-hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .5rem; }
