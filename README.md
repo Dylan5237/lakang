@@ -49,13 +49,14 @@ python scripts/build_clinical.py <记录.html> <输出.json>
 - 需要的环境变量：`ARK_API_KEY`（必填，仅存服务器 `/home/ubuntu/lakang-ai/.env`，0600）、`ARK_URL`、`ARK_MODEL`（默认 `doubao-seed-2.1-lite`）、`ALLOW_ORIGIN`、`PORT`（默认 8787）、`ARK_REASONING_EFFORT`（深度思考时的 effort，默认 low）。密钥不进仓库、不进构建产物、不写日志。
 - 内置限流：每 IP 每分钟 20 次、全局每分钟 80 次；请求体上限 100 KB，消息最多 12 条、合计 12000 字。
 - 请求体 `deep: false` 走 `reasoning_effort: minimal`（快速），`deep: true` 走 `low`（展示思考）。
+- 从概念卡进入（`#/ai/K015`）会开新会话并静默携带该卡：请求体多一个 `card`（只传编号），服务端用 `pickCard` 校验为 `K###` 且存在于公开知识后，把该卡全文放进提示词的【用户正在阅读的概念卡】段；界面只显示一条弱化的“正在读”小条（可点回卡片、可移除），并按卡片数据生成 3–4 个预备提问（`src/lib/aiContext.ts`）。同一张卡再次进入保留原会话，换卡则重开，页签进入不带上下文。
 - 本地联调：`node scripts/build_ai_knowledge.mjs`，把 `experts.json` 放到 `server/knowledge/`，然后 `ARK_API_KEY=... node server/ai.mjs`，`npm run dev` 会把 `/api` 代理到 8787。
 
 ## 部署
 
 前端：`npm run deploy`（`scripts/deploy.mjs`：构建、打包上传、原子替换 `/home/ubuntu/www-share/lakang/`、检查返回 200；旧版留在 `lakang.bak`，`npm run deploy -- --rollback` 换回）。`public/sw.js` 用于注销会议版遗留的 Service Worker，需保持 `Cache-Control: no-cache`。服务器端 nginx 配置不在仓库内。
 
-AI 服务（服务器已装 Node 22）：
+AI 服务代码/公开知识更新：`npm run deploy -- --ai`（只传 `ai.mjs`、`retrieval.mjs`、`public.json`，备份、重启、健康检查，失败自动还原；`experts.json` 与 `.env` 不经脚本）。首次搭建手工步骤（服务器已装 Node 22）：
 
 ```bash
 # 目录 /home/ubuntu/lakang-ai：ai.mjs、retrieval.mjs、knowledge/{public,experts}.json、.env(600)
